@@ -30,12 +30,12 @@ export async function POST(req: Request) {
     let fileSize = 0;
     let userId: string | null = user?.id ?? null;
     let modelFile: File | null = null;
-    let delivery: "whatsapp" | "email" = "whatsapp";
+    let delivery: "whatsapp" | "email" | "form" = "whatsapp";
 
     if (contentType.includes("multipart/form-data")) {
       const fd = asMultipartForm(await req.formData());
       const d = readFormString(fd, "delivery", "whatsapp");
-      if (d === "email") delivery = "email";
+      if (d === "email" || d === "form") delivery = d;
       name = readFormString(fd, "name");
       email = readFormString(fd, "email");
       phone = readFormString(fd, "phone");
@@ -92,11 +92,6 @@ export async function POST(req: Request) {
       );
     }
 
-    let fileStoragePath: string | null = null;
-    if (modelFile?.size) {
-      fileStoragePath = await uploadPrintFile(id, modelFile);
-    }
-
     const row = {
       id,
       name,
@@ -108,7 +103,7 @@ export async function POST(req: Request) {
       note,
       file_name: fileName,
       file_size: fileSize,
-      file_storage_path: fileStoragePath,
+      file_storage_path: null as string | null,
       user_id: userId,
       status: "yeni",
       created_at: new Date().toISOString(),
@@ -120,7 +115,31 @@ export async function POST(req: Request) {
       .select("*")
       .single();
 
-    if (error) throw error;
+    if (error) {
+      const msg = error.message ?? "";
+      if (/file_storage_path/i.test(msg)) {
+        throw new Error(
+          "Veritabanı güncel değil: supabase/migrations/004_quote_attachments.sql dosyasını Supabase SQL Editor'da çalıştırın."
+        );
+      }
+      throw error;
+    }
+
+    let storageWarning: string | undefined;
+    if (modelFile?.size) {
+      try {
+        const path = await uploadPrintFile(id, modelFile);
+        const { error: upErr } = await supabase
+          .from("custom_print_requests")
+          .update({ file_storage_path: path })
+          .eq("id", id);
+        if (upErr) throw upErr;
+        (data as Record<string, unknown>).file_storage_path = path;
+      } catch (uploadErr) {
+        storageWarning = (uploadErr as Error).message;
+        console.error("[custom-print] dosya yüklenemedi:", storageWarning);
+      }
+    }
 
     const mapped = mapCustomPrint(data as Record<string, unknown>);
     let notification;
@@ -129,9 +148,11 @@ export async function POST(req: Request) {
       notification = await sendCustomPrintQuoteEmail(mapped, modelFile);
     }
 
-    return NextResponse.json(
-      notification ? { ...mapped, notification } : mapped
-    );
+    return NextResponse.json({
+      ...mapped,
+      ...(notification ? { notification } : {}),
+      ...(storageWarning ? { storageWarning } : {}),
+    });
   } catch (e) {
     return NextResponse.json(
       { error: (e as Error).message },

@@ -23,6 +23,7 @@ export type QuoteNotificationResult = {
 
 export type CustomPrintSubmitResult = CustomPrintRequest & {
   notification?: QuoteNotificationResult;
+  storageWarning?: string;
 };
 
 export async function submitCustomPrintRequest(

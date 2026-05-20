@@ -42,6 +42,10 @@ export const ruExtended = {
     successTitle: "Заявка принята",
     successBody:
       "Заявка сохранена. Откройте WhatsApp и прикрепите 3D-файл к сообщению.",
+    submitForm: "Отправить заявку",
+    submittingForm: "Отправка…",
+    successBodyForm:
+      "Заявка получена. Мы свяжемся с вами в WhatsApp в ближайшее время.",
     submitWhatsApp: "Отправить в WhatsApp",
     submitEmail: "Отправить по e-mail",
     submittingEmail: "Отправка e-mail…",
@@ -111,6 +115,10 @@ export const ruExtended = {
     successBody: "Свяжемся по e-mail или телефону.",
     successBodyWhatsApp:
       "Заявка сохранена. Откройте WhatsApp и прикрепите фото к сообщению, если есть.",
+    submitForm: "Отправить заявку",
+    submittingForm: "Отправка…",
+    successBodyForm:
+      "Заявка получена. Мы свяжемся с вами в WhatsApp в ближайшее время.",
     submitWhatsApp: "Отправить в WhatsApp",
     submitEmail: "Отправить по e-mail",
     submittingEmail: "Отправка e-mail…",

@@ -19,12 +19,29 @@ export function readFormString(
   return fallback;
 }
 
-export function readFormFile(fd: MultipartForm, key: string): File | null {
+function blobToFile(value: Blob, fallbackName: string): File {
+  if (typeof File !== "undefined" && value instanceof File && value.name) {
+    return value;
+  }
+  const name =
+    typeof File !== "undefined" && value instanceof File && value.name
+      ? value.name
+      : fallbackName;
+  return new File([value], name, {
+    type: value.type || "application/octet-stream",
+  });
+}
+
+export function readFormFile(
+  fd: MultipartForm,
+  key: string,
+  fallbackName = "model.stl"
+): File | null {
   for (const [k, value] of fd.entries()) {
     if (k !== key) continue;
-    if (typeof value === "object" && value !== null && "size" in value) {
-      const f = value as File;
-      if (f.size > 0) return f;
+    if (typeof value === "string") continue;
+    if (value && typeof value === "object" && "size" in value && value.size > 0) {
+      return blobToFile(value as Blob, fallbackName);
     }
   }
   return null;

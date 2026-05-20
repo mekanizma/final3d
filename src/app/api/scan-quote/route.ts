@@ -34,12 +34,12 @@ export async function POST(req: Request) {
     let wantsPrint = false;
     let note = "";
     let formUserId: string | null = null;
-    let delivery: "whatsapp" | "email" = "whatsapp";
+    let delivery: "whatsapp" | "email" | "form" = "whatsapp";
 
     if (contentType.includes("multipart/form-data")) {
       const fd = asMultipartForm(await req.formData());
       const d = readFormString(fd, "delivery", "whatsapp");
-      if (d === "email") delivery = "email";
+      if (d === "email" || d === "form") delivery = d;
       name = readFormString(fd, "name");
       email = readFormString(fd, "email");
       phone = readFormString(fd, "phone");
@@ -81,12 +81,9 @@ export async function POST(req: Request) {
       );
     }
 
-    let photoStoragePath: string | null = null;
     let photoFileName: string | null = null;
     let photoFileSize: number | null = null;
-
     if (photoFile?.size) {
-      photoStoragePath = await uploadScanPhoto(id, photoFile);
       photoFileName = photoFile.name;
       photoFileSize = photoFile.size;
     }
@@ -108,7 +105,7 @@ export async function POST(req: Request) {
       note,
       photo_file_name: photoFileName,
       photo_file_size: photoFileSize,
-      photo_storage_path: photoStoragePath,
+      photo_storage_path: null as string | null,
       user_id: user?.id ?? formUserId,
       status: "yeni",
       created_at: new Date().toISOString(),
@@ -120,7 +117,31 @@ export async function POST(req: Request) {
       .select("*")
       .single();
 
-    if (error) throw error;
+    if (error) {
+      const msg = error.message ?? "";
+      if (/photo_storage_path/i.test(msg)) {
+        throw new Error(
+          "Veritabanı güncel değil: supabase/migrations/004_quote_attachments.sql dosyasını Supabase SQL Editor'da çalıştırın."
+        );
+      }
+      throw error;
+    }
+
+    let storageWarning: string | undefined;
+    if (photoFile?.size) {
+      try {
+        const path = await uploadScanPhoto(id, photoFile);
+        const { error: upErr } = await supabase
+          .from("scan_quote_requests")
+          .update({ photo_storage_path: path })
+          .eq("id", id);
+        if (upErr) throw upErr;
+        (data as Record<string, unknown>).photo_storage_path = path;
+      } catch (uploadErr) {
+        storageWarning = (uploadErr as Error).message;
+        console.error("[scan-quote] foto yüklenemedi:", storageWarning);
+      }
+    }
 
     const mapped = mapScanQuote(data as Record<string, unknown>);
     let notification;
@@ -129,9 +150,11 @@ export async function POST(req: Request) {
       notification = await sendScanQuoteEmail(mapped, photoFile);
     }
 
-    return NextResponse.json(
-      notification ? { ...mapped, notification } : mapped
-    );
+    return NextResponse.json({
+      ...mapped,
+      ...(notification ? { notification } : {}),
+      ...(storageWarning ? { storageWarning } : {}),
+    });
   } catch (e) {
     return NextResponse.json(
       { error: (e as Error).message },

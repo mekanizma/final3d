@@ -47,6 +47,31 @@ export function validatePhotoFile(file: File): string | null {
   return null;
 }
 
+async function storageUpload(
+  bucket: string,
+  path: string,
+  buffer: Buffer,
+  contentType: string
+): Promise<void> {
+  const supabase = createAdminClient();
+  const types = [contentType, "application/octet-stream"];
+
+  let lastErr: string | null = null;
+  for (const ct of types) {
+    const { error } = await supabase.storage.from(bucket).upload(path, buffer, {
+      contentType: ct,
+      upsert: true,
+    });
+    if (!error) return;
+    lastErr = error.message;
+    if (!/mime|content type|invalid/i.test(error.message)) break;
+  }
+  throw new Error(
+    lastErr ||
+      `Storage bucket '${bucket}' bulunamadı. Supabase migration 004/005 çalıştırın.`
+  );
+}
+
 export async function uploadPrintFile(
   requestId: string,
   file: File
@@ -54,19 +79,16 @@ export async function uploadPrintFile(
   const err = validatePrintFile(file);
   if (err) throw new Error(err);
 
-  const supabase = createAdminClient();
-  const safeName = sanitizeFileName(file.name);
+  const safeName = sanitizeFileName(file.name || "model.stl");
   const path = `${requestId}/${safeName}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  const { error } = await supabase.storage
-    .from(PRINT_FILES_BUCKET)
-    .upload(path, buffer, {
-      contentType: file.type || "application/octet-stream",
-      upsert: true,
-    });
-
-  if (error) throw new Error(error.message);
+  await storageUpload(
+    PRINT_FILES_BUCKET,
+    path,
+    buffer,
+    file.type || "application/octet-stream"
+  );
   return path;
 }
 
@@ -77,19 +99,16 @@ export async function uploadScanPhoto(
   const err = validatePhotoFile(file);
   if (err) throw new Error(err);
 
-  const supabase = createAdminClient();
-  const safeName = sanitizeFileName(file.name);
+  const safeName = sanitizeFileName(file.name || "photo.jpg");
   const path = `${requestId}/${safeName}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  const { error } = await supabase.storage
-    .from(SCAN_PHOTOS_BUCKET)
-    .upload(path, buffer, {
-      contentType: file.type || "image/jpeg",
-      upsert: true,
-    });
-
-  if (error) throw new Error(error.message);
+  await storageUpload(
+    SCAN_PHOTOS_BUCKET,
+    path,
+    buffer,
+    file.type || "image/jpeg"
+  );
   return path;
 }
 

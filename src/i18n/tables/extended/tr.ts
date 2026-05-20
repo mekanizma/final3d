@@ -45,6 +45,10 @@ export const trExtended = {
       "Talebiniz kaydedildi. WhatsApp açıldı — lütfen 3D dosyanızı sohbete ekleyip gönderin.",
     successBodyEmail:
       "Talebiniz kaydedildi ve tüm bilgiler ile 3D dosyanız ekibimize e-posta ile iletildi. En kısa sürede dönüş yapacağız.",
+    submitForm: "Teklifi Gönder",
+    submittingForm: "Teklif iletiliyor…",
+    successBodyForm:
+      "Teklifiniz tarafımıza iletilmiştir. En kısa sürede WhatsApp üzerinden geri dönüş sağlanacaktır.",
     submitWhatsApp: "WhatsApp ile Gönder",
     submitEmail: "E-posta ile Gönder",
     submittingEmail: "E-posta gönderiliyor…",
@@ -65,6 +69,8 @@ export const trExtended = {
     submit: "Teklif Talebi Gönder",
     submitting: "Gönderiliyor...",
     fail: "Talep gönderilemedi. Lütfen tekrar deneyin.",
+    storageWarning:
+      "Talebiniz kaydedildi ancak 3D dosya sunucuya yüklenemedi. Admin panelde indirme için Supabase Storage (print-files) kurulumunu kontrol edin.",
   },
   quoteForm: {
     emailMock:
@@ -116,10 +122,16 @@ export const trExtended = {
     successBody: "En kısa sürede e-posta veya telefon ile dönüş yapacağız.",
     successBodyWhatsApp:
       "Talebiniz kaydedildi. WhatsApp açıldı — varsa referans fotoğrafını sohbete ekleyip gönderin.",
+    submitForm: "Teklifi Gönder",
+    submittingForm: "Teklif iletiliyor…",
+    successBodyForm:
+      "Teklifiniz tarafımıza iletilmiştir. En kısa sürede WhatsApp üzerinden geri dönüş sağlanacaktır.",
     submitWhatsApp: "WhatsApp ile Gönder",
     submitEmail: "E-posta ile Gönder",
     submittingEmail: "E-posta gönderiliyor…",
     submitting: "Gönderiliyor…",
+    storageWarning:
+      "Talebiniz kaydedildi ancak fotoğraf sunucuya yüklenemedi. Admin panelde görüntüleme için Storage kurulumunu kontrol edin.",
     successBodyEmail:
       "Talebiniz kaydedildi; form bilgileri ve varsa referans fotoğrafınız ekibimize e-posta ile iletildi.",
     openWhatsApp: "WhatsApp'ı Tekrar Aç",

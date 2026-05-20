@@ -7,6 +7,7 @@ import {
   User,
   Mail,
   MessageCircle,
+  Send,
   Phone,
   ImagePlus,
   CheckCircle2,
@@ -91,9 +92,11 @@ export function ScanQuoteForm() {
   const router = useRouter();
   const hydrated = useAuthHydrated();
   const user = useAuthStore((s) => s.user);
-  const [loading, setLoading] = useState<"whatsapp" | "email" | null>(null);
+  const [loading, setLoading] = useState<"whatsapp" | "email" | "form" | null>(
+    null
+  );
   const [done, setDone] = useState(false);
-  const [doneVia, setDoneVia] = useState<"whatsapp" | "email">("whatsapp");
+  const [doneVia, setDoneVia] = useState<"whatsapp" | "email" | "form">("form");
   const [waUrl, setWaUrl] = useState<string | null>(null);
   const [photoName, setPhotoName] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -134,7 +137,7 @@ export function ScanQuoteForm() {
     return true;
   }
 
-  async function submitQuote(via: "whatsapp" | "email") {
+  async function submitQuote(via: "whatsapp" | "email" | "form") {
     if (!validateForm()) return;
 
     const photoInput = document.querySelector<HTMLInputElement>(
@@ -163,6 +166,17 @@ export function ScanQuoteForm() {
       if (user?.id) payload.append("userId", user.id);
 
       const result = await submitScanQuoteRequest(payload);
+
+      if (result.storageWarning) {
+        alert(`${t("scanForm.storageWarning")}\n\n${result.storageWarning}`);
+      }
+
+      if (via === "form") {
+        setDoneVia("form");
+        setWaUrl(null);
+        setDone(true);
+        return;
+      }
 
       if (via === "email") {
         quoteEmailFailAlert(result.notification, t);
@@ -196,8 +210,8 @@ export function ScanQuoteForm() {
       openWhatsAppWithMessage(message);
       setDoneVia("whatsapp");
       setDone(true);
-    } catch {
-      alert(t("scanForm.fail"));
+    } catch (e) {
+      alert(e instanceof Error ? e.message : t("scanForm.fail"));
     } finally {
       setLoading(null);
     }
@@ -210,9 +224,11 @@ export function ScanQuoteForm() {
           <CheckCircle2 className="w-14 h-14 text-emerald-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">{t("scanForm.successTitle")}</h1>
           <p className="text-violet-200/70 text-sm mb-4 leading-relaxed">
-            {doneVia === "email"
-              ? t("scanForm.successBodyEmail")
-              : t("scanForm.successBodyWhatsApp")}
+            {doneVia === "form"
+              ? t("scanForm.successBodyForm")
+              : doneVia === "email"
+                ? t("scanForm.successBodyEmail")
+                : t("scanForm.successBodyWhatsApp")}
           </p>
           {waUrl && doneVia === "whatsapp" && (
             <a
@@ -267,7 +283,7 @@ export function ScanQuoteForm() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              void submitQuote("whatsapp");
+              void submitQuote("form");
             }}
             className="space-y-5"
           >
@@ -459,6 +475,19 @@ export function ScanQuoteForm() {
                 size="lg"
                 className="w-full"
                 disabled={loading !== null}
+              >
+                <Send className="w-4 h-4" />
+                {loading === "form"
+                  ? t("scanForm.submittingForm")
+                  : t("scanForm.submitForm")}
+              </NeonButton>
+              <NeonButton
+                type="button"
+                size="lg"
+                variant="ghost"
+                className="w-full"
+                disabled={loading !== null}
+                onClick={() => void submitQuote("whatsapp")}
               >
                 <MessageCircle className="w-4 h-4" />
                 {loading === "whatsapp"

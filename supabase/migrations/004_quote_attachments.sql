@@ -27,30 +27,12 @@ create index if not exists scan_quote_requests_photo_path_idx
 -- Storage bucket'ları (private — yalnızca service role / imzalı URL)
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values
-  (
-    'print-files',
-    'print-files',
-    false,
-    52428800,
-    array[
-      'model/stl',
-      'model/obj',
-      'application/octet-stream',
-      'application/zip',
-      'application/x-zip-compressed'
-    ]
-  ),
-  (
-    'scan-photos',
-    'scan-photos',
-    false,
-    10485760,
-    array['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
-  )
+  ('print-files', 'print-files', false, 52428800, null),
+  ('scan-photos', 'scan-photos', false, 10485760, null)
 on conflict (id) do update set
   public = excluded.public,
   file_size_limit = excluded.file_size_limit,
-  allowed_mime_types = excluded.allowed_mime_types;
+  allowed_mime_types = null;
 
 -- İsteğe bağlı: authenticated kullanıcı kendi dosyasını görsün (admin API imzalı URL kullanır)
 -- Service role ile yükleme API üzerinden yapıldığı için insert policy gerekmez.

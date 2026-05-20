@@ -42,6 +42,10 @@ export const enExtended = {
     successTitle: "Request received",
     successBody:
       "Your request was saved. WhatsApp should open — please attach your 3D file in the chat and send.",
+    submitForm: "Submit quote",
+    submittingForm: "Submitting…",
+    successBodyForm:
+      "Your quote has been received. We will get back to you via WhatsApp as soon as possible.",
     submitWhatsApp: "Send via WhatsApp",
     submitEmail: "Send via email",
     submittingEmail: "Sending email…",
@@ -114,9 +118,15 @@ export const enExtended = {
     successBody: "We will contact you by email or phone shortly.",
     successBodyWhatsApp:
       "Your request was saved. WhatsApp should open — attach your reference photo in the chat if you have one.",
+    submitForm: "Submit quote",
+    submittingForm: "Submitting…",
+    successBodyForm:
+      "Your quote has been received. We will get back to you via WhatsApp as soon as possible.",
     submitWhatsApp: "Send via WhatsApp",
     submitEmail: "Send via email",
     submittingEmail: "Sending email…",
+    storageWarning:
+      "Request saved but the photo could not be uploaded. Check Storage setup for admin preview.",
     successBodyEmail:
       "Your request was saved; form details and any reference photo were emailed to our team.",
     openWhatsApp: "Open WhatsApp again",

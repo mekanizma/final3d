@@ -35,6 +35,7 @@ export type QuoteNotificationResult = {
 
 export type ScanQuoteSubmitResult = ScanQuoteRequest & {
   notification?: QuoteNotificationResult;
+  storageWarning?: string;
 };
 
 export async function submitScanQuoteRequest(

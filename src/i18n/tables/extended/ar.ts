@@ -42,6 +42,10 @@ export const arExtended = {
     successTitle: "تم استلام الطلب",
     successBody:
       "تم حفظ الطلب. افتح WhatsApp وأرفق ملف 3D في المحادثة.",
+    submitForm: "إرسال العرض",
+    submittingForm: "جارٍ الإرسال…",
+    successBodyForm:
+      "تم استلام عرضك. سنتواصل معك عبر WhatsApp في أقرب وقت.",
     submitWhatsApp: "إرسال عبر WhatsApp",
     submitEmail: "إرسال بالبريد",
     submittingEmail: "جارٍ إرسال البريد…",
@@ -111,6 +115,10 @@ export const arExtended = {
     successBody: "سنتواصل قريباً.",
     successBodyWhatsApp:
       "تم حفظ الطلب. افتح WhatsApp وأرفق الصورة المرجعية في المحادثة إن وُجدت.",
+    submitForm: "إرسال العرض",
+    submittingForm: "جارٍ الإرسال…",
+    successBodyForm:
+      "تم استلام عرضك. سنتواصل معك عبر WhatsApp في أقرب وقت.",
     submitWhatsApp: "إرسال عبر WhatsApp",
     submitEmail: "إرسال بالبريد",
     submittingEmail: "جارٍ إرسال البريد…",

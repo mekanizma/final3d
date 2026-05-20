@@ -7,6 +7,7 @@ import {
   User,
   Mail,
   MessageCircle,
+  Send,
   Phone,
   FileUp,
   CheckCircle2,
@@ -38,9 +39,11 @@ export default function CustomPrintPage() {
   const router = useRouter();
   const hydrated = useAuthHydrated();
   const user = useAuthStore((s) => s.user);
-  const [loading, setLoading] = useState<"whatsapp" | "email" | null>(null);
+  const [loading, setLoading] = useState<"whatsapp" | "email" | "form" | null>(
+    null
+  );
   const [done, setDone] = useState(false);
-  const [doneVia, setDoneVia] = useState<"whatsapp" | "email">("whatsapp");
+  const [doneVia, setDoneVia] = useState<"whatsapp" | "email" | "form">("form");
   const [waUrl, setWaUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -63,7 +66,7 @@ export default function CustomPrintPage() {
     }));
   }, [hydrated, user]);
 
-  async function submitQuote(via: "whatsapp" | "email") {
+  async function submitQuote(via: "whatsapp" | "email" | "form") {
     const fileInput = document.querySelector<HTMLInputElement>(
       'input[name="modelFile"]'
     );
@@ -89,6 +92,17 @@ export default function CustomPrintPage() {
 
       const result = await submitCustomPrintRequest(payload);
 
+      if (result.storageWarning) {
+        alert(`${t("ozelBaski.storageWarning")}\n\n${result.storageWarning}`);
+      }
+
+      if (via === "form") {
+        setDoneVia("form");
+        setWaUrl(null);
+        setDone(true);
+        return;
+      }
+
       if (via === "email") {
         quoteEmailFailAlert(result.notification, t);
         setDoneVia("email");
@@ -113,8 +127,8 @@ export default function CustomPrintPage() {
       openWhatsAppWithMessage(message);
       setDoneVia("whatsapp");
       setDone(true);
-    } catch {
-      alert(t("ozelBaski.fail"));
+    } catch (e) {
+      alert(e instanceof Error ? e.message : t("ozelBaski.fail"));
     } finally {
       setLoading(null);
     }
@@ -126,10 +140,12 @@ export default function CustomPrintPage() {
         <GlassCard hover={false} className="max-w-md w-full p-10 text-center">
           <CheckCircle2 className="w-14 h-14 text-emerald-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">{t("ozelBaski.successTitle")}</h1>
-          <p className="text-violet-200/70 text-sm mb-4">
-            {doneVia === "email"
-              ? t("ozelBaski.successBodyEmail")
-              : t("ozelBaski.successBody")}
+          <p className="text-violet-200/70 text-sm mb-4 leading-relaxed">
+            {doneVia === "form"
+              ? t("ozelBaski.successBodyForm")
+              : doneVia === "email"
+                ? t("ozelBaski.successBodyEmail")
+                : t("ozelBaski.successBody")}
           </p>
           {waUrl && doneVia === "whatsapp" && (
             <a
@@ -181,7 +197,7 @@ export default function CustomPrintPage() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                void submitQuote("whatsapp");
+                void submitQuote("form");
               }}
               className="space-y-5"
             >
@@ -293,6 +309,19 @@ export default function CustomPrintPage() {
                   size="lg"
                   className="w-full"
                   disabled={loading !== null}
+                >
+                  <Send className="w-4 h-4" />
+                  {loading === "form"
+                    ? t("ozelBaski.submittingForm")
+                    : t("ozelBaski.submitForm")}
+                </NeonButton>
+                <NeonButton
+                  type="button"
+                  size="lg"
+                  variant="ghost"
+                  className="w-full"
+                  disabled={loading !== null}
+                  onClick={() => void submitQuote("whatsapp")}
                 >
                   <MessageCircle className="w-4 h-4" />
                   {loading === "whatsapp"
