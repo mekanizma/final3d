@@ -1,0 +1,35 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Repo bağlandıktan sonra Environment sekmesinden tüm değişkenleri girin.
+services:
+  - type: web
+    name: final3d
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "20"
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: ADMIN_ORDER_EMAIL
+        sync: false
+      - key: EMAIL_REPLY_TO
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false

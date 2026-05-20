@@ -1,0 +1,102 @@
+import { NextResponse } from "next/server";
+import { assertAdminSession } from "@/lib/api/requireAdmin";
+import { requireSessionUser } from "@/lib/api/requireUser";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { mapOrder, type DbOrder } from "@/lib/supabase/mappers";
+import { generateId } from "@/lib/utils";
+import { calculateOrderTotals } from "@/lib/pricing";
+import type { CreateOrderInput } from "@/types";
+
+export async function GET() {
+  try {
+    await assertAdminSession();
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return NextResponse.json((data as DbOrder[]).map(mapOrder));
+  } catch (e) {
+    const msg = (e as Error).message;
+    return NextResponse.json(
+      { error: msg },
+      { status: msg.includes("Admin") ? 401 : 500 }
+    );
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const user = await requireSessionUser();
+    const input = (await req.json()) as CreateOrderInput;
+    const supabase = createAdminClient();
+
+    const { data: products, error: prodErr } = await supabase
+      .from("products")
+      .select("id, name, price, translations")
+      .in(
+        "id",
+        input.items.map((i) => i.productId)
+      );
+
+    if (prodErr) throw prodErr;
+
+    const items = input.items.map((item) => {
+      const product = products?.find((p) => p.id === item.productId);
+      if (!product) throw new Error(`Ürün bulunamadı: ${item.productId}`);
+      const translations = product.translations as Record<
+        string,
+        { name?: string }
+      > | null;
+      const displayName =
+        translations?.tr?.name ?? (product.name as string);
+      return {
+        productId: product.id as string,
+        productName: displayName,
+        quantity: item.quantity,
+        price: Number(product.price),
+      };
+    });
+
+    const subtotal = items.reduce(
+      (sum, i) => sum + i.price * i.quantity,
+      0
+    );
+    const pricing = calculateOrderTotals(subtotal);
+    const id = generateId("ord");
+
+    const row = {
+      id,
+      customer_name: input.customerName,
+      phone: input.phone,
+      address: input.address,
+      items,
+      note: input.note ?? null,
+      payment_method: "kapida-odeme",
+      status: "yeni",
+      subtotal: pricing.subtotal,
+      shipping_fee: pricing.shippingFee,
+      total: pricing.total,
+      user_id: user.id,
+      user_email: user.email,
+      created_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase
+      .from("orders")
+      .insert(row)
+      .select("*")
+      .single();
+
+    if (error) throw error;
+    return NextResponse.json(mapOrder(data as DbOrder));
+  } catch (e) {
+    const msg = (e as Error).message;
+    return NextResponse.json(
+      { error: msg },
+      { status: msg.includes("Oturum") ? 401 : 500 }
+    );
+  }
+}
