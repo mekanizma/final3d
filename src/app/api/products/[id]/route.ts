@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { mapProduct, type DbProduct } from "@/lib/supabase/mappers";
 import { normalizeProduct } from "@/lib/product-i18n";
+import { isLegacyDemoProduct } from "@/lib/legacyDemoData";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -16,7 +17,7 @@ export async function GET(_req: Request, { params }: Params) {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) return NextResponse.json(null);
+    if (!data || isLegacyDemoProduct(id)) return NextResponse.json(null);
     return NextResponse.json(normalizeProduct(mapProduct(data as DbProduct)));
   } catch (e) {
     return NextResponse.json(

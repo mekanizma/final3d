@@ -51,9 +51,11 @@ export function productSearchHaystack(product: Product): string {
   }
   return locales
     .map((loc) => {
-      const t = product.translations![loc];
-      return `${t.name} ${t.description}`;
+      const entry = product.translations?.[loc];
+      if (!entry) return "";
+      return `${entry.name} ${entry.description}`;
     })
+    .filter(Boolean)
     .join(" ")
     .toLowerCase();
 }

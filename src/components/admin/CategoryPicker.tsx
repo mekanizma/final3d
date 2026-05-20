@@ -8,11 +8,18 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
-import { CATEGORY_LABELS } from "@/lib/constants";
+import { categoryLabel } from "@/lib/order-labels";
 import { cn } from "@/lib/utils";
 import type { ProductCategory } from "@/types";
+import { useIntl } from "@/components/i18n/IntlProvider";
 
-const categories = Object.keys(CATEGORY_LABELS) as ProductCategory[];
+const categories: ProductCategory[] = [
+  "3d-print",
+  "model",
+  "accessory",
+  "filament",
+  "tool",
+];
 
 const CATEGORY_ICONS: Record<ProductCategory, LucideIcon> = {
   "3d-print": Printer,
@@ -28,9 +35,13 @@ interface CategoryPickerProps {
 }
 
 export function CategoryPicker({ value, onChange }: CategoryPickerProps) {
+  const { t } = useIntl();
+
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-violet-100/90">Kategori</label>
+      <label className="text-sm font-medium text-violet-100/90">
+        {t("productsFilter.category")}
+      </label>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {categories.map((cat) => {
           const Icon = CATEGORY_ICONS[cat];
@@ -57,7 +68,7 @@ export function CategoryPicker({ value, onChange }: CategoryPickerProps) {
               >
                 <Icon className="h-4 w-4" strokeWidth={2} aria-hidden />
               </span>
-              <span className="leading-tight">{CATEGORY_LABELS[cat]}</span>
+              <span className="leading-tight">{categoryLabel(cat, t)}</span>
             </button>
           );
         })}

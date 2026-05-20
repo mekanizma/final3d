@@ -1,13 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-
-const WA_NUMBER = "905338398293";
-const GREETING =
-  "Merhaba Final3d ekibi 👋 Sipariş / 3D tarama / özel baskı hakkında bilgi almak istiyorum.";
+import {
+  WHATSAPP_GREETING,
+} from "@/lib/whatsapp/constants";
+import { buildWhatsAppUrl } from "@/lib/whatsapp/openWhatsApp";
 
 export function WhatsAppFloatingButton() {
-  const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(GREETING)}`;
+  const url = buildWhatsAppUrl(WHATSAPP_GREETING);
 
   return (
     <motion.a

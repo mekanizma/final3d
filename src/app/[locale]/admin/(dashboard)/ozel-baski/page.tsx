@@ -5,11 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, ChevronDown } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { RequestStatusSelect } from "@/components/admin/RequestStatusSelect";
-import {
-  REQUEST_STATUS_COLORS,
-  REQUEST_STATUS_LABELS,
-  type RequestStatus,
-} from "@/lib/constants";
+import { REQUEST_STATUS_COLORS, type RequestStatus } from "@/lib/constants";
+import { useIntl } from "@/components/i18n/IntlProvider";
+import { tFormat } from "@/lib/t-format";
 import { formatDate } from "@/lib/utils";
 import {
   getCustomPrintRequests,
@@ -17,7 +15,14 @@ import {
   type CustomPrintRequest,
 } from "@/services/customPrintService";
 
+const REQUEST_STATUSES: RequestStatus[] = [
+  "yeni",
+  "inceleniyor",
+  "teklif-gonderildi",
+];
+
 export default function AdminCustomPrintPage() {
+  const { t } = useIntl();
   const [requests, setRequests] = useState<CustomPrintRequest[]>([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<RequestStatus | "all">("all");
@@ -55,14 +60,16 @@ export default function AdminCustomPrintPage() {
         r.id.toLowerCase().includes(search.toLowerCase())
     );
 
-  const statuses = Object.keys(REQUEST_STATUS_LABELS) as RequestStatus[];
-
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Özel Baskı Talepleri</h1>
+        <h1 className="text-2xl font-bold">{t("adminRequests.customTitle")}</h1>
         <p className="text-violet-200/60 text-sm">
-          {loading ? "Yükleniyor…" : `${requests.length} talep`}
+          {loading
+            ? t("adminRequests.countLoading")
+            : tFormat(t, "adminRequests.count", {
+                count: String(requests.length),
+              })}
         </p>
       </div>
 
@@ -75,9 +82,9 @@ export default function AdminCustomPrintPage() {
               : "glass text-violet-100/80"
           }`}
         >
-          Tümü
+          {t("adminRequests.all")}
         </button>
-        {statuses.map((s) => (
+        {REQUEST_STATUSES.map((s) => (
           <button
             key={s}
             onClick={() => setFilter(s)}
@@ -87,7 +94,7 @@ export default function AdminCustomPrintPage() {
                 : "glass text-violet-100/80"
             }`}
           >
-            {REQUEST_STATUS_LABELS[s]}
+            {t(`requestStatus.${s}`)}
           </button>
         ))}
       </div>
@@ -96,7 +103,7 @@ export default function AdminCustomPrintPage() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-violet-300/70" />
         <input
           className="input-field pl-10"
-          placeholder="İsim, e-posta veya talep no…"
+          placeholder={t("adminRequests.searchCustomPh")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -122,7 +129,7 @@ export default function AdminCustomPrintPage() {
                     <span
                       className={`text-[10px] px-2 py-1 rounded-full border ${REQUEST_STATUS_COLORS[req.status]}`}
                     >
-                      {REQUEST_STATUS_LABELS[req.status]}
+                      {t(`requestStatus.${req.status}`)}
                     </span>
                     <ChevronDown
                       className={`w-4 h-4 transition-transform ${expanded === req.id ? "rotate-180" : ""}`}
@@ -134,30 +141,37 @@ export default function AdminCustomPrintPage() {
                   <div className="mt-4 pt-4 border-t border-white/10 space-y-3 text-sm">
                     <div className="grid sm:grid-cols-2 gap-3">
                       <p>
-                        <span className="text-violet-300/60">Telefon:</span> {req.phone}
+                        <span className="text-violet-300/60">{t("adminRequests.phone")}:</span>{" "}
+                        {req.phone}
                       </p>
                       <p>
-                        <span className="text-violet-300/60">Malzeme:</span>{" "}
+                        <span className="text-violet-300/60">{t("adminRequests.material")}:</span>{" "}
                         {req.material.toUpperCase()}
                       </p>
                       <p>
-                        <span className="text-violet-300/60">Renk:</span> {req.color}
+                        <span className="text-violet-300/60">{t("adminRequests.color")}:</span>{" "}
+                        {req.color}
                       </p>
                       <p>
-                        <span className="text-violet-300/60">Adet:</span> {req.quantity}
+                        <span className="text-violet-300/60">{t("adminRequests.qty")}:</span>{" "}
+                        {req.quantity}
                       </p>
                       <p>
-                        <span className="text-violet-300/60">Dosya:</span> {req.fileName} (
+                        <span className="text-violet-300/60">{t("adminRequests.file")}:</span>{" "}
+                        {req.fileName} (
                         {Math.round(req.fileSize / 1024)} KB)
                       </p>
                     </div>
                     {req.note && (
                       <p className="text-violet-200/80">
-                        <span className="text-violet-300/60">Not:</span> {req.note}
+                        <span className="text-violet-300/60">{t("adminRequests.note")}:</span>{" "}
+                        {req.note}
                       </p>
                     )}
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-violet-300/60">Durum:</span>
+                      <span className="text-xs text-violet-300/60">
+                        {t("adminRequests.status")}:
+                      </span>
                       <RequestStatusSelect
                         value={req.status}
                         onChange={(s) => void handleStatusChange(req.id, s)}
@@ -170,7 +184,7 @@ export default function AdminCustomPrintPage() {
           ))}
         </AnimatePresence>
         {!loading && filtered.length === 0 && (
-          <p className="text-center text-violet-300/50 py-12">Talep bulunamadı.</p>
+          <p className="text-center text-violet-300/50 py-12">{t("adminRequests.notFound")}</p>
         )}
       </div>
     </div>

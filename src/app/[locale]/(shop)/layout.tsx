@@ -2,6 +2,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PageTransition } from "@/components/ui/PageTransition";
 import { WhatsAppFloatingButton } from "@/components/layout/WhatsAppFloatingButton";
+import { ClearLegacyStorage } from "@/components/admin/ClearLegacyStorage";
 
 export default function ShopLayout({
   children,
@@ -10,6 +11,7 @@ export default function ShopLayout({
 }) {
   return (
     <>
+      <ClearLegacyStorage shopOnly />
       <Navbar />
       <PageTransition>
         <main className="relative z-10 pt-16">

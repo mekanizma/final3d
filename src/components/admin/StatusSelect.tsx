@@ -1,7 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { ORDER_STATUS_LABELS } from "@/lib/constants";
+import { useIntl } from "@/components/i18n/IntlProvider";
+import { orderStatusLabel } from "@/lib/order-labels";
 import type { OrderStatus } from "@/types";
 
 const statuses: OrderStatus[] = [
@@ -24,6 +25,8 @@ interface StatusSelectProps {
 }
 
 export function StatusSelect({ value, onChange }: StatusSelectProps) {
+  const { t } = useIntl();
+
   return (
     <select
       className={cn(
@@ -32,10 +35,11 @@ export function StatusSelect({ value, onChange }: StatusSelectProps) {
       )}
       value={value}
       onChange={(e) => onChange(e.target.value as OrderStatus)}
+      aria-label={t("statusSelect.aria")}
     >
       {statuses.map((s) => (
         <option key={s} value={s} className="select-option">
-          {ORDER_STATUS_LABELS[s]}
+          {orderStatusLabel(s, t)}
         </option>
       ))}
     </select>

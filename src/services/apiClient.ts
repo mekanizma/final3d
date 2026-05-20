@@ -32,7 +32,7 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   return JSON.parse(text) as T;
 }
 
-/** Supabase-backed API — mockDataService + mockAuthService yerine */
+/** Supabase-backed API */
 export const apiClient = {
   async getProducts(): Promise<Product[]> {
     return fetchJson<Product[]>("/api/products");
@@ -96,10 +96,6 @@ export const apiClient = {
     await fetchJson(`/api/admin/orders/${encodeURIComponent(id)}`, {
       method: "DELETE",
     });
-  },
-
-  async resetData(): Promise<void> {
-    throw new Error("resetData yalnızca mock ortamında kullanılabilir.");
   },
 
   async register(input: RegisterInput): Promise<UserPublic> {

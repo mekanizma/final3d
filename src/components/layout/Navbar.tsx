@@ -5,7 +5,6 @@ import { ShoppingCart, Menu, X, User, LogIn } from "lucide-react";
 import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { useCartHydrated } from "@/hooks/useCartHydrated";
-import { useAuthHydrated } from "@/hooks/useAuthHydrated";
 import { useAuthStore } from "@/store/authStore";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
@@ -16,7 +15,6 @@ export function Navbar() {
   const { t } = useIntl();
   const [mobileOpen, setMobileOpen] = useState(false);
   const cartHydrated = useCartHydrated();
-  const authHydrated = useAuthHydrated();
   const totalItems = useCartStore((s) => s.totalItems());
   const setOpen = useCartStore((s) => s.setOpen);
   const user = useAuthStore((s) => s.user);
@@ -62,35 +60,31 @@ export function Navbar() {
               <LanguageSwitcher />
             </div>
 
-            {authHydrated && (
+            {user ? (
+              <LocaleLink
+                href="/hesabim"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-sm text-violet-100/90 glass-hover max-w-[120px] sm:max-w-none"
+              >
+                <User className="w-4 h-4 shrink-0" strokeWidth={2} />
+                <span className="truncate hidden sm:inline">
+                  {user.name.split(" ")[0]}
+                </span>
+              </LocaleLink>
+            ) : (
               <>
-                {user ? (
-                  <LocaleLink
-                    href="/hesabim"
-                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-violet-100/90 glass-hover"
-                  >
-                    <User className="w-4 h-4 shrink-0" strokeWidth={2} />
-                    <span className="max-w-[100px] truncate">
-                      {user.name.split(" ")[0]}
-                    </span>
-                  </LocaleLink>
-                ) : (
-                  <>
-                    <LocaleLink
-                      href="/giris"
-                      className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-violet-200/80 hover:text-white glass-hover"
-                    >
-                      <LogIn className="w-4 h-4" strokeWidth={2} />
-                      {t("nav.login")}
-                    </LocaleLink>
-                    <LocaleLink
-                      href="/kayit-ol"
-                      className="hidden sm:inline-flex items-center px-3 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-fuchsia-500/80 to-violet-600/80 text-white hover:opacity-90"
-                    >
-                      {t("nav.register")}
-                    </LocaleLink>
-                  </>
-                )}
+                <LocaleLink
+                  href="/giris"
+                  className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-sm text-violet-200/80 hover:text-white glass-hover whitespace-nowrap"
+                >
+                  <LogIn className="w-4 h-4 shrink-0" strokeWidth={2} />
+                  <span className="hidden sm:inline">{t("nav.login")}</span>
+                </LocaleLink>
+                <LocaleLink
+                  href="/kayit-ol"
+                  className="inline-flex items-center px-2.5 sm:px-3 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-fuchsia-500/80 to-violet-600/80 text-white hover:opacity-90 whitespace-nowrap"
+                >
+                  {t("nav.register")}
+                </LocaleLink>
               </>
             )}
 
@@ -142,37 +136,35 @@ export function Navbar() {
                 {link.label}
               </LocaleLink>
             ))}
-            {authHydrated && (
-              <div className="border-t border-white/10 pt-3 mt-1 flex flex-col gap-2">
-                {user ? (
+            <div className="border-t border-white/10 pt-3 mt-1 flex flex-col gap-2">
+              {user ? (
+                <LocaleLink
+                  href="/hesabim"
+                  className="text-sm text-violet-100/95 py-2.5 px-2 rounded-lg hover:bg-white/10 transition-colors flex items-center gap-2"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <User className="w-4 h-4" />
+                  {t("nav.account")}
+                </LocaleLink>
+              ) : (
+                <>
                   <LocaleLink
-                    href="/hesabim"
-                    className="text-sm text-violet-100/95 py-2.5 px-2 rounded-lg hover:bg-white/10 transition-colors flex items-center gap-2"
+                    href="/giris"
+                    className="text-sm text-violet-100/95 py-2.5 px-2 rounded-lg hover:bg-white/10 transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
-                    <User className="w-4 h-4" />
-                    {t("nav.account")}
+                    {t("nav.loginMobile")}
                   </LocaleLink>
-                ) : (
-                  <>
-                    <LocaleLink
-                      href="/giris"
-                      className="text-sm text-violet-100/95 py-2.5 px-2 rounded-lg hover:bg-white/10 transition-colors"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      {t("nav.loginMobile")}
-                    </LocaleLink>
-                    <LocaleLink
-                      href="/kayit-ol"
-                      className="text-sm font-medium text-cyan-200 py-2.5 px-2 rounded-lg hover:bg-cyan-500/10 transition-colors"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      {t("nav.register")}
-                    </LocaleLink>
-                  </>
-                )}
-              </div>
-            )}
+                  <LocaleLink
+                    href="/kayit-ol"
+                    className="text-sm font-medium text-cyan-200 py-2.5 px-2 rounded-lg hover:bg-cyan-500/10 transition-colors"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {t("nav.register")}
+                  </LocaleLink>
+                </>
+              )}
+            </div>
           </motion.div>
         )}
       </header>

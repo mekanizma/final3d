@@ -6,10 +6,10 @@ import { Search, ChevronDown, Trash2 } from "lucide-react";
 import { useOrderStore } from "@/store/orderStore";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusSelect } from "@/components/admin/StatusSelect";
-import {
-  ORDER_STATUS_LABELS,
-  ORDER_STATUS_COLORS,
-} from "@/lib/constants";
+import { ORDER_STATUS_COLORS } from "@/lib/constants";
+import { orderStatusLabel } from "@/lib/order-labels";
+import { useIntl } from "@/components/i18n/IntlProvider";
+import { tFormat } from "@/lib/t-format";
 import { formatDate, formatPrice } from "@/lib/utils";
 import { resolveOrderTotals } from "@/lib/pricing";
 import { OrderTotalsSummary } from "@/components/order/OrderTotalsSummary";
@@ -23,6 +23,7 @@ const statuses: OrderStatus[] = [
 ];
 
 export default function AdminOrdersPage() {
+  const { t } = useIntl();
   const { orders, fetchOrders, updateOrderStatus, deleteOrder } =
     useOrderStore();
   const [search, setSearch] = useState("");
@@ -47,8 +48,10 @@ export default function AdminOrdersPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Sipariş Yönetimi</h1>
-        <p className="text-violet-200/60 text-sm">{orders.length} sipariş</p>
+        <h1 className="text-2xl font-bold">{t("adminOrders.title")}</h1>
+        <p className="text-violet-200/60 text-sm">
+          {tFormat(t, "adminOrders.count", { count: String(orders.length) })}
+        </p>
       </div>
 
       <div className="flex flex-wrap gap-2 mb-4">
@@ -60,7 +63,7 @@ export default function AdminOrdersPage() {
               : "glass text-violet-100/80 hover:text-white"
           }`}
         >
-          Tümü
+          {t("adminOrders.all")}
         </button>
         {statuses.map((s) => (
           <button
@@ -72,7 +75,7 @@ export default function AdminOrdersPage() {
                 : "glass text-violet-100/80 hover:text-white"
             }`}
           >
-            {ORDER_STATUS_LABELS[s]}
+            {orderStatusLabel(s, t)}
           </button>
         ))}
       </div>
@@ -85,7 +88,7 @@ export default function AdminOrdersPage() {
         />
         <input
           className="input-field pl-10"
-          placeholder="Müşteri veya sipariş no ara..."
+          placeholder={t("adminOrders.searchPh")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -114,7 +117,7 @@ export default function AdminOrdersPage() {
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full border ${ORDER_STATUS_COLORS[order.status]}`}
                       >
-                        {ORDER_STATUS_LABELS[order.status]}
+                        {orderStatusLabel(order.status, t)}
                       </span>
                     </div>
                     <p className="text-xs text-violet-200/60 mt-1">
@@ -146,9 +149,7 @@ export default function AdminOrdersPage() {
                         }
                         onDelete={() => {
                           if (
-                            confirm(
-                              "Bu siparişi silmek istediğinize emin misiniz?"
-                            )
+                            confirm(t("adminOrders.deleteConfirm"))
                           )
                             deleteOrder(order.id);
                         }}
@@ -162,7 +163,7 @@ export default function AdminOrdersPage() {
         </AnimatePresence>
 
         {filtered.length === 0 && (
-          <p className="text-center text-violet-200/60 py-12">Sipariş bulunamadı</p>
+          <p className="text-center text-violet-200/60 py-12">{t("adminOrders.notFound")}</p>
         )}
       </div>
     </div>
@@ -178,6 +179,7 @@ function OrderDetail({
   onStatusChange: (status: OrderStatus) => void;
   onDelete: () => void;
 }) {
+  const { t } = useIntl();
   const totals = resolveOrderTotals(order);
 
   return (
@@ -185,29 +187,29 @@ function OrderDetail({
       <div className="grid sm:grid-cols-2 gap-4 text-sm">
         {order.userEmail && (
           <div>
-            <p className="text-violet-200/60 mb-1">Hesap e-postası</p>
+            <p className="text-violet-200/60 mb-1">{t("adminOrders.accountEmail")}</p>
             <p>{order.userEmail}</p>
           </div>
         )}
         <div>
-          <p className="text-violet-200/60 mb-1">Telefon</p>
+          <p className="text-violet-200/60 mb-1">{t("adminRequests.phone")}</p>
           <p>{order.phone}</p>
         </div>
         <div>
-          <p className="text-violet-200/60 mb-1">Adres</p>
+          <p className="text-violet-200/60 mb-1">{t("adminOrders.address")}</p>
           <p>{order.address}</p>
         </div>
       </div>
 
       {order.note && (
         <div className="text-sm">
-          <p className="text-violet-200/60 mb-1">Not</p>
+          <p className="text-violet-200/60 mb-1">{t("adminOrders.note")}</p>
           <p className="glass rounded-lg p-3">{order.note}</p>
         </div>
       )}
 
       <div>
-        <p className="text-violet-200/60 text-sm mb-2">Ürünler</p>
+        <p className="text-violet-200/60 text-sm mb-2">{t("adminOrders.items")}</p>
         {order.items.map((item) => (
           <div
             key={item.productId}
@@ -222,7 +224,7 @@ function OrderDetail({
       </div>
 
       <div className="glass rounded-xl p-4">
-        <p className="text-violet-200/60 text-sm mb-3">Ödeme özeti</p>
+        <p className="text-violet-200/60 text-sm mb-3">{t("adminOrders.paymentSummary")}</p>
         <OrderTotalsSummary
           subtotal={totals.subtotal}
           totals={totals}
@@ -231,14 +233,14 @@ function OrderDetail({
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <p className="text-sm text-violet-200/70">Durum:</p>
+        <p className="text-sm text-violet-200/70">{t("adminOrders.statusLabel")}:</p>
         <StatusSelect value={order.status} onChange={onStatusChange} />
         <button
           onClick={onDelete}
           className="ml-auto p-2 text-red-400 hover:bg-red-500/10 rounded-lg flex items-center gap-1 text-sm"
         >
           <Trash2 className="w-4 h-4" />
-          Sil
+          {t("adminOrders.deleteBtn")}
         </button>
       </div>
     </div>

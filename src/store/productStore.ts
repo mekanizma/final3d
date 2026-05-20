@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { api } from "@/services";
+import { withoutLegacyDemoProducts } from "@/lib/legacyDemoData";
 import type { CreateProductInput, Product, UpdateProductInput } from "@/types";
 
 interface ProductState {
@@ -20,7 +21,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
   fetchProducts: async () => {
     set({ loading: true, error: null });
     try {
-      const products = await api.getProducts();
+      const products = withoutLegacyDemoProducts(await api.getProducts());
       set({ products, loading: false });
     } catch (e) {
       set({ error: (e as Error).message, loading: false });

@@ -10,6 +10,7 @@ import { ShoppingCart, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { formatPrice, cn } from "@/lib/utils";
+import { tFormat } from "@/lib/t-format";
 import { ShippingPromo } from "@/components/shipping/ShippingPromo";
 import type { Product } from "@/types";
 import { useCartStore } from "@/store/cartStore";
@@ -106,7 +107,9 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                     product.featured ? "top-12 right-3" : "top-3 right-3"
                   )}
                 >
-                  Son {product.stock} adet
+                  {tFormat(t, "productCard.lowStock", {
+                    count: String(product.stock),
+                  })}
                 </span>
               )}
             </div>

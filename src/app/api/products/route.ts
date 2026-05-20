@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { mapProduct, type DbProduct } from "@/lib/supabase/mappers";
 import { normalizeProduct } from "@/lib/product-i18n";
+import { withoutLegacyDemoProducts } from "@/lib/legacyDemoData";
 
 export async function GET() {
   try {
@@ -12,7 +13,9 @@ export async function GET() {
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    const products = (data as DbProduct[]).map(mapProduct).map(normalizeProduct);
+    const products = withoutLegacyDemoProducts(
+      (data as DbProduct[]).map(mapProduct).map(normalizeProduct)
+    );
     return NextResponse.json(products);
   } catch (e) {
     return NextResponse.json(

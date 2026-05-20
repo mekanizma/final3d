@@ -3,9 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpDown, Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SORT_LABELS, type SortOption } from "@/lib/productCatalog";
-
-const sortOptions = Object.keys(SORT_LABELS) as SortOption[];
+import { SORT_OPTIONS, type SortOption } from "@/lib/productCatalog";
+import { useIntl } from "@/components/i18n/IntlProvider";
 
 interface SortSelectProps {
   value: SortOption;
@@ -14,6 +13,7 @@ interface SortSelectProps {
 }
 
 export function SortSelect({ value, onChange, className }: SortSelectProps) {
+  const { t } = useIntl();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +41,7 @@ export function SortSelect({ value, onChange, className }: SortSelectProps) {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label="Sıralama"
+        aria-label={t("sort.aria")}
         className={cn(
           "flex items-center gap-2 min-w-[200px] sm:min-w-[220px] max-w-full",
           "py-2.5 pl-3 pr-3 rounded-xl text-sm text-left",
@@ -56,7 +56,7 @@ export function SortSelect({ value, onChange, className }: SortSelectProps) {
           aria-hidden
         />
         <span className="flex-1 truncate text-violet-100">
-          {SORT_LABELS[value]}
+          {t(`sort.${value}`)}
         </span>
         <ChevronDown
           className={cn(
@@ -70,7 +70,7 @@ export function SortSelect({ value, onChange, className }: SortSelectProps) {
       {open && (
         <ul
           role="listbox"
-          aria-label="Sıralama seçenekleri"
+          aria-label={t("sort.optionsAria")}
           className={cn(
             "absolute right-0 z-50 mt-2 w-full min-w-[220px]",
             "py-1.5 rounded-xl border border-fuchsia-400/25",
@@ -78,7 +78,7 @@ export function SortSelect({ value, onChange, className }: SortSelectProps) {
             "backdrop-blur-xl"
           )}
         >
-          {sortOptions.map((key) => {
+          {SORT_OPTIONS.map((key) => {
             const active = key === value;
             return (
               <li key={key} role="option" aria-selected={active}>
@@ -95,7 +95,7 @@ export function SortSelect({ value, onChange, className }: SortSelectProps) {
                       : "text-violet-200/80 hover:bg-white/5 hover:text-white"
                   )}
                 >
-                  <span className="flex-1">{SORT_LABELS[key]}</span>
+                  <span className="flex-1">{t(`sort.${key}`)}</span>
                   {active && (
                     <Check className="w-4 h-4 text-cyan-300 shrink-0" />
                   )}

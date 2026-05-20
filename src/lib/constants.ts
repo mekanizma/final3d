@@ -1,14 +1,5 @@
 import type { OrderStatus, ProductCategory } from "@/types";
 
-export const STORAGE_KEYS = {
-  products: "print3d_products",
-  orders: "print3d_orders",
-  users: "print3d_users",
-  session: "print3d_session",
-  customPrintRequests: "print3d_custom_print_requests",
-  scanQuoteRequests: "print3d_scan_quote_requests",
-} as const;
-
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   "3d-print": "3D Yazıcı",
   model: "Model & Figür",

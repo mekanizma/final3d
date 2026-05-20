@@ -5,6 +5,7 @@ import type { CreateProductInput, Product, ProductCategory } from "@/types";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { ProductImagePicker } from "@/components/admin/ProductImagePicker";
 import { CategoryPicker } from "@/components/admin/CategoryPicker";
+import { useIntl } from "@/components/i18n/IntlProvider";
 
 interface ProductFormProps {
   initial?: Product;
@@ -23,6 +24,7 @@ const empty: CreateProductInput = {
 };
 
 export function ProductForm({ initial, onSubmit, onCancel }: ProductFormProps) {
+  const { t } = useIntl();
   const [form, setForm] = useState<CreateProductInput>(
     initial
       ? {
@@ -43,7 +45,7 @@ export function ProductForm({ initial, onSubmit, onCancel }: ProductFormProps) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.image.trim()) {
-      setImageError("Lütfen bir ürün görseli seçin.");
+      setImageError(t("productForm.imageRequired"));
       return;
     }
     setImageError(null);
@@ -58,19 +60,18 @@ export function ProductForm({ initial, onSubmit, onCancel }: ProductFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <p className="text-xs text-violet-300/60 rounded-lg border border-cyan-400/20 bg-cyan-500/5 px-3 py-2 leading-relaxed">
-        Türkçe ad ve açıklama girin; kayıtta otomatik olarak İngilizce, Rusça ve
-        Arapça çeviriler oluşturulur.
+        {t("productForm.translateHint")}
       </p>
       <input
         className="input-field"
-        placeholder="Ürün adı (Türkçe)"
+        placeholder={t("productForm.namePh")}
         required
         value={form.name}
         onChange={(e) => setForm({ ...form, name: e.target.value })}
       />
       <textarea
         className="input-field min-h-[100px] resize-none"
-        placeholder="Açıklama (Türkçe)"
+        placeholder={t("productForm.descPh")}
         required
         value={form.description}
         onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -79,7 +80,7 @@ export function ProductForm({ initial, onSubmit, onCancel }: ProductFormProps) {
         <input
           className="input-field"
           type="number"
-          placeholder="Fiyat (₺)"
+          placeholder={t("productForm.pricePh")}
           required
           min={0}
           value={form.price || ""}
@@ -90,7 +91,7 @@ export function ProductForm({ initial, onSubmit, onCancel }: ProductFormProps) {
         <input
           className="input-field"
           type="number"
-          placeholder="Stok"
+          placeholder={t("productForm.stockPh")}
           required
           min={0}
           value={form.stock || ""}
@@ -122,20 +123,20 @@ export function ProductForm({ initial, onSubmit, onCancel }: ProductFormProps) {
           onChange={(e) => setForm({ ...form, featured: e.target.checked })}
           className="rounded"
         />
-        Öne çıkan ürün
+        {t("productForm.featured")}
       </label>
       <div className="flex gap-3 pt-2">
         <NeonButton type="submit" disabled={loading}>
           {loading
             ? isNew
-              ? "Çeviriler oluşturuluyor…"
-              : "Kaydediliyor…"
+              ? t("productForm.savingNew")
+              : t("productForm.saving")
             : initial
-              ? "Güncelle"
-              : "Ekle"}
+              ? t("productForm.update")
+              : t("productForm.addBtn")}
         </NeonButton>
         <NeonButton type="button" variant="ghost" onClick={onCancel}>
-          İptal
+          {t("productForm.cancel")}
         </NeonButton>
       </div>
     </form>

@@ -3,12 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  REQUEST_STATUS_LABELS,
-  type RequestStatus,
-} from "@/lib/constants";
+import { useIntl } from "@/components/i18n/IntlProvider";
+import type { RequestStatus } from "@/lib/constants";
 
-const options = Object.keys(REQUEST_STATUS_LABELS) as RequestStatus[];
+const options: RequestStatus[] = ["yeni", "inceleniyor", "teklif-gonderildi"];
 
 interface RequestStatusSelectProps {
   value: RequestStatus;
@@ -21,6 +19,7 @@ export function RequestStatusSelect({
   onChange,
   className,
 }: RequestStatusSelectProps) {
+  const { t } = useIntl();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +38,7 @@ export function RequestStatusSelect({
         onClick={() => setOpen((o) => !o)}
         className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs glass border border-white/10 hover:border-cyan-400/35"
       >
-        <span>{REQUEST_STATUS_LABELS[value]}</span>
+        <span>{t(`requestStatus.${value}`)}</span>
         <ChevronDown className={cn("w-3.5 h-3.5", open && "rotate-180")} />
       </button>
       {open && (
@@ -54,7 +53,7 @@ export function RequestStatusSelect({
                 }}
                 className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-white/5"
               >
-                <span className="flex-1">{REQUEST_STATUS_LABELS[key]}</span>
+                <span className="flex-1">{t(`requestStatus.${key}`)}</span>
                 {key === value && <Check className="w-3.5 h-3.5 text-cyan-300" />}
               </button>
             </li>

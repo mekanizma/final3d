@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -26,6 +25,11 @@ import { FormInput, FormTextarea } from "@/components/ui/FormField";
 import { useAuthStore } from "@/store/authStore";
 import { useAuthHydrated } from "@/hooks/useAuthHydrated";
 import { submitScanQuoteRequest } from "@/services/scanRequestService";
+import { buildScanQuoteWhatsAppMessage } from "@/lib/whatsapp/messages/scanQuote";
+import {
+  buildWhatsAppUrl,
+  openWhatsAppWithMessage,
+} from "@/lib/whatsapp/openWhatsApp";
 import {
   SCAN_LOCATIONS,
   SCAN_PURPOSES,
@@ -35,6 +39,8 @@ import {
   type ScanSurfaceId,
 } from "@/lib/scanQuoteOptions";
 import { cn } from "@/lib/utils";
+import { useIntl } from "@/components/i18n/IntlProvider";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
 
 const PHOTO_ACCEPT = ".jpg,.jpeg,.png,.webp,.heic";
 
@@ -80,11 +86,13 @@ function FormSelect({
 }
 
 export function ScanQuoteForm() {
+  const { t } = useIntl();
   const router = useRouter();
   const hydrated = useAuthHydrated();
   const user = useAuthStore((s) => s.user);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [waUrl, setWaUrl] = useState<string | null>(null);
   const [photoName, setPhotoName] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
@@ -117,11 +125,11 @@ export function ScanQuoteForm() {
     const fd = new FormData(e.currentTarget);
     const photo = fd.get("referencePhoto") as File | null;
     if (form.locationType === "onsite" && !form.locationAddress.trim()) {
-      alert("Saha taraması için adres bilgisi girin.");
+      alert(t("scanForm.alertAddress"));
       return;
     }
     if (!form.scanArea.trim()) {
-      alert("Taranacak alan / yaklaşık boyut bilgisi girin.");
+      alert(t("scanForm.alertScanArea"));
       return;
     }
 
@@ -145,9 +153,31 @@ export function ScanQuoteForm() {
         photoFileSize: photo?.size ? photo.size : undefined,
         userId: user?.id,
       });
+      const message = buildScanQuoteWhatsAppMessage({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        objectDescription: form.objectDescription,
+        scanArea: form.scanArea,
+        quantity: form.quantity,
+        locationType: form.locationType,
+        locationLabel: t(`scanLocation.${form.locationType}`),
+        locationAddress: form.locationAddress,
+        city: form.city,
+        purpose: form.purpose,
+        purposeLabel: t(`scanPurpose.${form.purpose}`),
+        surfaceType: form.surfaceType,
+        surfaceLabel: t(`scanSurface.${form.surfaceType}`),
+        wantsPrint: form.wantsPrint,
+        note: form.note,
+        photoFileName: photo?.size ? photo.name : undefined,
+        photoFileSize: photo?.size ? photo.size : undefined,
+      });
+      setWaUrl(buildWhatsAppUrl(message));
+      openWhatsAppWithMessage(message);
       setDone(true);
     } catch {
-      alert("Talep gönderilemedi. Lütfen tekrar deneyin.");
+      alert(t("scanForm.fail"));
     } finally {
       setLoading(false);
     }
@@ -158,20 +188,32 @@ export function ScanQuoteForm() {
       <motion.div className="min-h-[60vh] flex items-center justify-center px-4">
         <GlassCard hover={false} className="max-w-md w-full p-10 text-center">
           <CheckCircle2 className="w-14 h-14 text-emerald-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold mb-2">Tarama Talebiniz Alındı</h1>
-          <p className="text-violet-200/70 text-sm mb-8 leading-relaxed">
-            Nesne ve konum bilgileriniz incelenecek; tarama ve varsa baskı için
-            fiyat teklifi e-posta veya telefon ile iletilecektir.
+          <h1 className="text-2xl font-bold mb-2">{t("scanForm.successTitle")}</h1>
+          <p className="text-violet-200/70 text-sm mb-4 leading-relaxed">
+            {t("scanForm.successBodyWhatsApp")}
           </p>
+          {waUrl && (
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mb-8"
+            >
+              <NeonButton type="button" variant="ghost">
+                {t("scanForm.openWhatsApp")}
+              </NeonButton>
+            </a>
+          )}
+          {!waUrl && <div className="mb-8" />}
           <div className="flex flex-col gap-3">
             <NeonButton onClick={() => router.push("/3d-tarama")}>
-              3D Tarama Sayfası
+              {t("scanForm.scanPageBtn")}
             </NeonButton>
-            <Link href="/">
+            <LocaleLink href="/">
               <NeonButton variant="ghost" className="w-full">
-                Ana Sayfa
+                {t("scanForm.homeBtn")}
               </NeonButton>
-            </Link>
+            </LocaleLink>
           </div>
         </GlassCard>
       </motion.div>
@@ -188,14 +230,14 @@ export function ScanQuoteForm() {
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full badge-glow text-xs mb-4">
             <ScanLine className="w-3 h-3 text-cyan-300" />
-            3D Tarama Teklifi
+            {t("scanForm.badge")}
           </span>
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-            <span className="text-neon">Tarama</span> teklif formu
+            <span className="text-neon">{t("scanForm.title")}</span>{" "}
+            {t("scanForm.titleNeon")}
           </h1>
           <p className="text-violet-200/55 text-sm max-w-md mx-auto leading-relaxed">
-            Taranacak nesne, boyut, konum ve adet bilgilerini paylaşın; size
-            özel fiyat ve süre teklifi hazırlayalım.
+            {t("scanForm.subtitle")}
           </p>
         </motion.div>
 
@@ -203,15 +245,15 @@ export function ScanQuoteForm() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-xs font-medium text-violet-200/70 mb-2">
-                Referans fotoğraf (önerilir)
+                {t("scanForm.photoLabel")}
               </label>
               <label className="flex flex-col items-center justify-center gap-3 p-6 rounded-xl border-2 border-dashed border-cyan-400/30 bg-cyan-500/5 hover:bg-cyan-500/10 cursor-pointer transition-colors">
                 <ImagePlus className="w-10 h-10 text-cyan-400/80" />
                 <span className="text-sm text-violet-200/70 text-center">
-                  {photoName ?? "Nesnenin fotoğrafını yükleyin (JPG, PNG)"}
+                  {photoName ?? t("scanForm.photoDrop")}
                 </span>
                 <span className="text-[10px] text-violet-300/45">
-                  Birden fazla açıdan çekilmiş görsel teklifi hızlandırır
+                  {t("scanForm.photoHint")} ({t("scanForm.photoFormats")})
                 </span>
                 <input
                   type="file"
@@ -227,11 +269,11 @@ export function ScanQuoteForm() {
 
             <div>
               <label className="block text-xs font-medium text-violet-200/70 mb-2">
-                Taranacak nesne / parça *
+                {t("scanForm.objectPh")} *
               </label>
               <FormTextarea
                 icon={Box}
-                placeholder="Örn: motor parçası, heykel, ayakkabı kalıbı, mimari maket…"
+                placeholder={t("scanForm.objectExample")}
                 required
                 value={form.objectDescription}
                 onChange={(e) =>
@@ -242,7 +284,7 @@ export function ScanQuoteForm() {
 
             <FormInput
               icon={Ruler}
-              placeholder="Taranacak alan / yaklaşık boyut * (örn. 25×15×10 cm)"
+              placeholder={t("scanForm.scanAreaPh")}
               required
               value={form.scanArea}
               onChange={(e) => setForm({ ...form, scanArea: e.target.value })}
@@ -252,7 +294,7 @@ export function ScanQuoteForm() {
               icon={Hash}
               type="number"
               min={1}
-              placeholder="Adet (kaç nesne taranacak) *"
+              placeholder={t("scanForm.qtyPh")}
               required
               value={form.quantity}
               onChange={(e) => setForm({ ...form, quantity: e.target.value })}
@@ -260,7 +302,7 @@ export function ScanQuoteForm() {
 
             <FormSelect
               icon={Layers}
-              label="Tarama amacı *"
+              label={`${t("scanForm.purposeLabel")} *`}
               value={form.purpose}
               onChange={(v) =>
                 setForm({ ...form, purpose: v as ScanPurposeId })
@@ -268,14 +310,14 @@ export function ScanQuoteForm() {
             >
               {SCAN_PURPOSES.map((p) => (
                 <option key={p.id} value={p.id} className="bg-[#1a0a3a]">
-                  {p.label}
+                  {t(`scanPurpose.${p.id}`)}
                 </option>
               ))}
             </FormSelect>
 
             <FormSelect
               icon={ScanLine}
-              label="Yüzey tipi"
+              label={t("scanForm.surfaceLabel")}
               value={form.surfaceType}
               onChange={(v) =>
                 setForm({ ...form, surfaceType: v as ScanSurfaceId })
@@ -283,14 +325,14 @@ export function ScanQuoteForm() {
             >
               {SCAN_SURFACE_TYPES.map((s) => (
                 <option key={s.id} value={s.id} className="bg-[#1a0a3a]">
-                  {s.label}
+                  {t(`scanSurface.${s.id}`)}
                 </option>
               ))}
             </FormSelect>
 
             <FormSelect
               icon={MapPin}
-              label="Tarama konumu *"
+              label={`${t("scanForm.locationLabel")} *`}
               value={form.locationType}
               onChange={(v) =>
                 setForm({ ...form, locationType: v as ScanLocationId })
@@ -298,7 +340,7 @@ export function ScanQuoteForm() {
             >
               {SCAN_LOCATIONS.map((l) => (
                 <option key={l.id} value={l.id} className="bg-[#1a0a3a]">
-                  {l.label}
+                  {t(`scanLocation.${l.id}`)}
                 </option>
               ))}
             </FormSelect>
@@ -306,7 +348,7 @@ export function ScanQuoteForm() {
             {form.locationType === "onsite" && (
               <FormInput
                 icon={MapPin}
-                placeholder="Saha tarama adresi *"
+                placeholder={t("scanForm.addressOnsite")}
                 required
                 value={form.locationAddress}
                 onChange={(e) =>
@@ -317,7 +359,7 @@ export function ScanQuoteForm() {
 
             <FormInput
               icon={MapPin}
-              placeholder="Şehir / bölge (örn. Lefkoşa, Girne)"
+              placeholder={t("scanForm.cityPh")}
               value={form.city}
               onChange={(e) => setForm({ ...form, city: e.target.value })}
             />
@@ -340,18 +382,17 @@ export function ScanQuoteForm() {
               />
               <span className="text-sm text-violet-200/80 leading-relaxed">
                 <Printer className="w-4 h-4 inline mr-1.5 text-cyan-300 -mt-0.5" />
-                Tarama sonrası <strong className="text-white/90">3D baskı</strong>{" "}
-                da istiyorum (tek teklifte tarama + üretim)
+                {t("scanForm.wantsPrintLong")}
               </span>
             </label>
 
             <p className="text-xs font-medium text-violet-200/60 pt-2 border-t border-white/10">
-              İletişim bilgileri
+              {t("scanForm.contactSection")}
             </p>
 
             <FormInput
               icon={User}
-              placeholder="Ad Soyad *"
+              placeholder={t("scanForm.namePh")}
               required
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -359,7 +400,7 @@ export function ScanQuoteForm() {
             <FormInput
               icon={Mail}
               type="email"
-              placeholder="E-posta *"
+              placeholder={t("scanForm.emailPh")}
               required
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -367,7 +408,7 @@ export function ScanQuoteForm() {
             <FormInput
               icon={Phone}
               type="tel"
-              placeholder="Telefon *"
+              placeholder={t("scanForm.phonePh")}
               required
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -375,10 +416,14 @@ export function ScanQuoteForm() {
 
             <FormTextarea
               icon={MessageSquare}
-              placeholder="Ek notlar (teslim süresi, hassasiyet, özel istekler…)"
+              placeholder={t("scanForm.notePh")}
               value={form.note}
               onChange={(e) => setForm({ ...form, note: e.target.value })}
             />
+
+            <p className="text-xs text-violet-300/55 -mt-2">
+              {t("scanForm.attachPhotoHint")}
+            </p>
 
             <NeonButton
               type="submit"
@@ -387,15 +432,15 @@ export function ScanQuoteForm() {
               disabled={loading}
             >
               <Upload className="w-4 h-4" />
-              {loading ? "Gönderiliyor..." : "Tarama Teklifi Gönder"}
+              {loading ? t("scanForm.submitting") : t("scanForm.submitWhatsApp")}
             </NeonButton>
           </form>
         </GlassCard>
 
         <p className="text-center text-xs text-violet-300/45 mt-6">
-          <Link href="/3d-tarama" className="text-cyan-300/80 hover:text-cyan-200">
-            ← 3D tarama hizmetine dön
-          </Link>
+          <LocaleLink href="/3d-tarama" className="text-cyan-300/80 hover:text-cyan-200">
+            {t("scanForm.backLink")}
+          </LocaleLink>
         </p>
       </div>
     </section>

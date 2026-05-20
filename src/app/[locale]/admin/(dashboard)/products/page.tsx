@@ -8,13 +8,16 @@ import { useProductStore } from "@/store/productStore";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
-import { CATEGORY_LABELS } from "@/lib/constants";
+import { categoryLabel } from "@/lib/order-labels";
+import { useIntl } from "@/components/i18n/IntlProvider";
+import { tFormat } from "@/lib/t-format";
 import { formatPrice } from "@/lib/utils";
 import type { Product } from "@/types";
 import { productSearchHaystack } from "@/lib/product-i18n";
 import { locales, localeLabels } from "@/i18n/config";
 
 export default function AdminProductsPage() {
+  const { t } = useIntl();
   const { products, fetchProducts, createProduct, updateProduct, deleteProduct } =
     useProductStore();
   const [search, setSearch] = useState("");
@@ -34,8 +37,10 @@ export default function AdminProductsPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Ürün Yönetimi</h1>
-          <p className="text-violet-200/60 text-sm">{products.length} ürün</p>
+          <h1 className="text-2xl font-bold">{t("adminProducts.title")}</h1>
+          <p className="text-violet-200/60 text-sm">
+            {tFormat(t, "adminProducts.count", { count: String(products.length) })}
+          </p>
         </div>
         <NeonButton
           onClick={() => {
@@ -44,7 +49,7 @@ export default function AdminProductsPage() {
           }}
         >
           <Plus className="w-4 h-4" />
-          Ürün Ekle
+          {t("adminProducts.add")}
         </NeonButton>
       </div>
 
@@ -58,7 +63,7 @@ export default function AdminProductsPage() {
           >
             <GlassCard hover={false} className="p-6">
               <h2 className="font-semibold mb-4">
-                {editing ? "Ürünü Düzenle" : "Yeni Ürün Ekle"}
+                {editing ? t("adminProducts.edit") : t("adminProducts.new")}
               </h2>
               <ProductForm
                 initial={editing ?? undefined}
@@ -89,7 +94,7 @@ export default function AdminProductsPage() {
         />
         <input
           className="input-field pl-10"
-          placeholder="Ürün ara..."
+          placeholder={t("adminProducts.searchPh")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -118,19 +123,24 @@ export default function AdminProductsPage() {
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{product.name}</p>
                     <p className="text-xs text-violet-200/60">
-                      {CATEGORY_LABELS[product.category]} · Stok: {product.stock}
+                      {categoryLabel(product.category, t)} · {t("adminProducts.stock")}:{" "}
+                      {product.stock}
                     </p>
                     {product.translations && (
                       <div className="flex flex-wrap gap-1 mt-1.5">
-                        {locales.map((loc) => (
-                          <span
-                            key={loc}
-                            className="text-[9px] px-1.5 py-0.5 rounded border border-emerald-500/25 bg-emerald-500/10 text-emerald-300/90"
-                            title={product.translations![loc].name}
-                          >
-                            {localeLabels[loc]}
-                          </span>
-                        ))}
+                        {locales.map((loc) => {
+                          const entry = product.translations?.[loc];
+                          if (!entry?.name) return null;
+                          return (
+                            <span
+                              key={loc}
+                              className="text-[9px] px-1.5 py-0.5 rounded border border-emerald-500/25 bg-emerald-500/10 text-emerald-300/90"
+                              title={entry.name}
+                            >
+                              {localeLabels[loc]}
+                            </span>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -149,7 +159,7 @@ export default function AdminProductsPage() {
                     </button>
                     <button
                       onClick={() => {
-                        if (confirm("Bu ürünü silmek istediğinize emin misiniz?"))
+                        if (confirm(t("adminProducts.deleteConfirm")))
                           deleteProduct(product.id);
                       }}
                       className="p-2 rounded-lg hover:bg-red-500/10 text-red-400"

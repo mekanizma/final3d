@@ -16,6 +16,8 @@ import {
 import { NeonButton } from "@/components/ui/NeonButton";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PRINT_MATERIALS } from "@/lib/printMaterials";
+import { useIntl } from "@/components/i18n/IntlProvider";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
 
 const materialIcons = {
   pla: Sparkles,
@@ -24,23 +26,7 @@ const materialIcons = {
   tpu: CircleDot,
 } as const;
 
-const steps = [
-  {
-    icon: Upload,
-    title: "Modelinizi iletin",
-    desc: "STL, OBJ veya 3MF dosyanızı güvenle yükleyin.",
-  },
-  {
-    icon: Palette,
-    title: "Malzeme ve renk",
-    desc: "PLA, ABS, PETG veya TPU; parçanıza uygun filament ve renk seçimi.",
-  },
-  {
-    icon: Truck,
-    title: "Üretim ve teslimat",
-    desc: "Baskı tamamlandıktan sonra KKTC geneline özenli kargo.",
-  },
-] as const;
+const stepIcons = [Upload, Palette, Truck] as const;
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -49,11 +35,29 @@ const fadeUp = {
 };
 
 interface CustomPrintSectionProps {
-  /** /ozel-baski sayfasında formun hemen altında */
   onPage?: boolean;
 }
 
 export function CustomPrintSection({ onPage = false }: CustomPrintSectionProps) {
+  const { t } = useIntl();
+  const steps = [
+    {
+      icon: stepIcons[0],
+      title: t("customPrintSection.step1Title"),
+      desc: t("customPrintSection.step1Desc"),
+    },
+    {
+      icon: stepIcons[1],
+      title: t("customPrintSection.step2Title"),
+      desc: t("customPrintSection.step2Desc"),
+    },
+    {
+      icon: stepIcons[2],
+      title: t("customPrintSection.step3Title"),
+      desc: t("customPrintSection.step3Desc"),
+    },
+  ] as const;
+
   return (
     <section
       className={`relative z-10 overflow-hidden ${
@@ -69,19 +73,17 @@ export function CustomPrintSection({ onPage = false }: CustomPrintSectionProps) 
           <motion.div {...fadeUp} transition={{ duration: 0.55 }}>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full badge-glow text-xs mb-6">
               <Sparkles className="w-3 h-3 text-cyan-300" />
-              Özel Filament Baskı
+              {t("customPrintSection.badge")}
             </span>
 
             <h2 className="text-3xl sm:text-4xl xl:text-5xl font-bold leading-tight tracking-tight mb-6">
-              <span className="block text-white/95">TASARIMINI</span>
-              <span className="block text-white/95 mt-1">GÖNDERİYORSUN</span>
-              <span className="text-neon block mt-2 sm:mt-3">BİZ BASIYORUZ.</span>
+              <span className="block text-white/95">{t("customPrintSection.h1a")}</span>
+              <span className="block text-white/95 mt-1">{t("customPrintSection.h1b")}</span>
+              <span className="text-neon block mt-2 sm:mt-3">{t("customPrintSection.h1c")}</span>
             </h2>
 
             <p className="text-violet-200/75 text-base sm:text-lg leading-relaxed max-w-lg mb-8">
-              Dijital modelinizi paylaşın; filament türünü ve rengi birlikte
-              belirleyelim. PLA, ABS, PETG ve TPU seçenekleriyle kontrollü
-              üretim, temiz yüzey ve kapınıza kadar teslimat.
+              {t("customPrintSection.lead")}
             </p>
 
             <div className="flex flex-wrap gap-2 mb-8">
@@ -90,14 +92,14 @@ export function CustomPrintSection({ onPage = false }: CustomPrintSectionProps) 
                 return (
                   <span
                     key={mat.id}
-                    title={mat.hint}
+                    title={t(`printMaterial.${mat.id}.hint`)}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full glass text-xs font-medium text-violet-100/90"
                   >
                     <Icon
                       className={`w-3.5 h-3.5 ${mat.color}`}
                       strokeWidth={2}
                     />
-                    {mat.label}
+                    {t(`printMaterial.${mat.id}.label`)}
                   </span>
                 );
               })}
@@ -107,30 +109,27 @@ export function CustomPrintSection({ onPage = false }: CustomPrintSectionProps) 
               {onPage ? (
                 <a href="#talep-form">
                   <NeonButton size="lg">
-                    Teklif Formuna Git
+                    {t("customPrintSection.ctaForm")}
                     <ArrowRight className="w-4 h-4" />
                   </NeonButton>
                 </a>
               ) : (
-                <Link href="/ozel-baski">
+                <LocaleLink href="/ozel-baski">
                   <NeonButton size="lg">
-                    Dosya Gönder & Teklif Al
+                    {t("customPrintSection.ctaSendFile")}
                     <ArrowRight className="w-4 h-4" />
                   </NeonButton>
-                </Link>
+                </LocaleLink>
               )}
-              <Link href="/urunler">
+              <LocaleLink href="/urunler">
                 <NeonButton variant="ghost" size="lg">
-                  Hazır Ürünlere Bak
+                  {t("customPrintSection.ctaProducts")}
                 </NeonButton>
-              </Link>
+              </LocaleLink>
             </div>
           </motion.div>
 
-          <motion.div
-            {...fadeUp}
-            transition={{ duration: 0.55, delay: 0.1 }}
-          >
+          <motion.div {...fadeUp} transition={{ duration: 0.55, delay: 0.1 }}>
             <GlassCard
               hover={false}
               className="p-6 sm:p-8 border-fuchsia-400/20 relative overflow-hidden"
@@ -140,7 +139,7 @@ export function CustomPrintSection({ onPage = false }: CustomPrintSectionProps) 
 
               <p className="text-sm font-semibold text-violet-200/80 mb-6 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                Nasıl çalışır?
+                {t("customPrintSection.howItWorks")}
               </p>
 
               <div className="space-y-5">
@@ -159,18 +158,11 @@ export function CustomPrintSection({ onPage = false }: CustomPrintSectionProps) 
                         <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-fuchsia-500/80 text-[10px] font-bold flex items-center justify-center text-white">
                           {i + 1}
                         </span>
-                        <Icon
-                          className="w-5 h-5 text-cyan-300"
-                          strokeWidth={2}
-                        />
+                        <Icon className="w-5 h-5 text-cyan-300" strokeWidth={2} />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-white/95">
-                          {step.title}
-                        </h3>
-                        <p className="text-sm text-violet-200/55 mt-0.5">
-                          {step.desc}
-                        </p>
+                        <h3 className="font-semibold text-white/95">{step.title}</h3>
+                        <p className="text-sm text-violet-200/55 mt-0.5">{step.desc}</p>
                       </div>
                     </motion.div>
                   );
@@ -179,9 +171,7 @@ export function CustomPrintSection({ onPage = false }: CustomPrintSectionProps) 
 
               <div className="mt-8 pt-6 border-t border-white/10">
                 <p className="text-xs text-violet-300/50 leading-relaxed">
-                  Her dosya teknik incelemeden geçer; katman yüksekliği, doluluk
-                  ve malzeme önerisiyle birlikte net fiyat teklifi e-postanıza
-                  iletilir.
+                  {t("customPrintSection.footerNote")}
                 </p>
               </div>
             </GlassCard>

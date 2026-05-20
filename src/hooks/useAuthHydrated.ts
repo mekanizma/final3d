@@ -8,9 +8,14 @@ export function useAuthHydrated() {
 
   useEffect(() => {
     const sync = async () => {
-      await useAuthStore.persist.rehydrate();
-      await useAuthStore.getState().hydrate();
-      setHydrated(true);
+      try {
+        await useAuthStore.persist.rehydrate();
+        await useAuthStore.getState().hydrate();
+      } catch {
+        /* API yoksa bile giriş/kayıt butonları görünsün */
+      } finally {
+        setHydrated(true);
+      }
     };
     void sync();
   }, []);

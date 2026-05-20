@@ -1,29 +1,19 @@
-import { stockGalleryImages } from "@/data/imageGallery";
-
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 
 export interface GalleryImage {
   id: string;
   label: string;
   url: string;
-  source: "stock" | "upload";
-}
-
-function stockFallback(): GalleryImage[] {
-  return stockGalleryImages.map((img) => ({
-    ...img,
-    source: "stock" as const,
-  }));
+  source: "upload";
 }
 
 export async function fetchAllGalleryImages(): Promise<GalleryImage[]> {
-  try {
-    const res = await fetch("/api/gallery", { credentials: "include" });
-    if (!res.ok) return stockFallback();
-    return (await res.json()) as GalleryImage[];
-  } catch {
-    return stockFallback();
+  const res = await fetch("/api/gallery", { credentials: "include" });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error || "Galeri yüklenemedi.");
   }
+  return (await res.json()) as GalleryImage[];
 }
 
 export async function saveUploadedImage(
@@ -55,11 +45,6 @@ export async function deleteUploadedImage(id: string): Promise<void> {
     const body = (await res.json().catch(() => ({}))) as { error?: string };
     throw new Error(body.error || "Görsel silinemedi.");
   }
-}
-
-/** @deprecated fetchAllGalleryImages kullanın */
-export function getAllGalleryImages(): GalleryImage[] {
-  return stockFallback();
 }
 
 export async function fileToDataUrl(file: File): Promise<string> {

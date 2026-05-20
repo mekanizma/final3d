@@ -6,6 +6,10 @@ import { mapOrder, type DbOrder } from "@/lib/supabase/mappers";
 import { generateId } from "@/lib/utils";
 import { calculateOrderTotals } from "@/lib/pricing";
 import type { CreateOrderInput } from "@/types";
+import {
+  isLegacyDemoProduct,
+  withoutLegacyDemoOrders,
+} from "@/lib/legacyDemoData";
 
 export async function GET() {
   try {
@@ -17,7 +21,9 @@ export async function GET() {
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    return NextResponse.json((data as DbOrder[]).map(mapOrder));
+    return NextResponse.json(
+      withoutLegacyDemoOrders((data as DbOrder[]).map(mapOrder))
+    );
   } catch (e) {
     const msg = (e as Error).message;
     return NextResponse.json(
@@ -42,6 +48,9 @@ export async function POST(req: Request) {
     if (prodErr) throw prodErr;
 
     const items = input.items.map((item) => {
+      if (isLegacyDemoProduct(item.productId)) {
+        throw new Error("Bu ürün artık satışta değil.");
+      }
       const product = products?.find((p) => p.id === item.productId);
       if (!product) throw new Error(`Ürün bulunamadı: ${item.productId}`);
 

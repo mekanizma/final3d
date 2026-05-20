@@ -1,6 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateId } from "@/lib/utils";
-import { stockGalleryImages } from "@/data/imageGallery";
 
 const BUCKET = "product-images";
 const MAX_DATA_URL_DB = 500_000;
@@ -9,15 +8,8 @@ export type GalleryImageDto = {
   id: string;
   label: string;
   url: string;
-  source: "stock" | "upload";
+  source: "upload";
 };
-
-export function getStockGallery(): GalleryImageDto[] {
-  return stockGalleryImages.map((img) => ({
-    ...img,
-    source: "stock" as const,
-  }));
-}
 
 export async function listUploadedGallery(): Promise<GalleryImageDto[]> {
   const supabase = createAdminClient();
@@ -36,8 +28,7 @@ export async function listUploadedGallery(): Promise<GalleryImageDto[]> {
 }
 
 export async function listAllGallery(): Promise<GalleryImageDto[]> {
-  const uploads = await listUploadedGallery();
-  return [...uploads, ...getStockGallery()];
+  return listUploadedGallery();
 }
 
 function dataUrlToBuffer(dataUrl: string): { buffer: Buffer; contentType: string } {
@@ -91,10 +82,6 @@ export async function saveGalleryUpload(
 }
 
 export async function deleteGalleryUpload(id: string): Promise<void> {
-  if (id.startsWith("stock-")) {
-    throw new Error("Stok görselleri silinemez.");
-  }
-
   const supabase = createAdminClient();
   const { data: row } = await supabase
     .from("gallery_uploads")
@@ -105,7 +92,11 @@ export async function deleteGalleryUpload(id: string): Promise<void> {
   const { error } = await supabase.from("gallery_uploads").delete().eq("id", id);
   if (error) throw error;
 
-  if (row?.url && typeof row.url === "string" && row.url.includes("/storage/v1/object/public/product-images/")) {
+  if (
+    row?.url &&
+    typeof row.url === "string" &&
+    row.url.includes("/storage/v1/object/public/product-images/")
+  ) {
     const path = row.url.split("/product-images/")[1];
     if (path) {
       await supabase.storage.from(BUCKET).remove([path]);

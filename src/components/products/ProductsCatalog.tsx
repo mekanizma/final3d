@@ -19,14 +19,15 @@ import {
 } from "lucide-react";
 import { ProductCard } from "@/components/products/ProductCard";
 import { SortSelect } from "@/components/products/SortSelect";
+import { useIntl } from "@/components/i18n/IntlProvider";
 import { useProductStore } from "@/store/productStore";
-import { CATEGORY_LABELS } from "@/lib/constants";
+import { categoryLabel } from "@/lib/order-labels";
+import { tFormat } from "@/lib/t-format";
 import { formatPrice, cn } from "@/lib/utils";
 import { GlassCard } from "@/components/ui/GlassCard";
 import type { ProductCategory } from "@/types";
 import {
   DEFAULT_FILTERS,
-  SORT_LABELS,
   countActiveFilters,
   filterAndSortProducts,
   getProductPriceBounds,
@@ -52,12 +53,12 @@ const categoryIcons: Record<ProductCategory | "all", typeof Package> = {
   tool: Wrench,
 };
 
-const PRICE_PRESETS = [
-  { label: "Tüm fiyatlar", min: 0, max: Infinity },
-  { label: "500 ₺ altı", min: 0, max: 500 },
-  { label: "500 – 2.000 ₺", min: 500, max: 2000 },
-  { label: "2.000 – 10.000 ₺", min: 2000, max: 10000 },
-  { label: "10.000 ₺ üzeri", min: 10000, max: Infinity },
+const PRICE_PRESET_KEYS = [
+  { key: "products.allPrices", min: 0, max: Infinity },
+  { key: "products.under500", min: 0, max: 500 },
+  { key: "products.range500_2000", min: 500, max: 2000 },
+  { key: "products.range2000_10000", min: 2000, max: 10000 },
+  { key: "products.over10k", min: 10000, max: Infinity },
 ] as const;
 
 function FiltersPanel({
@@ -66,12 +67,14 @@ function FiltersPanel({
   priceBounds,
   onClose,
   showClose,
+  t,
 }: {
   filters: ProductFilters;
   setFilters: React.Dispatch<React.SetStateAction<ProductFilters>>;
   priceBounds: { min: number; max: number };
   onClose?: () => void;
   showClose?: boolean;
+  t: (key: string) => string;
 }) {
   const [localMax, setLocalMax] = useState(
     filters.maxPrice === Infinity ? priceBounds.max : filters.maxPrice
@@ -94,12 +97,12 @@ function FiltersPanel({
     <div className="space-y-6">
       {showClose && onClose && (
         <div className="flex items-center justify-between lg:hidden">
-          <h3 className="font-semibold text-white">Filtreler</h3>
+          <h3 className="font-semibold text-white">{t("products.filters")}</h3>
           <button
             type="button"
             onClick={onClose}
             className="p-2 rounded-lg glass-hover"
-            aria-label="Kapat"
+            aria-label={t("products.close")}
           >
             <X className="w-5 h-5" />
           </button>
@@ -108,7 +111,7 @@ function FiltersPanel({
 
       <div>
         <p className="text-[11px] uppercase tracking-wider text-violet-300/50 mb-3 font-medium">
-          Kategori
+          {t("productsFilter.category")}
         </p>
         <div className="flex flex-col gap-1.5">
           {categories.map((cat) => {
@@ -135,7 +138,9 @@ function FiltersPanel({
                   )}
                 />
                 <span className="flex-1">
-                  {cat === "all" ? "Tüm kategoriler" : CATEGORY_LABELS[cat]}
+                  {cat === "all"
+                    ? t("products.allCategories")
+                    : categoryLabel(cat, t)}
                 </span>
                 {active && (
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
@@ -148,16 +153,16 @@ function FiltersPanel({
 
       <div>
         <p className="text-[11px] uppercase tracking-wider text-violet-300/50 mb-3 font-medium">
-          Fiyat aralığı
+          {t("products.priceRange")}
         </p>
         <div className="flex flex-wrap gap-2 mb-4">
-          {PRICE_PRESETS.map((preset) => {
+          {PRICE_PRESET_KEYS.map((preset) => {
             const active =
               filters.minPrice === preset.min &&
               filters.maxPrice === preset.max;
             return (
               <button
-                key={preset.label}
+                key={preset.key}
                 type="button"
                 onClick={() => {
                   setFilters((f) => ({
@@ -175,7 +180,7 @@ function FiltersPanel({
                     : "glass border-white/10 text-violet-200/60 hover:border-white/20"
                 )}
               >
-                {preset.label}
+                {t(preset.key)}
               </button>
             );
           })}
@@ -211,7 +216,7 @@ function FiltersPanel({
 
       <div>
         <p className="text-[11px] uppercase tracking-wider text-violet-300/50 mb-3 font-medium">
-          Görünüm
+          {t("products.view")}
         </p>
         <div className="space-y-2">
           <label className="flex items-center gap-3 cursor-pointer group">
@@ -227,7 +232,7 @@ function FiltersPanel({
               className="w-4 h-4 rounded border-violet-500/50 bg-violet-950/50 text-fuchsia-500 focus:ring-cyan-400/50"
             />
             <span className="text-sm text-violet-200/75 group-hover:text-white transition-colors">
-              Yalnızca stokta olanlar
+              {t("products.inStockOnly")}
             </span>
           </label>
           <label className="flex items-center gap-3 cursor-pointer group">
@@ -244,7 +249,7 @@ function FiltersPanel({
             />
             <span className="text-sm text-violet-200/75 group-hover:text-white transition-colors flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              Öne çıkan ürünler
+              {t("products.featuredOnly")}
             </span>
           </label>
         </div>
@@ -256,13 +261,14 @@ function FiltersPanel({
         className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm text-violet-200/60 border border-white/10 hover:border-white/20 hover:text-white transition-all"
       >
         <RotateCcw className="w-4 h-4" />
-        Filtreleri sıfırla
+        {t("products.resetFilters")}
       </button>
     </div>
   );
 }
 
 export function ProductsCatalog() {
+  const { t } = useIntl();
   const { products, loading, fetchProducts } = useProductStore();
   const [filters, setFilters] = useState<ProductFilters>(DEFAULT_FILTERS);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -319,16 +325,20 @@ export function ProductsCatalog() {
           >
             <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full badge-glow text-[11px] mb-2">
               <TrendingUp className="w-3 h-3 text-cyan-300" />
-              {loading ? "…" : `${products.length} ürün`}
+              {loading
+                ? "…"
+                : tFormat(t, "products.productCount", {
+                    count: String(products.length),
+                  })}
             </span>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              Ürün{" "}
+              {t("products.catalogTitle")}{" "}
               <span className="bg-gradient-to-r from-fuchsia-300 via-violet-200 to-cyan-300 bg-clip-text text-transparent">
-                Kataloğu
+                {t("products.catalogTitleNeon")}
               </span>
             </h1>
             <p className="text-violet-200/50 text-sm mt-1 mb-4 max-w-lg">
-              Filament, yazıcı, model ve aksesuarlar.
+              {t("products.catalogSub")}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-2 max-w-md">
@@ -338,7 +348,7 @@ export function ProductsCatalog() {
                   type="search"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder="Ürün ara…"
+                  placeholder={t("products.searchPh")}
                   className="w-full pl-10 pr-9 py-2.5 rounded-xl glass border border-white/10 bg-white/5 text-sm text-white placeholder:text-violet-300/40 focus:outline-none focus:border-cyan-400/45 transition-all"
                 />
                 {searchInput && (
@@ -346,7 +356,7 @@ export function ProductsCatalog() {
                     type="button"
                     onClick={() => setSearchInput("")}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-white/10"
-                    aria-label="Aramayı temizle"
+                    aria-label={t("products.clearSearch")}
                   >
                     <X className="w-4 h-4 text-violet-300/60" />
                   </button>
@@ -358,7 +368,7 @@ export function ProductsCatalog() {
                 className="lg:hidden flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl glass border border-fuchsia-400/30 text-sm font-medium shrink-0"
               >
                 <SlidersHorizontal className="w-4 h-4" />
-                Filtreler
+                {t("products.filters")}
                 {activeFilterCount > 0 && (
                   <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-cyan-500/30 text-cyan-200 text-xs flex items-center justify-center">
                     {activeFilterCount}
@@ -379,12 +389,15 @@ export function ProductsCatalog() {
               <GlassCard hover={false} className="p-5 border-white/10">
                 <div className="flex items-center gap-2 mb-5 pb-4 border-b border-white/10">
                   <SlidersHorizontal className="w-4 h-4 text-cyan-400" />
-                  <span className="font-semibold text-sm">Filtrele</span>
+                  <span className="font-semibold text-sm">
+                    {t("products.filterLabel")}
+                  </span>
                 </div>
                 <FiltersPanel
                   filters={filters}
                   setFilters={setFilters}
                   priceBounds={priceBounds}
+                  t={t}
                 />
               </GlassCard>
             </div>
@@ -395,17 +408,17 @@ export function ProductsCatalog() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <p className="text-sm text-violet-200/60">
                 {loading ? (
-                  "Yükleniyor…"
+                  t("products.loading")
                 ) : (
                   <>
                     <span className="text-white font-medium">
                       {filtered.length}
                     </span>{" "}
-                    ürün listeleniyor
+                    {t("products.countListed")}
                     {filters.category !== "all" && (
                       <span className="text-violet-300/50">
                         {" "}
-                        · {CATEGORY_LABELS[filters.category]}
+                        · {categoryLabel(filters.category, t)}
                       </span>
                     )}
                   </>
@@ -439,7 +452,7 @@ export function ProductsCatalog() {
                     )}
                   >
                     <Icon className="w-3.5 h-3.5" />
-                    {cat === "all" ? "Tümü" : CATEGORY_LABELS[cat]}
+                    {cat === "all" ? t("products.all") : categoryLabel(cat, t)}
                     <span
                       className={cn(
                         "text-[10px] px-1.5 py-0.5 rounded-full",
@@ -466,7 +479,7 @@ export function ProductsCatalog() {
                 >
                   {searchInput && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-cyan-500/15 border border-cyan-400/30 text-cyan-100">
-                      Arama: {searchInput}
+                      {tFormat(t, "products.searchChip", { q: searchInput })}
                       <button
                         type="button"
                         onClick={() => setSearchInput("")}
@@ -478,7 +491,7 @@ export function ProductsCatalog() {
                   )}
                   {filters.inStockOnly && (
                     <FilterChip
-                      label="Stokta"
+                      label={t("products.inStockChip")}
                       onRemove={() =>
                         setFilters((f) => ({ ...f, inStockOnly: false }))
                       }
@@ -486,7 +499,7 @@ export function ProductsCatalog() {
                   )}
                   {filters.featuredOnly && (
                     <FilterChip
-                      label="Öne çıkan"
+                      label={t("products.featured")}
                       onRemove={() =>
                         setFilters((f) => ({ ...f, featuredOnly: false }))
                       }
@@ -552,6 +565,7 @@ export function ProductsCatalog() {
               </motion.div>
             ) : (
               <EmptyCatalogState
+                t={t}
                 onReset={() => {
                   setSearchInput("");
                   setFilters({
@@ -589,13 +603,16 @@ export function ProductsCatalog() {
                 priceBounds={priceBounds}
                 showClose
                 onClose={() => setMobileFiltersOpen(false)}
+                t={t}
               />
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(false)}
                 className="mt-6 w-full py-3.5 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-violet-600 text-white font-medium text-sm"
               >
-                {filtered.length} ürünü göster
+                {tFormat(t, "products.showCount", {
+                  count: String(filtered.length),
+                })}
               </button>
             </motion.div>
           </>
@@ -622,16 +639,22 @@ function FilterChip({
   );
 }
 
-function EmptyCatalogState({ onReset }: { onReset: () => void }) {
+function EmptyCatalogState({
+  onReset,
+  t,
+}: {
+  onReset: () => void;
+  t: (key: string) => string;
+}) {
   return (
     <GlassCard
       hover={false}
       className="py-16 px-8 text-center border-dashed border-white/15"
     >
       <Package className="w-14 h-14 text-violet-400/40 mx-auto mb-4" />
-      <h3 className="text-xl font-semibold mb-2">Ürün bulunamadı</h3>
+      <h3 className="text-xl font-semibold mb-2">{t("products.noResultsTitle")}</h3>
       <p className="text-violet-200/55 text-sm max-w-sm mx-auto mb-6">
-        Filtreleri gevşetin veya farklı bir arama deneyin.
+        {t("products.noResultsHint")}
       </p>
       <button
         type="button"
@@ -639,7 +662,7 @@ function EmptyCatalogState({ onReset }: { onReset: () => void }) {
         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl glass-hover text-sm"
       >
         <RotateCcw className="w-4 h-4" />
-        Tüm ürünleri göster
+        {t("products.showAll")}
       </button>
     </GlassCard>
   );

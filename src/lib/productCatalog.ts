@@ -8,13 +8,13 @@ export type SortOption =
   | "name"
   | "newest";
 
-export const SORT_LABELS: Record<SortOption, string> = {
-  featured: "Öne çıkanlar",
-  "price-asc": "Fiyat: Düşük → Yüksek",
-  "price-desc": "Fiyat: Yüksek → Düşük",
-  name: "İsim (A–Z)",
-  newest: "En yeni",
-};
+export const SORT_OPTIONS: SortOption[] = [
+  "featured",
+  "price-asc",
+  "price-desc",
+  "name",
+  "newest",
+];
 
 export interface ProductFilters {
   search: string;
