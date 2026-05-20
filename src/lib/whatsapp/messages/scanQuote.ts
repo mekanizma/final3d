@@ -3,6 +3,12 @@ import type {
   ScanPurposeId,
   ScanSurfaceId,
 } from "@/lib/scanQuoteOptions";
+import {
+  formatRequestTime,
+  waLine,
+  waNote,
+  waTitle,
+} from "@/lib/whatsapp/formatMessage";
 
 export type ScanQuoteWhatsAppPayload = {
   name: string;
@@ -35,51 +41,54 @@ export function buildScanQuoteWhatsAppMessage(
   data: ScanQuoteWhatsAppPayload
 ): string {
   const lines = [
-    "🟢 *Final3d — 3D Tarama Teklif Talebi*",
+    waTitle("Final3d - 3D Tarama Teklif Talebi"),
     "",
-    `👤 *Ad Soyad:* ${data.name}`,
-    `📧 *E-posta:* ${data.email}`,
-    `📱 *Telefon:* ${data.phone}`,
+    waLine("Ad Soyad", data.name),
+    waLine("E-posta", data.email),
+    waLine("Telefon", data.phone),
     "",
-    `📦 *Nesne / parça:* ${data.objectDescription}`,
-    `📐 *Taranacak alan:* ${data.scanArea}`,
-    `🔢 *Adet:* ${data.quantity}`,
+    waLine("Nesne / parça", data.objectDescription),
+    waLine("Taranacak alan", data.scanArea),
+    waLine("Adet", data.quantity),
     "",
-    `🎯 *Amaç:* ${data.purposeLabel}`,
-    `🔍 *Yüzey tipi:* ${data.surfaceLabel}`,
+    waLine("Amaç", data.purposeLabel),
+    waLine("Yüzey tipi", data.surfaceLabel),
     "",
-    `📍 *Konum:* ${data.locationLabel}`,
+    waLine("Konum", data.locationLabel),
   ];
 
   if (data.locationType === "onsite" && data.locationAddress.trim()) {
-    lines.push(`🏠 *Saha adresi:* ${data.locationAddress.trim()}`);
+    lines.push(waLine("Saha adresi", data.locationAddress.trim()));
   }
 
   if (data.city.trim()) {
-    lines.push(`🌆 *Şehir:* ${data.city.trim()}`);
+    lines.push(waLine("Şehir", data.city.trim()));
   }
 
   lines.push(
-    `🖨️ *Tarama sonrası baskı:* ${data.wantsPrint ? "Evet" : "Hayır"}`
+    waLine("Tarama sonrası baskı", data.wantsPrint ? "Evet" : "Hayır")
   );
 
   if (data.photoFileName) {
     const size = data.photoFileSize
       ? ` (${formatFileSize(data.photoFileSize)})`
       : "";
-    lines.push("", `📷 *Referans fotoğraf:* ${data.photoFileName}${size}`);
-    lines.push("⚠️ _Lütfen fotoğrafı bu sohbete ekleyin._");
+    lines.push(
+      "",
+      waLine("Referans fotoğraf", `${data.photoFileName}${size}`),
+      waNote("Lütfen fotoğrafı bu sohbete ekleyin.")
+    );
   }
 
   if (data.note.trim()) {
-    lines.push(`📝 *Not:* ${data.note.trim()}`);
+    lines.push(waLine("Not", data.note.trim()));
   }
 
   lines.push(
     "",
-    `🕐 *Talep zamanı:* ${new Date().toLocaleString("tr-TR", { timeZone: "Europe/Nicosia" })}`,
+    waLine("Talep zamanı", formatRequestTime()),
     "",
-    "Teşekkürler 🙏"
+    "Teşekkürler."
   );
 
   return lines.join("\n");

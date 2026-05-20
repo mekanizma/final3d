@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
 
 interface AuthCardProps {
   title: React.ReactNode;
@@ -40,8 +40,11 @@ export function AuthLink({
   children: React.ReactNode;
 }) {
   return (
-    <Link href={href} className="text-cyan-300 hover:text-cyan-200 font-medium">
+    <LocaleLink
+      href={href}
+      className="text-cyan-300 hover:text-cyan-200 font-medium"
+    >
       {children}
-    </Link>
+    </LocaleLink>
   );
 }

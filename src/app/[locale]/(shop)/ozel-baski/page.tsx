@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Upload,
   User,
   Mail,
+  MessageCircle,
   Phone,
   FileUp,
   CheckCircle2,
@@ -21,6 +21,7 @@ import { FormInput, FormTextarea } from "@/components/ui/FormField";
 import { useAuthStore } from "@/store/authStore";
 import { useAuthHydrated } from "@/hooks/useAuthHydrated";
 import { submitCustomPrintRequest } from "@/services/customPrintService";
+import { quoteEmailFailAlert } from "@/lib/quoteFormNotify";
 import { PRINT_MATERIALS, type PrintMaterialId } from "@/lib/printMaterials";
 import { buildCustomPrintWhatsAppMessage } from "@/lib/whatsapp/messages/customPrint";
 import {
@@ -37,8 +38,9 @@ export default function CustomPrintPage() {
   const router = useRouter();
   const hydrated = useAuthHydrated();
   const user = useAuthStore((s) => s.user);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<"whatsapp" | "email" | null>(null);
   const [done, setDone] = useState(false);
+  const [doneVia, setDoneVia] = useState<"whatsapp" | "email">("whatsapp");
   const [waUrl, setWaUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -61,28 +63,40 @@ export default function CustomPrintPage() {
     }));
   }, [hydrated, user]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const file = fd.get("modelFile") as File | null;
+  async function submitQuote(via: "whatsapp" | "email") {
+    const fileInput = document.querySelector<HTMLInputElement>(
+      'input[name="modelFile"]'
+    );
+    const file = fileInput?.files?.[0];
     if (!file?.size) {
       alert(t("ozelBaski.fileRequired"));
       return;
     }
-    setLoading(true);
+
+    setLoading(via);
     try {
-      await submitCustomPrintRequest({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        material: form.material,
-        color: form.color,
-        quantity: form.quantity,
-        note: form.note,
-        fileName: file.name,
-        fileSize: file.size,
-        userId: user?.id,
-      });
+      const payload = new FormData();
+      payload.append("delivery", via);
+      payload.append("name", form.name);
+      payload.append("email", form.email);
+      payload.append("phone", form.phone);
+      payload.append("material", form.material);
+      payload.append("color", form.color);
+      payload.append("quantity", form.quantity);
+      payload.append("note", form.note);
+      payload.append("modelFile", file);
+      if (user?.id) payload.append("userId", user.id);
+
+      const result = await submitCustomPrintRequest(payload);
+
+      if (via === "email") {
+        quoteEmailFailAlert(result.notification, t);
+        setDoneVia("email");
+        setWaUrl(null);
+        setDone(true);
+        return;
+      }
+
       const message = buildCustomPrintWhatsAppMessage({
         name: form.name,
         email: form.email,
@@ -97,11 +111,12 @@ export default function CustomPrintPage() {
       });
       setWaUrl(buildWhatsAppUrl(message));
       openWhatsAppWithMessage(message);
+      setDoneVia("whatsapp");
       setDone(true);
     } catch {
       alert(t("ozelBaski.fail"));
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
   }
 
@@ -111,8 +126,12 @@ export default function CustomPrintPage() {
         <GlassCard hover={false} className="max-w-md w-full p-10 text-center">
           <CheckCircle2 className="w-14 h-14 text-emerald-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">{t("ozelBaski.successTitle")}</h1>
-          <p className="text-violet-200/70 text-sm mb-4">{t("ozelBaski.successBody")}</p>
-          {waUrl && (
+          <p className="text-violet-200/70 text-sm mb-4">
+            {doneVia === "email"
+              ? t("ozelBaski.successBodyEmail")
+              : t("ozelBaski.successBody")}
+          </p>
+          {waUrl && doneVia === "whatsapp" && (
             <a
               href={waUrl}
               target="_blank"
@@ -159,7 +178,13 @@ export default function CustomPrintPage() {
           </motion.div>
 
           <GlassCard hover={false} className="p-6 sm:p-8">
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void submitQuote("whatsapp");
+              }}
+              className="space-y-5"
+            >
               <div>
                 <label className="block text-xs font-medium text-violet-200/70 mb-2">
                   {t("ozelBaski.fileLabel")}
@@ -262,15 +287,32 @@ export default function CustomPrintPage() {
                 {t("ozelBaski.attachFileHint")}
               </p>
 
-              <NeonButton
-                type="submit"
-                size="lg"
-                className="w-full"
-                disabled={loading}
-              >
-                <Upload className="w-4 h-4" />
-                {loading ? t("ozelBaski.submitting") : t("ozelBaski.submitWhatsApp")}
-              </NeonButton>
+              <div className="flex flex-col gap-3 pt-1">
+                <NeonButton
+                  type="submit"
+                  size="lg"
+                  className="w-full"
+                  disabled={loading !== null}
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  {loading === "whatsapp"
+                    ? t("ozelBaski.submitting")
+                    : t("ozelBaski.submitWhatsApp")}
+                </NeonButton>
+                <NeonButton
+                  type="button"
+                  size="lg"
+                  variant="ghost"
+                  className="w-full"
+                  disabled={loading !== null}
+                  onClick={() => void submitQuote("email")}
+                >
+                  <Mail className="w-4 h-4" />
+                  {loading === "email"
+                    ? t("ozelBaski.submittingEmail")
+                    : t("ozelBaski.submitEmail")}
+                </NeonButton>
+              </div>
             </form>
           </GlassCard>
         </div>

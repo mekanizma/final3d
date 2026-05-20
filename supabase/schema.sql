@@ -117,8 +117,9 @@ create table if not exists public.custom_print_requests (
   color       text not null,
   quantity    text not null,
   note        text not null default '',
-  file_name   text not null,
-  file_size   bigint not null default 0 check (file_size >= 0),
+  file_name           text not null,
+  file_size           bigint not null default 0 check (file_size >= 0),
+  file_storage_path   text,
   user_id     uuid references auth.users (id) on delete set null,
   status      text not null default 'yeni' check (
     status in ('yeni', 'inceleniyor', 'teklif-gonderildi')
@@ -151,6 +152,7 @@ create table if not exists public.scan_quote_requests (
   note                text not null default '',
   photo_file_name     text,
   photo_file_size     bigint check (photo_file_size is null or photo_file_size >= 0),
+  photo_storage_path  text,
   user_id             uuid references auth.users (id) on delete set null,
   status              text not null default 'yeni' check (
     status in ('yeni', 'inceleniyor', 'teklif-gonderildi')

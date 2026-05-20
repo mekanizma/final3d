@@ -1,4 +1,10 @@
 import type { PrintMaterialId } from "@/lib/printMaterials";
+import {
+  formatRequestTime,
+  waLine,
+  waNote,
+  waTitle,
+} from "@/lib/whatsapp/formatMessage";
 
 export type CustomPrintWhatsAppPayload = {
   name: string;
@@ -23,29 +29,29 @@ export function buildCustomPrintWhatsAppMessage(
   data: CustomPrintWhatsAppPayload
 ): string {
   const lines = [
-    "🔵 *Final3d — Özel Baskı Teklif Talebi*",
+    waTitle("Final3d - Özel Baskı Teklif Talebi"),
     "",
-    `👤 *Ad Soyad:* ${data.name}`,
-    `📧 *E-posta:* ${data.email}`,
-    `📱 *Telefon:* ${data.phone}`,
+    waLine("Ad Soyad", data.name),
+    waLine("E-posta", data.email),
+    waLine("Telefon", data.phone),
     "",
-    `📁 *3D Dosya:* ${data.fileName} (${formatFileSize(data.fileSize)})`,
-    "⚠️ _Lütfen dosyayı bu sohbete ekleyin (STL/OBJ/3MF)._",
+    waLine("3D Dosya", `${data.fileName} (${formatFileSize(data.fileSize)})`),
+    waNote("Lütfen dosyayı bu sohbete ekleyin (STL/OBJ/3MF)."),
     "",
-    `🧵 *Malzeme:* ${data.materialLabel} (${data.material.toUpperCase()})`,
-    `🎨 *Renk:* ${data.color.trim() || "Belirtilmedi"}`,
-    `🔢 *Adet:* ${data.quantity}`,
+    waLine("Malzeme", `${data.materialLabel} (${data.material.toUpperCase()})`),
+    waLine("Renk", data.color.trim() || "Belirtilmedi"),
+    waLine("Adet", data.quantity),
   ];
 
   if (data.note.trim()) {
-    lines.push(`📝 *Not:* ${data.note.trim()}`);
+    lines.push(waLine("Not", data.note.trim()));
   }
 
   lines.push(
     "",
-    `🕐 *Talep zamanı:* ${new Date().toLocaleString("tr-TR", { timeZone: "Europe/Nicosia" })}`,
+    waLine("Talep zamanı", formatRequestTime()),
     "",
-    "Teşekkürler 🙏"
+    "Teşekkürler."
   );
 
   return lines.join("\n");

@@ -43,6 +43,10 @@ export const enExtended = {
     successBody:
       "Your request was saved. WhatsApp should open — please attach your 3D file in the chat and send.",
     submitWhatsApp: "Send via WhatsApp",
+    submitEmail: "Send via email",
+    submittingEmail: "Sending email…",
+    successBodyEmail:
+      "Your request was saved and all details plus your 3D file were emailed to our team. We will reply shortly.",
     openWhatsApp: "Open WhatsApp again",
     attachFileHint:
       "Files are not attached automatically — use 📎 in WhatsApp to attach your model.",
@@ -59,6 +63,12 @@ export const enExtended = {
     submit: "Submit quote request",
     submitting: "Sending…",
     fail: "Could not submit request. Please try again.",
+  },
+  quoteForm: {
+    emailMock:
+      "RESEND_API_KEY is not set — request saved; email was only simulated in development.",
+    emailFail:
+      "Request saved but email could not be sent. Try WhatsApp or call us.",
   },
   customPrintSection: {
     badge: "Custom filament printing",
@@ -105,6 +115,10 @@ export const enExtended = {
     successBodyWhatsApp:
       "Your request was saved. WhatsApp should open — attach your reference photo in the chat if you have one.",
     submitWhatsApp: "Send via WhatsApp",
+    submitEmail: "Send via email",
+    submittingEmail: "Sending email…",
+    successBodyEmail:
+      "Your request was saved; form details and any reference photo were emailed to our team.",
     openWhatsApp: "Open WhatsApp again",
     attachPhotoHint:
       "Photos are not attached automatically — use 📎 in WhatsApp.",
@@ -236,6 +250,23 @@ export const enExtended = {
     photo: "Photo",
     yes: "Yes",
     no: "No",
+  },
+  adminQuotes: {
+    title: "Quotes",
+    countSummary: "{total} requests (custom print: {custom}, scan: {scan})",
+    tabAll: "All",
+    tabCustom: "Custom print",
+    tabScan: "3D scan",
+    badgeCustom: "Custom print",
+    badgeScan: "3D scan",
+    searchPh: "Name, email, city or request id…",
+    requestId: "Request id",
+    city: "City",
+    noFileStored:
+      "No file on server (legacy request or WhatsApp only).",
+    loadingFile: "Loading file…",
+    downloadFile: "Download / open 3D file",
+    downloadImage: "Download / full size image",
   },
   productForm: {
     translateHint:

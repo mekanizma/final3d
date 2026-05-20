@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Mail, Lock, User, Phone, MapPin } from "lucide-react";
 import { AuthCard, AuthLink } from "@/components/auth/AuthCard";
 import { FormInput, FormTextarea } from "@/components/ui/FormField";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { useAuthStore } from "@/store/authStore";
+import { useIntl } from "@/components/i18n/IntlProvider";
+import { useLocaleRouter } from "@/hooks/useLocaleRouter";
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const { t } = useIntl();
+  const { push } = useLocaleRouter();
   const register = useAuthStore((s) => s.register);
   const loading = useAuthStore((s) => s.loading);
   const [form, setForm] = useState({
@@ -26,7 +28,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setError(null);
     if (form.password !== form.passwordConfirm) {
-      setError("Şifreler eşleşmiyor.");
+      setError(t("auth.passwordMismatch"));
       return;
     }
     try {
@@ -37,7 +39,7 @@ export default function RegisterPage() {
         address: form.address,
         password: form.password,
       });
-      router.push("/hesabim");
+      push("/hesabim");
     } catch (e) {
       setError((e as Error).message);
     }
@@ -47,13 +49,15 @@ export default function RegisterPage() {
     <AuthCard
       title={
         <>
-          <span className="text-neon">Kayıt</span> Ol
+          <span className="text-neon">{t("auth.registerTitle")}</span>{" "}
+          {t("auth.registerTitleNeon")}
         </>
       }
-      subtitle="KKTC'ye 3D baskı siparişi vermek için ücretsiz hesap oluşturun"
+      subtitle={t("auth.registerSubtitle")}
       footer={
         <>
-          Zaten hesabınız var mı? <AuthLink href="/giris">Giriş yapın</AuthLink>
+          {t("auth.hasAccount")}{" "}
+          <AuthLink href="/giris">{t("auth.loginLink")}</AuthLink>
         </>
       }
     >
@@ -65,7 +69,7 @@ export default function RegisterPage() {
         )}
         <FormInput
           icon={User}
-          placeholder="Ad Soyad"
+          placeholder={t("auth.namePh")}
           required
           autoComplete="name"
           value={form.name}
@@ -74,7 +78,7 @@ export default function RegisterPage() {
         <FormInput
           icon={Mail}
           type="email"
-          placeholder="E-posta"
+          placeholder={t("auth.emailPh")}
           required
           autoComplete="email"
           value={form.email}
@@ -83,7 +87,7 @@ export default function RegisterPage() {
         <FormInput
           icon={Phone}
           type="tel"
-          placeholder="Telefon"
+          placeholder={t("auth.phonePh")}
           required
           autoComplete="tel"
           value={form.phone}
@@ -91,7 +95,7 @@ export default function RegisterPage() {
         />
         <FormTextarea
           icon={MapPin}
-          placeholder="Varsayılan teslimat adresi (KKTC)"
+          placeholder={t("auth.addressPh")}
           required
           value={form.address}
           onChange={(e) => setForm({ ...form, address: e.target.value })}
@@ -99,7 +103,7 @@ export default function RegisterPage() {
         <FormInput
           icon={Lock}
           type="password"
-          placeholder="Şifre (min. 6 karakter)"
+          placeholder={t("auth.passwordMin")}
           required
           minLength={6}
           autoComplete="new-password"
@@ -109,7 +113,7 @@ export default function RegisterPage() {
         <FormInput
           icon={Lock}
           type="password"
-          placeholder="Şifre tekrar"
+          placeholder={t("auth.passwordConfirmPh")}
           required
           autoComplete="new-password"
           value={form.passwordConfirm}
@@ -118,7 +122,7 @@ export default function RegisterPage() {
           }
         />
         <NeonButton type="submit" className="w-full" size="lg" disabled={loading}>
-          {loading ? "Kayıt oluşturuluyor..." : "Hesap Oluştur"}
+          {loading ? t("auth.registering") : t("auth.submitRegister")}
         </NeonButton>
       </form>
     </AuthCard>

@@ -32,7 +32,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="lg:col-span-7 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-7 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300/60 mb-3">
                 {t("footer.quick")}
@@ -61,6 +61,50 @@ export function Footer() {
                   className="hover:text-cyan-300 transition-colors"
                 >
                   {t("nav.order")}
+                </LocaleLink>
+              </nav>
+            </div>
+
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300/60 mb-3">
+                {t("footer.seo")}
+              </h4>
+              <nav className="flex flex-col gap-2.5 text-sm text-violet-100/85">
+                <LocaleLink
+                  href="/3d-baski-kktc"
+                  className="hover:text-cyan-300 transition-colors"
+                >
+                  {t("footer.seoBaski")}
+                </LocaleLink>
+                <LocaleLink
+                  href="/3d-tarama-kktc"
+                  className="hover:text-cyan-300 transition-colors"
+                >
+                  {t("footer.seoTarama")}
+                </LocaleLink>
+                <LocaleLink
+                  href="/prototip-uretim-kibris"
+                  className="hover:text-cyan-300 transition-colors"
+                >
+                  {t("footer.seoPrototip")}
+                </LocaleLink>
+                <LocaleLink
+                  href="/blog"
+                  className="hover:text-cyan-300 transition-colors"
+                >
+                  {t("footer.seoBlog")}
+                </LocaleLink>
+                <LocaleLink
+                  href="/sss"
+                  className="hover:text-cyan-300 transition-colors"
+                >
+                  {t("footer.seoSss")}
+                </LocaleLink>
+                <LocaleLink
+                  href="/iletisim"
+                  className="hover:text-cyan-300 transition-colors"
+                >
+                  {t("footer.seoContact")}
                 </LocaleLink>
               </nav>
             </div>
@@ -101,6 +145,29 @@ export function Footer() {
             </div>
 
             <div>
+              <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300/60 mb-3">
+                KKTC
+              </h4>
+              <nav className="flex flex-col gap-2.5 text-sm text-violet-100/85 mb-6">
+                <LocaleLink
+                  href="/kktc/lefkosa-3d-baski"
+                  className="hover:text-cyan-300 transition-colors"
+                >
+                  {t("footer.seoLefkosa")}
+                </LocaleLink>
+                <LocaleLink
+                  href="/kktc/girne-3d-baski"
+                  className="hover:text-cyan-300 transition-colors"
+                >
+                  {t("footer.seoGirne")}
+                </LocaleLink>
+                <LocaleLink
+                  href="/kktc/gazimagusa-3d-baski"
+                  className="hover:text-cyan-300 transition-colors"
+                >
+                  Gazimağusa
+                </LocaleLink>
+              </nav>
               <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300/60 mb-3 flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-cyan-400/80 shrink-0" />
                 {t("footer.location")}

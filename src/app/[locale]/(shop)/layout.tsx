@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { PageTransition } from "@/components/ui/PageTransition";
 import { WhatsAppFloatingButton } from "@/components/layout/WhatsAppFloatingButton";
 import { ClearLegacyStorage } from "@/components/admin/ClearLegacyStorage";
+import { GlobalJsonLd } from "@/components/seo/GlobalJsonLd";
 
 export default function ShopLayout({
   children,
@@ -11,6 +12,7 @@ export default function ShopLayout({
 }) {
   return (
     <>
+      <GlobalJsonLd />
       <ClearLegacyStorage shopOnly />
       <Navbar />
       <PageTransition>

@@ -43,7 +43,11 @@ export const trExtended = {
     successTitle: "Talebiniz Alındı",
     successBody:
       "Talebiniz kaydedildi. WhatsApp açıldı — lütfen 3D dosyanızı sohbete ekleyip gönderin.",
+    successBodyEmail:
+      "Talebiniz kaydedildi ve tüm bilgiler ile 3D dosyanız ekibimize e-posta ile iletildi. En kısa sürede dönüş yapacağız.",
     submitWhatsApp: "WhatsApp ile Gönder",
+    submitEmail: "E-posta ile Gönder",
+    submittingEmail: "E-posta gönderiliyor…",
     openWhatsApp: "WhatsApp'ı Tekrar Aç",
     attachFileHint:
       "Dosya sohbete otomatik eklenmez; WhatsApp'ta 📎 ile dosyayı eklemeyi unutmayın.",
@@ -61,6 +65,12 @@ export const trExtended = {
     submit: "Teklif Talebi Gönder",
     submitting: "Gönderiliyor...",
     fail: "Talep gönderilemedi. Lütfen tekrar deneyin.",
+  },
+  quoteForm: {
+    emailMock:
+      "RESEND_API_KEY tanımlı değil — talep kaydedildi, e-posta yalnızca geliştirme modunda simüle edildi.",
+    emailFail:
+      "Talep kaydedildi ancak e-posta gönderilemedi. Lütfen WhatsApp ile deneyin veya bizi arayın.",
   },
   customPrintSection: {
     badge: "Özel Filament Baskı",
@@ -107,6 +117,11 @@ export const trExtended = {
     successBodyWhatsApp:
       "Talebiniz kaydedildi. WhatsApp açıldı — varsa referans fotoğrafını sohbete ekleyip gönderin.",
     submitWhatsApp: "WhatsApp ile Gönder",
+    submitEmail: "E-posta ile Gönder",
+    submittingEmail: "E-posta gönderiliyor…",
+    submitting: "Gönderiliyor…",
+    successBodyEmail:
+      "Talebiniz kaydedildi; form bilgileri ve varsa referans fotoğrafınız ekibimize e-posta ile iletildi.",
     openWhatsApp: "WhatsApp'ı Tekrar Aç",
     attachPhotoHint:
       "Fotoğraf otomatik eklenmez; WhatsApp'ta 📎 ile eklemeyi unutmayın.",
@@ -122,7 +137,6 @@ export const trExtended = {
     photoDrop: "Fotoğraf seçin veya sürükleyin",
     wantsPrint: "Tarama sonrası 3D baskı da istiyorum",
     submit: "Teklif Gönder",
-    submitting: "Gönderiliyor...",
     fail: "Talep gönderilemedi.",
     purposeLabel: "Kullanım amacı",
     locationLabel: "Tarama yeri",
@@ -238,6 +252,24 @@ export const trExtended = {
     photo: "Foto",
     yes: "Evet",
     no: "Hayır",
+  },
+  adminQuotes: {
+    title: "Teklifler",
+    countSummary:
+      "{total} talep (özel baskı: {custom}, tarama: {scan})",
+    tabAll: "Tümü",
+    tabCustom: "Özel baskı",
+    tabScan: "3D tarama",
+    badgeCustom: "Özel baskı",
+    badgeScan: "3D tarama",
+    searchPh: "İsim, e-posta, şehir veya talep no…",
+    requestId: "Talep no",
+    city: "Şehir",
+    noFileStored:
+      "Dosya sunucuda yok (eski talep veya yalnızca WhatsApp üzerinden).",
+    loadingFile: "Dosya yükleniyor…",
+    downloadFile: "3D dosyayı indir / aç",
+    downloadImage: "Görseli indir / tam boyut",
   },
   productForm: {
     translateHint:

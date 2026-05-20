@@ -21,24 +21,29 @@ export interface ScanQuoteRequest {
   note: string;
   photoFileName?: string;
   photoFileSize?: number;
+  photoStoragePath?: string;
   userId?: string;
   createdAt: string;
   status: "yeni" | "inceleniyor" | "teklif-gonderildi";
 }
 
-export type SubmitScanQuoteInput = Omit<
-  ScanQuoteRequest,
-  "id" | "createdAt" | "status"
->;
+export type QuoteNotificationResult = {
+  sent: boolean;
+  mock?: boolean;
+  error?: string;
+};
+
+export type ScanQuoteSubmitResult = ScanQuoteRequest & {
+  notification?: QuoteNotificationResult;
+};
 
 export async function submitScanQuoteRequest(
-  input: SubmitScanQuoteInput
-): Promise<ScanQuoteRequest> {
+  formData: FormData
+): Promise<ScanQuoteSubmitResult> {
   const res = await fetch("/api/scan-quote", {
     method: "POST",
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
+    body: formData,
   });
 
   if (!res.ok) {
@@ -46,7 +51,7 @@ export async function submitScanQuoteRequest(
     throw new Error(body.error || "Talep gönderilemedi.");
   }
 
-  return res.json() as Promise<ScanQuoteRequest>;
+  return res.json() as Promise<ScanQuoteSubmitResult>;
 }
 
 export async function getScanQuoteRequests(): Promise<ScanQuoteRequest[]> {

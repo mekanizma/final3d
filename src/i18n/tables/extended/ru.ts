@@ -43,6 +43,10 @@ export const ruExtended = {
     successBody:
       "Заявка сохранена. Откройте WhatsApp и прикрепите 3D-файл к сообщению.",
     submitWhatsApp: "Отправить в WhatsApp",
+    submitEmail: "Отправить по e-mail",
+    submittingEmail: "Отправка e-mail…",
+    successBodyEmail:
+      "Заявка сохранена; все данные и 3D-файл отправлены команде по e-mail.",
     openWhatsApp: "Открыть WhatsApp снова",
     attachFileHint:
       "Файл не прикрепляется автоматически — добавьте его через 📎 в WhatsApp.",
@@ -59,6 +63,12 @@ export const ruExtended = {
     submit: "Отправить заявку",
     submitting: "Отправка…",
     fail: "Не удалось отправить.",
+  },
+  quoteForm: {
+    emailMock:
+      "RESEND_API_KEY не задан — заявка сохранена, e-mail только симулирован в dev.",
+    emailFail:
+      "Заявка сохранена, но e-mail не отправлен. Попробуйте WhatsApp.",
   },
   customPrintSection: {
     badge: "Индивидуальная печать",
@@ -102,6 +112,10 @@ export const ruExtended = {
     successBodyWhatsApp:
       "Заявка сохранена. Откройте WhatsApp и прикрепите фото к сообщению, если есть.",
     submitWhatsApp: "Отправить в WhatsApp",
+    submitEmail: "Отправить по e-mail",
+    submittingEmail: "Отправка e-mail…",
+    successBodyEmail:
+      "Заявка сохранена; данные формы и фото (если есть) отправлены по e-mail.",
     openWhatsApp: "Открыть WhatsApp снова",
     attachPhotoHint:
       "Фото не прикрепляется автоматически — добавьте через 📎 в WhatsApp.",
@@ -227,6 +241,22 @@ export const ruExtended = {
     photo: "Фото",
     yes: "Да",
     no: "Нет",
+  },
+  adminQuotes: {
+    title: "Заявки",
+    countSummary: "{total} заявок (печать: {custom}, скан: {scan})",
+    tabAll: "Все",
+    tabCustom: "Печать",
+    tabScan: "3D скан",
+    badgeCustom: "Печать",
+    badgeScan: "3D скан",
+    searchPh: "Имя, email, город или id…",
+    requestId: "ID заявки",
+    city: "Город",
+    noFileStored: "Файла на сервере нет (старая заявка или только WhatsApp).",
+    loadingFile: "Загрузка файла…",
+    downloadFile: "Скачать / открыть 3D файл",
+    downloadImage: "Скачать / полный размер",
   },
   productForm: {
     translateHint: "Введите на турецком; EN/RU/AR переводы создаются автоматически.",

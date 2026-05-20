@@ -212,25 +212,78 @@ body::after {
   min-width: 0;
   padding: 0.75rem 1rem;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(18, 8, 42, 0.85);
   border: 1px solid rgba(232, 121, 249, 0.25);
   border-radius: 0.75rem;
   color: #faf5ff;
   font-size: 0.875rem;
   transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
+  color-scheme: dark;
+  caret-color: #faf5ff;
 }
 
 .input-field:focus {
   border-color: rgba(34, 211, 238, 0.6);
+  background: rgba(18, 8, 42, 0.95) !important;
   box-shadow:
     0 0 0 3px rgba(34, 211, 238, 0.15),
     0 0 20px rgba(232, 121, 249, 0.1);
 }
 
+.input-field:-webkit-autofill,
+.input-field:-webkit-autofill:hover,
+.input-field:-webkit-autofill:focus,
+.input-field:-webkit-autofill:active {
+  -webkit-text-fill-color: #faf5ff !important;
+  -webkit-box-shadow: 0 0 0 1000px #12082a inset !important;
+  box-shadow: 0 0 0 1000px #12082a inset !important;
+  transition: background-color 99999s ease-out 0s;
+}
+
 .input-field::placeholder {
   color: #c4b5fd;
   opacity: 0.6;
+}
+
+/* FormField (giriş, kayıt, teklif formları) — autofill / yazarken beyaz arka planı engelle */
+.form-field-wrap {
+  color-scheme: dark;
+}
+
+.form-field-input {
+  background-color: transparent;
+  color: #faf5ff;
+  caret-color: #faf5ff;
+}
+
+.form-field-input:focus {
+  background-color: transparent !important;
+  outline: none;
+}
+
+.form-field-input:-webkit-autofill,
+.form-field-input:-webkit-autofill:hover,
+.form-field-input:-webkit-autofill:focus,
+.form-field-input:-webkit-autofill:active,
+textarea.form-field-input:-webkit-autofill,
+textarea.form-field-input:-webkit-autofill:hover,
+textarea.form-field-input:-webkit-autofill:focus,
+textarea.form-field-input:-webkit-autofill:active {
+  -webkit-text-fill-color: #faf5ff !important;
+  caret-color: #faf5ff;
+  color: #faf5ff !important;
+  border-radius: 0;
+  -webkit-box-shadow: 0 0 0 1000px #12082a inset !important;
+  box-shadow: 0 0 0 1000px #12082a inset !important;
+  transition: background-color 99999s ease-out 0s;
+}
+
+.form-field-input:autofill,
+textarea.form-field-input:autofill {
+  -webkit-text-fill-color: #faf5ff !important;
+  box-shadow: 0 0 0 1000px #12082a inset !important;
+  caret-color: #faf5ff;
 }
 
 /* Select — koyu temada okunabilir seçenekler */
@@ -292,6 +345,66 @@ body::after {
     rgba(26, 11, 62, 0.92) 0%,
     rgba(26, 11, 62, 0.2) 45%,
     transparent 100%
+  );
+}
+
+/* Rozetler — ürün görseli üzerinde (açık/koyu arka planda okunur) */
+.product-image-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: rgba(12, 6, 28, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+@media (min-width: 640px) {
+  .product-image-badge {
+    font-size: 0.75rem;
+    padding: 0.3125rem 0.75rem;
+  }
+}
+
+.product-image-badge--category {
+  color: #e0f7fa;
+  border-color: rgba(34, 211, 238, 0.45);
+  background: rgba(8, 30, 42, 0.9);
+}
+
+.product-image-badge--featured {
+  color: #fffbeb;
+  background: rgba(92, 45, 8, 0.92);
+  border-color: rgba(251, 191, 36, 0.55);
+}
+
+.product-image-badge--stock {
+  color: #fef9c3;
+  background: rgba(69, 32, 6, 0.92);
+  border-color: rgba(245, 158, 11, 0.5);
+}
+
+.product-card-image-scrim {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.15) 22%,
+    transparent 38%
   );
 }
 

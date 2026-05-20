@@ -1,5 +1,8 @@
-export const metadata = {
-  title: "Admin | Final3d",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Admin | FINAL3D",
+  robots: { index: false, follow: false },
 };
 
 export default function AdminRootLayout({

@@ -9,24 +9,29 @@ export interface CustomPrintRequest {
   note: string;
   fileName: string;
   fileSize: number;
+  fileStoragePath?: string;
   userId?: string;
   createdAt: string;
   status: "yeni" | "inceleniyor" | "teklif-gonderildi";
 }
 
-export type SubmitCustomPrintInput = Omit<
-  CustomPrintRequest,
-  "id" | "createdAt" | "status"
->;
+export type QuoteNotificationResult = {
+  sent: boolean;
+  mock?: boolean;
+  error?: string;
+};
+
+export type CustomPrintSubmitResult = CustomPrintRequest & {
+  notification?: QuoteNotificationResult;
+};
 
 export async function submitCustomPrintRequest(
-  input: SubmitCustomPrintInput
-): Promise<CustomPrintRequest> {
+  formData: FormData
+): Promise<CustomPrintSubmitResult> {
   const res = await fetch("/api/custom-print", {
     method: "POST",
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
+    body: formData,
   });
 
   if (!res.ok) {
@@ -34,7 +39,7 @@ export async function submitCustomPrintRequest(
     throw new Error(body.error || "Talep gönderilemedi.");
   }
 
-  return res.json() as Promise<CustomPrintRequest>;
+  return res.json() as Promise<CustomPrintSubmitResult>;
 }
 
 export async function updateCustomPrintStatus(

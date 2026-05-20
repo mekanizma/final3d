@@ -4,10 +4,10 @@ import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 
 const wrapperClass =
-  "flex w-full gap-3 rounded-xl border border-fuchsia-400/25 bg-white/[0.06] px-3.5 transition-all focus-within:border-cyan-400/50 focus-within:shadow-[0_0_0_3px_rgba(34,211,238,0.12)]";
+  "form-field-wrap flex w-full gap-3 rounded-xl border border-fuchsia-400/25 bg-[#12082a]/80 px-3.5 transition-all focus-within:border-cyan-400/50 focus-within:shadow-[0_0_0_3px_rgba(34,211,238,0.12)]";
 
 const fieldClass =
-  "flex-1 min-w-0 w-full bg-transparent border-0 outline-none text-[#faf5ff] placeholder:text-violet-300/50 text-sm leading-normal";
+  "form-field-input flex-1 min-w-0 w-full border-0 outline-none text-[#faf5ff] placeholder:text-violet-300/50 text-sm leading-normal";
 
 function FieldIcon({ icon: Icon, multiline }: { icon: LucideIcon; multiline?: boolean }) {
   return (

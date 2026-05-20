@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ScanLine,
@@ -19,6 +18,8 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { ProductPhoto } from "@/components/ui/ProductPhoto";
 import { Scan3DVideo } from "@/components/home/Scan3DVideo";
 import { SCAN_IMAGES } from "@/lib/scanMedia";
+import { useIntl } from "@/components/i18n/IntlProvider";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -26,48 +27,25 @@ const fadeUp = {
   viewport: { once: true, margin: "-80px" },
 };
 
-const capabilities = [
-  {
-    icon: Ruler,
-    title: "Hassas geometri",
-    desc: "Küçük parçalardan orta ölçekli objelere kadar detaylı mesh.",
-  },
-  {
-    icon: Palette,
-    title: "Renkli doku",
-    desc: "RGB ile gerçekçi yüzey; sunum ve arşiv için hazır model.",
-  },
-  {
-    icon: Sun,
-    title: "Zorlu yüzeyler",
-    desc: "Koyu veya parlak parçalarda pratik tarama süreçleri.",
-  },
-  {
-    icon: FileBox,
-    title: "Standart formatlar",
-    desc: "STL, OBJ, PLY ve 3MF — CAD ve slicer ile uyumlu.",
-  },
-] as const;
-
-const workflow = [
-  {
-    step: "01",
-    title: "Tarama",
-    desc: "Nesnenizi stüdyoda veya sahada el tipi tarayıcı ile dijitalleştiriyoruz.",
-  },
-  {
-    step: "02",
-    title: "Model hazırlığı",
-    desc: "Mesh temizliği, hizalama ve baskıya veya tasarıma uygun dosya.",
-  },
-  {
-    step: "03",
-    title: "Baskı",
-    desc: "Dijital modelden PLA, ABS, PETG veya TPU ile üretim — tek süreç.",
-  },
-] as const;
+const capabilityIcons = [Ruler, Palette, Sun, FileBox] as const;
+const workflowSteps = ["0", "1", "2"] as const;
+const whoBullets = ["0", "1", "2", "3", "4"] as const;
 
 export function Scan3DSection() {
+  const { t } = useIntl();
+
+  const capabilities = capabilityIcons.map((icon, i) => ({
+    icon,
+    title: t(`scanSection.cap${i}Title` as "scanSection.cap0Title"),
+    desc: t(`scanSection.cap${i}Desc` as "scanSection.cap0Desc"),
+  }));
+
+  const workflow = workflowSteps.map((i) => ({
+    step: t(`scanSection.wf${i}Step` as "scanSection.wf0Step"),
+    title: t(`scanSection.wf${i}Title` as "scanSection.wf0Title"),
+    desc: t(`scanSection.wf${i}Desc` as "scanSection.wf0Desc"),
+  }));
+
   return (
     <section className="relative pt-24 sm:pt-28 pb-24 sm:pb-28 z-10 overflow-hidden">
       <motion.div className="absolute inset-0 pointer-events-none" aria-hidden>
@@ -80,40 +58,33 @@ export function Scan3DSection() {
           <motion.div {...fadeUp} transition={{ duration: 0.55 }}>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full badge-glow text-xs mb-6">
               <ScanLine className="w-3 h-3 text-cyan-300" />
-              Hizmetimiz · 3D Tarama
+              {t("scanSection.serviceBadge")}
             </span>
 
             <h2 className="text-3xl sm:text-4xl xl:text-5xl font-bold leading-tight tracking-tight mb-6">
-              <span className="block text-white/95">NESNELERİ TARAYIP</span>
+              <span className="block text-white/95">{t("scanSection.h1a")}</span>
               <span className="text-neon block mt-2 sm:mt-3">
-                YENİDEN HAYAT VERİYORUZ.
+                {t("scanSection.h1b")}
               </span>
             </h2>
 
             <p className="text-violet-200/75 text-base sm:text-lg leading-relaxed max-w-lg mb-4">
-              Nesneleri{" "}
-              <strong className="text-white/90">dijitalize ediyoruz</strong>,
-              baskısını üretiyoruz. Gerçek dünyadaki parçanızı veya objenizi{" "}
-              <strong className="text-white/90">profesyonel 3D tarama</strong> ile
-              ölçüyoruz; temiz dijital modeli hazırlıyor, isteğinize göre{" "}
-              <strong className="text-white/90">filament baskısını</strong> aynı
-              çatı altında tamamlıyoruz. Tarama, dosya ve üretim — tek adres.
+              {t("scanSection.lead")}
             </p>
             <p className="text-sm text-violet-300/50 max-w-lg mb-8 leading-relaxed">
-              Tersine mühendislik, arşiv, prototip veya kopya parça: el tipi
-              tarayıcı, renkli doku ve KKTC&apos;de stüdyo / saha hizmeti.
+              {t("scanSection.sub")}
             </p>
 
             <div className="flex flex-wrap gap-3">
-              <Link href="/3d-tarama/teklif">
+              <LocaleLink href="/3d-tarama/teklif">
                 <NeonButton size="lg">
-                  Tarama Teklifi Al
+                  {t("scanSection.ctaScanQuote")}
                   <ArrowRight className="w-4 h-4" />
                 </NeonButton>
-              </Link>
+              </LocaleLink>
               <a href="#detay">
                 <NeonButton variant="ghost" size="lg">
-                  Özellikleri İncele
+                  {t("scanSection.ctaFeatures")}
                 </NeonButton>
               </a>
             </div>
@@ -133,7 +104,7 @@ export function Scan3DSection() {
                 <div className="relative flex-1 aspect-[4/3] rounded-xl overflow-hidden border border-white/15 shadow-lg">
                   <ProductPhoto
                     src={SCAN_IMAGES.model}
-                    alt="Tablet üzerinde incelenen 3D tarama modeli"
+                    alt={t("scanSection.altModel")}
                     fill
                     className="object-cover"
                   />
@@ -141,7 +112,7 @@ export function Scan3DSection() {
                 <div className="relative flex-1 aspect-[4/3] rounded-xl overflow-hidden border border-white/15 shadow-lg">
                   <ProductPhoto
                     src={SCAN_IMAGES.workflow}
-                    alt="El tipi 3D tarayıcı ile ölçüm"
+                    alt={t("scanSection.altWorkflow")}
                     fill
                     className="object-cover"
                   />
@@ -151,7 +122,7 @@ export function Scan3DSection() {
               <div className="absolute top-4 left-4 z-[2] glass px-3 py-2 rounded-xl border border-cyan-400/30 flex items-center gap-2">
                 <ScanLine className="w-4 h-4 text-cyan-300" />
                 <span className="text-xs font-medium text-cyan-100/90">
-                  Canlı tarama hizmeti
+                  {t("scanSection.liveService")}
                 </span>
               </div>
             </div>
@@ -205,7 +176,7 @@ export function Scan3DSection() {
             >
               <p className="text-sm font-semibold text-violet-200/80 mb-6 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                Tarama → model → baskı (tek adres)
+                {t("scanSection.pipeline")}
               </p>
               <div className="space-y-5">
                 {workflow.map((w, i) => (
@@ -235,33 +206,25 @@ export function Scan3DSection() {
             >
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                 <Layers className="w-5 h-5 text-cyan-300" />
-                Kimler için?
+                {t("scanSection.whoFor")}
               </h3>
               <ul className="space-y-3 text-sm text-violet-200/65 flex-1">
-                {[
-                  "Tersine mühendislik ve yedek parça üretimi",
-                  "Prototip, ürün tasarımı ve kalite kontrol",
-                  "Sanat, mimari ve kültürel miras dijitalleştirme",
-                  "Eğitim, atölye ve maker projeleri",
-                  "Mevcut parçadan 3D baskıya geçiş",
-                ].map((line) => (
-                  <li key={line} className="flex gap-2">
+                {whoBullets.map((i) => (
+                  <li key={i} className="flex gap-2">
                     <Zap className="w-4 h-4 text-fuchsia-400/70 shrink-0 mt-0.5" />
-                    {line}
+                    {t(`scanSection.bullet${i}` as "scanSection.bullet0")}
                   </li>
                 ))}
               </ul>
               <p className="text-xs text-violet-300/45 mt-6 pt-4 border-t border-white/10 leading-relaxed">
-                Profesyonel el tipi tarayıcı altyapısı; detay modu ve geniş alan
-                taraması ile esnek çözüm. Çıktılarınızı slicer veya CAD
-                yazılımınızda doğrudan kullanın.
+                {t("scanSection.whoFootnote")}
               </p>
-              <Link href="/3d-tarama/teklif" className="mt-6 self-start">
+              <LocaleLink href="/3d-tarama/teklif" className="mt-6 self-start">
                 <NeonButton>
                   <Box className="w-4 h-4" />
-                  Teklif Formu
+                  {t("scanSection.ctaForm")}
                 </NeonButton>
-              </Link>
+              </LocaleLink>
             </GlassCard>
           </div>
         </motion.div>

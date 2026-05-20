@@ -90,20 +90,24 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               </motion.div>
-              <div className="absolute inset-0 card-vignette pointer-events-none" />
+              <div className="absolute inset-0 card-vignette pointer-events-none z-[1]" />
+              <div
+                className="product-card-image-scrim"
+                aria-hidden
+              />
               {product.featured && (
-                <span className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-amber-500/25 text-amber-200 border border-amber-400/40">
-                  <Sparkles className="w-3 h-3" />
-                  Öne çıkan
+                <span className="product-image-badge product-image-badge--featured absolute top-3 right-3 z-10">
+                  <Sparkles className="w-3 h-3 shrink-0" aria-hidden />
+                  {t("productCard.featured")}
                 </span>
               )}
-              <span className="absolute top-3 left-3 text-xs px-2 py-1 rounded-full badge-glow z-10">
+              <span className="product-image-badge product-image-badge--category absolute top-3 left-3 z-10 max-w-[calc(100%-1.5rem)] truncate">
                 {categoryLabel(product.category, t)}
               </span>
               {product.stock <= 5 && product.stock > 0 && (
                 <span
                   className={cn(
-                    "absolute z-10 text-xs px-2 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30",
+                    "product-image-badge product-image-badge--stock absolute z-10 max-w-[calc(100%-1.5rem)] truncate",
                     product.featured ? "top-12 right-3" : "top-3 right-3"
                   )}
                 >

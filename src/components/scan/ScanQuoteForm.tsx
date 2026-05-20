@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Upload,
   User,
   Mail,
+  MessageCircle,
   Phone,
   ImagePlus,
   CheckCircle2,
@@ -25,6 +25,7 @@ import { FormInput, FormTextarea } from "@/components/ui/FormField";
 import { useAuthStore } from "@/store/authStore";
 import { useAuthHydrated } from "@/hooks/useAuthHydrated";
 import { submitScanQuoteRequest } from "@/services/scanRequestService";
+import { quoteEmailFailAlert } from "@/lib/quoteFormNotify";
 import { buildScanQuoteWhatsAppMessage } from "@/lib/whatsapp/messages/scanQuote";
 import {
   buildWhatsAppUrl,
@@ -90,8 +91,9 @@ export function ScanQuoteForm() {
   const router = useRouter();
   const hydrated = useAuthHydrated();
   const user = useAuthStore((s) => s.user);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<"whatsapp" | "email" | null>(null);
   const [done, setDone] = useState(false);
+  const [doneVia, setDoneVia] = useState<"whatsapp" | "email">("whatsapp");
   const [waUrl, setWaUrl] = useState<string | null>(null);
   const [photoName, setPhotoName] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -120,39 +122,56 @@ export function ScanQuoteForm() {
     }));
   }, [hydrated, user]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const photo = fd.get("referencePhoto") as File | null;
+  function validateForm(): boolean {
     if (form.locationType === "onsite" && !form.locationAddress.trim()) {
       alert(t("scanForm.alertAddress"));
-      return;
+      return false;
     }
     if (!form.scanArea.trim()) {
       alert(t("scanForm.alertScanArea"));
-      return;
+      return false;
     }
+    return true;
+  }
 
-    setLoading(true);
+  async function submitQuote(via: "whatsapp" | "email") {
+    if (!validateForm()) return;
+
+    const photoInput = document.querySelector<HTMLInputElement>(
+      'input[name="referencePhoto"]'
+    );
+    const photo = photoInput?.files?.[0];
+
+    setLoading(via);
     try {
-      await submitScanQuoteRequest({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        objectDescription: form.objectDescription,
-        scanArea: form.scanArea,
-        quantity: form.quantity,
-        locationType: form.locationType,
-        locationAddress: form.locationAddress,
-        city: form.city,
-        purpose: form.purpose,
-        surfaceType: form.surfaceType,
-        wantsPrint: form.wantsPrint,
-        note: form.note,
-        photoFileName: photo?.size ? photo.name : undefined,
-        photoFileSize: photo?.size ? photo.size : undefined,
-        userId: user?.id,
-      });
+      const payload = new FormData();
+      payload.append("delivery", via);
+      payload.append("name", form.name);
+      payload.append("email", form.email);
+      payload.append("phone", form.phone);
+      payload.append("objectDescription", form.objectDescription);
+      payload.append("scanArea", form.scanArea);
+      payload.append("quantity", form.quantity);
+      payload.append("locationType", form.locationType);
+      payload.append("locationAddress", form.locationAddress);
+      payload.append("city", form.city);
+      payload.append("purpose", form.purpose);
+      payload.append("surfaceType", form.surfaceType);
+      payload.append("wantsPrint", String(form.wantsPrint));
+      payload.append("note", form.note);
+      if (photo?.size) payload.append("referencePhoto", photo);
+      if (user?.id) payload.append("userId", user.id);
+
+      const result = await submitScanQuoteRequest(payload);
+
+      if (via === "email") {
+        quoteEmailFailAlert(result.notification, t);
+        setDoneVia("email");
+        setWaUrl(null);
+        setDone(true);
+        return;
+      }
+
       const message = buildScanQuoteWhatsAppMessage({
         name: form.name,
         email: form.email,
@@ -175,11 +194,12 @@ export function ScanQuoteForm() {
       });
       setWaUrl(buildWhatsAppUrl(message));
       openWhatsAppWithMessage(message);
+      setDoneVia("whatsapp");
       setDone(true);
     } catch {
       alert(t("scanForm.fail"));
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
   }
 
@@ -190,9 +210,11 @@ export function ScanQuoteForm() {
           <CheckCircle2 className="w-14 h-14 text-emerald-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">{t("scanForm.successTitle")}</h1>
           <p className="text-violet-200/70 text-sm mb-4 leading-relaxed">
-            {t("scanForm.successBodyWhatsApp")}
+            {doneVia === "email"
+              ? t("scanForm.successBodyEmail")
+              : t("scanForm.successBodyWhatsApp")}
           </p>
-          {waUrl && (
+          {waUrl && doneVia === "whatsapp" && (
             <a
               href={waUrl}
               target="_blank"
@@ -242,7 +264,13 @@ export function ScanQuoteForm() {
         </motion.div>
 
         <GlassCard hover={false} className="p-6 sm:p-8 border-cyan-400/15">
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void submitQuote("whatsapp");
+            }}
+            className="space-y-5"
+          >
             <div>
               <label className="block text-xs font-medium text-violet-200/70 mb-2">
                 {t("scanForm.photoLabel")}
@@ -425,15 +453,32 @@ export function ScanQuoteForm() {
               {t("scanForm.attachPhotoHint")}
             </p>
 
-            <NeonButton
-              type="submit"
-              size="lg"
-              className="w-full"
-              disabled={loading}
-            >
-              <Upload className="w-4 h-4" />
-              {loading ? t("scanForm.submitting") : t("scanForm.submitWhatsApp")}
-            </NeonButton>
+            <div className="flex flex-col gap-3 pt-1">
+              <NeonButton
+                type="submit"
+                size="lg"
+                className="w-full"
+                disabled={loading !== null}
+              >
+                <MessageCircle className="w-4 h-4" />
+                {loading === "whatsapp"
+                  ? t("scanForm.submitting")
+                  : t("scanForm.submitWhatsApp")}
+              </NeonButton>
+              <NeonButton
+                type="button"
+                size="lg"
+                variant="ghost"
+                className="w-full"
+                disabled={loading !== null}
+                onClick={() => void submitQuote("email")}
+              >
+                <Mail className="w-4 h-4" />
+                {loading === "email"
+                  ? t("scanForm.submittingEmail")
+                  : t("scanForm.submitEmail")}
+              </NeonButton>
+            </div>
           </form>
         </GlassCard>
 

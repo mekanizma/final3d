@@ -4,4 +4,4 @@ export const WHATSAPP_NUMBER =
   "905338398293";
 
 export const WHATSAPP_GREETING =
-  "Merhaba Final3d ekibi 👋 Sipariş / 3D tarama / özel baskı hakkında bilgi almak istiyorum.";
+  "Merhaba Final3d ekibi. Sipariş / 3D tarama / özel baskı hakkında bilgi almak istiyorum.";

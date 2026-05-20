@@ -43,6 +43,10 @@ export const arExtended = {
     successBody:
       "تم حفظ الطلب. افتح WhatsApp وأرفق ملف 3D في المحادثة.",
     submitWhatsApp: "إرسال عبر WhatsApp",
+    submitEmail: "إرسال بالبريد",
+    submittingEmail: "جارٍ إرسال البريد…",
+    successBodyEmail:
+      "تم حفظ الطلب وإرسال جميع التفاصيل وملف 3D إلى فريقنا بالبريد.",
     openWhatsApp: "فتح WhatsApp مرة أخرى",
     attachFileHint:
       "الملف لا يُرفق تلقائياً — استخدم 📎 في WhatsApp لإرفاق النموذج.",
@@ -59,6 +63,12 @@ export const arExtended = {
     submit: "إرسال طلب العرض",
     submitting: "جارٍ الإرسال…",
     fail: "تعذر الإرسال.",
+  },
+  quoteForm: {
+    emailMock:
+      "RESEND_API_KEY غير مضبوط — تم حفظ الطلب؛ البريد مُحاكى في التطوير فقط.",
+    emailFail:
+      "تم حفظ الطلب لكن تعذر إرسال البريد. جرّب WhatsApp.",
   },
   customPrintSection: {
     badge: "طباعة فيلامنت مخصصة",
@@ -102,6 +112,10 @@ export const arExtended = {
     successBodyWhatsApp:
       "تم حفظ الطلب. افتح WhatsApp وأرفق الصورة المرجعية في المحادثة إن وُجدت.",
     submitWhatsApp: "إرسال عبر WhatsApp",
+    submitEmail: "إرسال بالبريد",
+    submittingEmail: "جارٍ إرسال البريد…",
+    successBodyEmail:
+      "تم حفظ الطلب؛ أُرسلت تفاصيل النموذج والصورة (إن وُجدت) بالبريد إلى فريقنا.",
     openWhatsApp: "فتح WhatsApp مرة أخرى",
     attachPhotoHint:
       "الصورة لا تُرفق تلقائياً — استخدم 📎 في WhatsApp.",
@@ -227,6 +241,22 @@ export const arExtended = {
     photo: "صورة",
     yes: "نعم",
     no: "لا",
+  },
+  adminQuotes: {
+    title: "العروض",
+    countSummary: "{total} طلب (طباعة: {custom}، مسح: {scan})",
+    tabAll: "الكل",
+    tabCustom: "طباعة مخصصة",
+    tabScan: "مسح 3D",
+    badgeCustom: "طباعة مخصصة",
+    badgeScan: "مسح 3D",
+    searchPh: "اسم، بريد، مدينة أو رقم الطلب…",
+    requestId: "رقم الطلب",
+    city: "المدينة",
+    noFileStored: "لا يوجد ملف على الخادم (طلب قديم أو واتساب فقط).",
+    loadingFile: "جارٍ تحميل الملف…",
+    downloadFile: "تنزيل / فتح ملف 3D",
+    downloadImage: "تنزيل / حجم كامل",
   },
   productForm: {
     translateHint: "أدخل الاسم والوصف بالتركية؛ تُنشأ ترجمات EN/RU/AR تلقائياً.",

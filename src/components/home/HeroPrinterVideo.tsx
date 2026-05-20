@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
 import { HERO_PRINTER_VIDEO } from "@/lib/heroMedia";
+import { useIntl } from "@/components/i18n/IntlProvider";
 
 export function HeroPrinterVideo() {
+  const { t } = useIntl();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -90,7 +92,7 @@ export function HeroPrinterVideo() {
             disablePictureInPicture
             controlsList="nodownload nofullscreen noremoteplayback"
             onLoadedData={() => setReady(true)}
-            aria-label="Renkli 3D baskı tanıtım videosu"
+            aria-label={t("hero.videoAria")}
           />
 
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#12082a]/95 via-[#12082a]/20 to-[#1a0a3a]/40" />
@@ -99,10 +101,10 @@ export function HeroPrinterVideo() {
 
           <div className="absolute bottom-0 left-0 right-0 z-10 p-4 sm:p-5 bg-gradient-to-t from-black/85 to-transparent">
             <p className="text-sm sm:text-base font-semibold text-white">
-              Figürden hediyeye, fikirden ürüne
+              {t("hero.videoCaption")}
             </p>
             <p className="text-xs text-violet-200/75 mt-0.5">
-              Özel tasarım · Renkli baskı · KKTC&apos;ye teslimat
+              {t("hero.videoSubline")}
             </p>
           </div>
 

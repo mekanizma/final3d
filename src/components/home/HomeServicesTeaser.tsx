@@ -1,11 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, ScanLine, Upload, Zap } from "lucide-react";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { cn } from "@/lib/utils";
+import { useIntl } from "@/components/i18n/IntlProvider";
+import { LocaleLink } from "@/components/i18n/LocaleLink";
 
 const HomeServicesCanvas = dynamic(
   () =>
@@ -40,35 +41,44 @@ const itemUp = {
   },
 };
 
-const services = [
-  {
-    href: "/3d-tarama",
-    ctaHref: "/3d-tarama/teklif",
-    ctaLabel: "Tarama teklifi",
-    icon: ScanLine,
-    accent: "cyan" as const,
-    title: "3D Tarama",
-    tagline: "Nesneleri tarayıp yeniden hayat veriyoruz",
-    desc: "El tipi tarayıcı ile yüksek çözünürlüklü mesh; stüdyo veya saha. İsterseniz aynı süreçte filament baskı.",
-    bullets: ["STL · OBJ · 3MF", "Stüdyo / saha", "Tersine mühendislik"],
-  },
-  {
-    href: "/ozel-baski",
-    ctaHref: "/ozel-baski#talep-form",
-    ctaLabel: "Teklif formu",
-    icon: Upload,
-    accent: "fuchsia" as const,
-    title: "Özel Baskı",
-    tagline: "Tasarımını gönder, biz basalım",
-    desc: "3D dosyanızı yükleyin; malzeme ve renk seçin. Üretim sonrası KKTC geneline özenli teslimat.",
-    bullets: ["PLA · ABS · PETG · TPU", "Dosya ile teklif", "Kapıda ödeme"],
-  },
-] as const;
-
 export function HomeServicesTeaser() {
+  const { t } = useIntl();
+
+  const services = [
+    {
+      href: "/3d-tarama",
+      ctaHref: "/3d-tarama/teklif",
+      ctaLabel: t("homeServices.scanCta"),
+      icon: ScanLine,
+      accent: "cyan" as const,
+      title: t("homeServices.scanTitle"),
+      tagline: t("homeServices.scanTag"),
+      desc: t("homeServices.scanDesc"),
+      bullets: [
+        t("homeServices.scanBullet0"),
+        t("homeServices.scanBullet1"),
+        t("homeServices.scanBullet2"),
+      ],
+    },
+    {
+      href: "/ozel-baski",
+      ctaHref: "/ozel-baski#talep-form",
+      ctaLabel: t("homeServices.printCta"),
+      icon: Upload,
+      accent: "fuchsia" as const,
+      title: t("homeServices.printTitle"),
+      tagline: t("homeServices.printTag"),
+      desc: t("homeServices.printDesc"),
+      bullets: [
+        t("homeServices.printBullet0"),
+        t("homeServices.printBullet1"),
+        t("homeServices.printBullet2"),
+      ],
+    },
+  ] as const;
+
   return (
     <section className="relative z-10 overflow-hidden py-20 sm:py-28">
-      {/* Arka plan katmanları */}
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(34,211,238,0.18),transparent_55%)]"
         aria-hidden
@@ -105,26 +115,20 @@ export function HomeServicesTeaser() {
             className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-200/90 backdrop-blur-md"
           >
             <Zap className="h-3.5 w-3.5 text-amber-300" aria-hidden />
-            Hizmetlerimiz
+            {t("homeServices.badge")}
           </motion.div>
 
           <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
             <span className="bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
-              Dijitalleştir.
+              {t("homeServices.h2a")}
             </span>{" "}
             <span className="bg-gradient-to-r from-fuchsia-300 via-neon to-cyan-300 bg-clip-text text-transparent">
-              Üret.
+              {t("homeServices.h2b")}
             </span>{" "}
-            <span className="text-white/90">Teslim al.</span>
+            <span className="text-white/90">{t("homeServices.h2c")}</span>
           </h2>
           <p className="mx-auto max-w-2xl text-sm leading-relaxed text-violet-200/65 sm:text-base">
-            Hazır kataloğun ötesinde profesyonel{" "}
-            <strong className="font-medium text-cyan-200/90">3D tarama</strong>{" "}
-            ve{" "}
-            <strong className="font-medium text-fuchsia-200/90">
-              özel filament baskı
-            </strong>{" "}
-            — tek çatı altında uçtan uca süreç.
+            {t("homeServices.sub")}
           </p>
         </motion.header>
 
@@ -216,18 +220,17 @@ export function HomeServicesTeaser() {
                   </ul>
 
                   <div className="relative mt-auto flex flex-wrap gap-3">
-                    <Link href={svc.href} className="min-w-0">
+                    <LocaleLink href={svc.href} className="min-w-0">
                       <NeonButton variant="ghost" size="sm">
-                        Keşfet
+                        {t("homeServices.explore")}
                         <ArrowRight className="h-3.5 w-3.5" />
                       </NeonButton>
-                    </Link>
-                    <Link href={svc.ctaHref}>
+                    </LocaleLink>
+                    <LocaleLink href={svc.ctaHref}>
                       <NeonButton size="sm">{svc.ctaLabel}</NeonButton>
-                    </Link>
+                    </LocaleLink>
                   </div>
 
-                  {/* Köşe vurgusu */}
                   <div
                     className={cn(
                       "pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-30 blur-2xl transition-opacity group-hover:opacity-50",

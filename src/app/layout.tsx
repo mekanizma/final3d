@@ -14,9 +14,33 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Final3d | 3D Baskı Ürünleri",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+      "https://final3d.tr"
+  ),
+  title: {
+    default: "FINAL3D | KKTC 3D Baskı, Tarama ve Prototip",
+    template: "%s | FINAL3D",
+  },
   description:
-    "Kuzey Kıbrıs'ın premium 3D baskı ürünleri platformu. Yazıcılar, filamentler, modeller ve aksesuarlar. Kapıda ödeme.",
+    "FINAL3D — Kuzey Kıbrıs'ta profesyonel 3D baskı, 3D tarama ve prototip üretimi. Lefkoşa, Girne, Gazimağusa. Kapıda ödeme.",
+  keywords: [
+    "3d baskı kktc",
+    "3d tarama kktc",
+    "3d printer kıbrıs",
+    "prototip üretim",
+    "final3d",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "tr_TR",
+    siteName: "FINAL3D",
+    url: "https://final3d.tr",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({

@@ -9,10 +9,9 @@ import { NeonButton } from "@/components/ui/NeonButton";
 import { useAuthStore } from "@/store/authStore";
 import { useIntl } from "@/components/i18n/IntlProvider";
 import { useLocaleRouter } from "@/hooks/useLocaleRouter";
-import { withLocale } from "@/lib/locale-path";
 
 export function LoginForm() {
-  const { push, locale } = useLocaleRouter();
+  const { push } = useLocaleRouter();
   const { t } = useIntl();
   const searchParams = useSearchParams();
   const returnTo = searchParams.get("return") || "/hesabim";
@@ -45,9 +44,7 @@ export function LoginForm() {
       footer={
         <>
           {t("auth.noAccount")}{" "}
-          <AuthLink href={withLocale("/kayit-ol", locale)}>
-            {t("auth.registerLink")}
-          </AuthLink>
+          <AuthLink href="/kayit-ol">{t("auth.registerLink")}</AuthLink>
         </>
       }
     >
