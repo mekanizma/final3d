@@ -1,3 +1,8 @@
+import {
+  multipartFileToWebFile,
+  parseMultipartRequest,
+} from "@/lib/api/parseMultipartRequest";
+
 export type MultipartForm = {
   entries(): IterableIterator<[string, string | File | Blob]>;
 };
@@ -6,7 +11,6 @@ export function asMultipartForm(fd: unknown): MultipartForm {
   return fd as MultipartForm;
 }
 
-/** Next.js 16 FormData — alan okuma (entries üzerinden). */
 export function readFormString(
   fd: MultipartForm,
   key: string,
@@ -49,4 +53,23 @@ export function readFormFile(
 
 export function readFormBool(fd: MultipartForm, key: string): boolean {
   return readFormString(fd, key) === "true";
+}
+
+/** Route handler: multipart isteği alanlara ve dosyalara ayırır */
+export async function readMultipartBody(req: Request): Promise<MultipartForm> {
+  const parsed = await parseMultipartRequest(req);
+  const entries: [string, string | File][] = [];
+
+  for (const [key, value] of Object.entries(parsed.fields)) {
+    entries.push([key, value]);
+  }
+  for (const [key, file] of Object.entries(parsed.files)) {
+    entries.push([key, multipartFileToWebFile(file, key)]);
+  }
+
+  return {
+    entries: function* () {
+      yield* entries;
+    },
+  };
 }

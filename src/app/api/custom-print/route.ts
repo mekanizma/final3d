@@ -5,12 +5,14 @@ import { generateId } from "@/lib/utils";
 import { mapCustomPrint } from "@/lib/supabase/mappers";
 import { uploadPrintFile } from "@/lib/storage/requestFiles";
 import {
-  asMultipartForm,
   readFormFile,
   readFormString,
-} from "@/lib/api/parseMultipart";
+  readMultipartBody,
+} from "@/lib/api/parseMultipartBody";
 import type { PrintMaterialId } from "@/lib/printMaterials";
 import { sendCustomPrintQuoteEmail } from "@/lib/email/sendCustomPrintQuoteEmail";
+
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
@@ -33,7 +35,7 @@ export async function POST(req: Request) {
     let delivery: "whatsapp" | "email" | "form" = "whatsapp";
 
     if (contentType.includes("multipart/form-data")) {
-      const fd = asMultipartForm(await req.formData());
+      const fd = await readMultipartBody(req);
       const d = readFormString(fd, "delivery", "whatsapp");
       if (d === "email" || d === "form") delivery = d;
       name = readFormString(fd, "name");
@@ -154,9 +156,17 @@ export async function POST(req: Request) {
       ...(storageWarning ? { storageWarning } : {}),
     });
   } catch (e) {
+    const msg = (e as Error).message;
+    const isParse =
+      /formdata|multipart|boundary|parse/i.test(msg) ||
+      msg.includes("Form verisi");
     return NextResponse.json(
-      { error: (e as Error).message },
-      { status: 500 }
+      {
+        error: isParse
+          ? "Form gönderilemedi. Sayfayı yenileyin; dosya STL/OBJ/ZIP ve en fazla 50 MB olmalı."
+          : msg,
+      },
+      { status: isParse ? 400 : 500 }
     );
   }
 }

@@ -5,12 +5,14 @@ import { generateId } from "@/lib/utils";
 import { mapScanQuote } from "@/lib/supabase/mappers";
 import { uploadScanPhoto } from "@/lib/storage/requestFiles";
 import {
-  asMultipartForm,
   readFormBool,
   readFormFile,
   readFormString,
-} from "@/lib/api/parseMultipart";
+  readMultipartBody,
+} from "@/lib/api/parseMultipartBody";
 import { sendScanQuoteEmail } from "@/lib/email/sendScanQuoteEmail";
+
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
@@ -37,7 +39,7 @@ export async function POST(req: Request) {
     let delivery: "whatsapp" | "email" | "form" = "whatsapp";
 
     if (contentType.includes("multipart/form-data")) {
-      const fd = asMultipartForm(await req.formData());
+      const fd = await readMultipartBody(req);
       const d = readFormString(fd, "delivery", "whatsapp");
       if (d === "email" || d === "form") delivery = d;
       name = readFormString(fd, "name");
@@ -156,9 +158,17 @@ export async function POST(req: Request) {
       ...(storageWarning ? { storageWarning } : {}),
     });
   } catch (e) {
+    const msg = (e as Error).message;
+    const isParse =
+      /formdata|multipart|boundary|parse/i.test(msg) ||
+      msg.includes("Form verisi");
     return NextResponse.json(
-      { error: (e as Error).message },
-      { status: 500 }
+      {
+        error: isParse
+          ? "Form gönderilemedi. Sayfayı yenileyin; fotoğraf en fazla 10 MB olmalı."
+          : msg,
+      },
+      { status: isParse ? 400 : 500 }
     );
   }
 }

@@ -18,6 +18,13 @@ function stripLocalePath(pathname: string): string {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  if (
+    pathname.startsWith("/api/custom-print") ||
+    pathname.startsWith("/api/scan-quote")
+  ) {
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith("/api")) {
     return updateSession(request);
   }
