@@ -168,6 +168,8 @@ export const en = {
     dashboard: "Dashboard",
     products: "Products",
     orders: "Orders",
+    customPrint: "Custom print",
+    scanQuotes: "Scan quotes",
     pricing: "Print pricing",
     panel: "Admin panel",
     logout: "Admin sign out",

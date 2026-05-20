@@ -31,4 +31,18 @@ export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
   "teslim-edildi": "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
 };
 
+export type RequestStatus = "yeni" | "inceleniyor" | "teklif-gonderildi";
+
+export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {
+  yeni: "Yeni",
+  inceleniyor: "İnceleniyor",
+  "teklif-gonderildi": "Teklif Gönderildi",
+};
+
+export const REQUEST_STATUS_COLORS: Record<RequestStatus, string> = {
+  yeni: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  inceleniyor: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+  "teklif-gonderildi": "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+};
+
 export const CURRENCY = "₺";

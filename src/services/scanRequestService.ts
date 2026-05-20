@@ -50,5 +50,27 @@ export async function submitScanQuoteRequest(
 }
 
 export async function getScanQuoteRequests(): Promise<ScanQuoteRequest[]> {
-  throw new Error("Admin paneli henüz talep listesini desteklemiyor.");
+  const res = await fetch("/api/admin/scan-quotes", { credentials: "include" });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error || "Talepler yüklenemedi.");
+  }
+  return res.json() as Promise<ScanQuoteRequest[]>;
+}
+
+export async function updateScanQuoteStatus(
+  id: string,
+  status: ScanQuoteRequest["status"]
+): Promise<ScanQuoteRequest> {
+  const res = await fetch(`/api/admin/scan-quotes/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error || "Durum güncellenemedi.");
+  }
+  return res.json() as Promise<ScanQuoteRequest>;
 }

@@ -15,8 +15,8 @@ import { ProductPhoto } from "@/components/ui/ProductPhoto";
 import { cn } from "@/lib/utils";
 import {
   deleteUploadedImage,
+  fetchAllGalleryImages,
   fileToDataUrl,
-  getAllGalleryImages,
   saveUploadedImage,
   type GalleryImage,
 } from "@/lib/imageGalleryStorage";
@@ -35,12 +35,13 @@ export function ProductImagePicker({ value, onChange }: ProductImagePickerProps)
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const refreshGallery = useCallback(() => {
-    setGallery(getAllGalleryImages());
+  const refreshGallery = useCallback(async () => {
+    const images = await fetchAllGalleryImages();
+    setGallery(images);
   }, []);
 
   useEffect(() => {
-    refreshGallery();
+    void refreshGallery();
   }, [refreshGallery]);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -50,8 +51,8 @@ export function ProductImagePicker({ value, onChange }: ProductImagePickerProps)
     setUploading(true);
     try {
       const dataUrl = await fileToDataUrl(file);
-      const saved = saveUploadedImage(dataUrl, file.name);
-      refreshGallery();
+      const saved = await saveUploadedImage(dataUrl, file.name);
+      await refreshGallery();
       onChange(saved.url);
       setMode("gallery");
     } catch (err) {
@@ -62,12 +63,16 @@ export function ProductImagePicker({ value, onChange }: ProductImagePickerProps)
     }
   }
 
-  function handleDeleteUpload(id: string, e: React.MouseEvent) {
+  async function handleDeleteUpload(id: string, e: React.MouseEvent) {
     e.stopPropagation();
     if (!confirm("Bu görseli galeriden silmek istiyor musunuz?")) return;
-    deleteUploadedImage(id);
-    if (gallery.find((g) => g.id === id)?.url === value) onChange("");
-    refreshGallery();
+    try {
+      await deleteUploadedImage(id);
+      if (gallery.find((g) => g.id === id)?.url === value) onChange("");
+      await refreshGallery();
+    } catch (err) {
+      setError((err as Error).message);
+    }
   }
 
   const modes: { id: ImageMode; label: string; icon: LucideIcon }[] = [
@@ -129,9 +134,7 @@ export function ProductImagePicker({ value, onChange }: ProductImagePickerProps)
         onChange={handleFileChange}
       />
 
-      {error && (
-        <p className="text-xs text-rose-400">{error}</p>
-      )}
+      {error && <p className="text-xs text-rose-400">{error}</p>}
 
       <AnimatePresence mode="wait">
         {mode === "url" && (
@@ -232,10 +235,10 @@ export function ProductImagePicker({ value, onChange }: ProductImagePickerProps)
                       <span
                         role="button"
                         tabIndex={0}
-                        onClick={(e) => handleDeleteUpload(img.id, e)}
+                        onClick={(e) => void handleDeleteUpload(img.id, e)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter")
-                            handleDeleteUpload(
+                            void handleDeleteUpload(
                               img.id,
                               e as unknown as React.MouseEvent
                             );

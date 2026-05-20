@@ -33,30 +33,39 @@ export async function POST(req: Request) {
     const input = (await req.json()) as CreateOrderInput;
     const supabase = createAdminClient();
 
+    const productIds = input.items.map((i) => i.productId);
     const { data: products, error: prodErr } = await supabase
       .from("products")
-      .select("id, name, price, translations")
-      .in(
-        "id",
-        input.items.map((i) => i.productId)
-      );
+      .select("id, name, price, stock, translations")
+      .in("id", productIds);
 
     if (prodErr) throw prodErr;
 
     const items = input.items.map((item) => {
       const product = products?.find((p) => p.id === item.productId);
       if (!product) throw new Error(`Ürün bulunamadı: ${item.productId}`);
+
+      const stock = Number(product.stock);
+      if (stock < item.quantity) {
+        const translations = product.translations as Record<
+          string,
+          { name?: string }
+        > | null;
+        const name = translations?.tr?.name ?? (product.name as string);
+        throw new Error(`"${name}" için yeterli stok yok (kalan: ${stock}).`);
+      }
+
       const translations = product.translations as Record<
         string,
         { name?: string }
       > | null;
-      const displayName =
-        translations?.tr?.name ?? (product.name as string);
+      const displayName = translations?.tr?.name ?? (product.name as string);
       return {
         productId: product.id as string,
         productName: displayName,
         quantity: item.quantity,
         price: Number(product.price),
+        stockBefore: stock,
       };
     });
 
@@ -72,7 +81,7 @@ export async function POST(req: Request) {
       customer_name: input.customerName,
       phone: input.phone,
       address: input.address,
-      items,
+      items: items.map(({ stockBefore: _, ...rest }) => rest),
       note: input.note ?? null,
       payment_method: "kapida-odeme",
       status: "yeni",
@@ -91,6 +100,15 @@ export async function POST(req: Request) {
       .single();
 
     if (error) throw error;
+
+    for (const item of items) {
+      const { error: stockErr } = await supabase
+        .from("products")
+        .update({ stock: item.stockBefore - item.quantity })
+        .eq("id", item.productId);
+      if (stockErr) throw stockErr;
+    }
+
     return NextResponse.json(mapOrder(data as DbOrder));
   } catch (e) {
     const msg = (e as Error).message;

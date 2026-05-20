@@ -19,8 +19,6 @@ import {
   type PrintCostInputs,
 } from "@/lib/printCostCalculator";
 
-const STORAGE_KEY = "print3d_admin_cost_calc";
-
 type FieldKey = keyof PrintCostInputs;
 
 const fields: {
@@ -81,14 +79,28 @@ const fields: {
 ];
 
 function loadSaved(): PrintCostInputs {
-  if (typeof window === "undefined") return { ...PRINT_COST_DEFAULTS };
+  return { ...PRINT_COST_DEFAULTS };
+}
+
+async function loadFromServer(): Promise<PrintCostInputs> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { ...PRINT_COST_DEFAULTS };
-    return { ...PRINT_COST_DEFAULTS, ...JSON.parse(raw) };
+    const res = await fetch("/api/admin/settings/print-cost", {
+      credentials: "include",
+    });
+    if (!res.ok) return loadSaved();
+    return (await res.json()) as PrintCostInputs;
   } catch {
-    return { ...PRINT_COST_DEFAULTS };
+    return loadSaved();
   }
+}
+
+async function saveToServer(inputs: PrintCostInputs): Promise<void> {
+  await fetch("/api/admin/settings/print-cost", {
+    method: "PUT",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(inputs),
+  });
 }
 
 export function PrintCostCalculator() {
@@ -99,13 +111,18 @@ export function PrintCostCalculator() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setInputs(loadSaved());
-    setHydrated(true);
+    void loadFromServer().then((data) => {
+      setInputs(data);
+      setHydrated(true);
+    });
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(inputs));
+    const timer = setTimeout(() => {
+      void saveToServer(inputs);
+    }, 400);
+    return () => clearTimeout(timer);
   }, [inputs, hydrated]);
 
   const breakdown = useMemo(() => calculatePrintCost(inputs), [inputs]);

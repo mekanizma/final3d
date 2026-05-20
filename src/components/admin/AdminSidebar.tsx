@@ -12,6 +12,8 @@ import {
   Home,
   Calculator,
   LogOut,
+  Printer,
+  ScanLine,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -23,6 +25,8 @@ const links = [
   { href: "/admin", labelKey: "adminNav.dashboard", icon: LayoutDashboard },
   { href: "/admin/products", labelKey: "adminNav.products", icon: Package },
   { href: "/admin/orders", labelKey: "adminNav.orders", icon: ShoppingBag },
+  { href: "/admin/ozel-baski", labelKey: "adminNav.customPrint", icon: Printer },
+  { href: "/admin/tarama-teklifleri", labelKey: "adminNav.scanQuotes", icon: ScanLine },
   { href: "/admin/hesaplama", labelKey: "adminNav.pricing", icon: Calculator },
 ] as const;
 

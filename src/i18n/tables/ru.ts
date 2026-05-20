@@ -164,6 +164,8 @@ export const ru = {
     dashboard: "Дашборд",
     products: "Товары",
     orders: "Заказы",
+    customPrint: "Индив. печать",
+    scanQuotes: "Заявки на скан",
     pricing: "Расчёт стоимости",
     panel: "Админ-панель",
     logout: "Выйти из админки",

@@ -170,6 +170,8 @@ export const tr = {
     dashboard: "Dashboard",
     products: "Ürünler",
     orders: "Siparişler",
+    customPrint: "Özel Baskı",
+    scanQuotes: "Tarama Teklifleri",
     pricing: "Ücret Hesaplama",
     panel: "Admin Panel",
     logout: "Admin çıkış",

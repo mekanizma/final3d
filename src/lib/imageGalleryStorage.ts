@@ -1,7 +1,5 @@
 import { stockGalleryImages } from "@/data/imageGallery";
 
-const UPLOADS_KEY = "print3d_uploaded_images";
-const MAX_UPLOADS = 24;
 const MAX_FILE_BYTES = 2 * 1024 * 1024;
 
 export interface GalleryImage {
@@ -11,60 +9,57 @@ export interface GalleryImage {
   source: "stock" | "upload";
 }
 
-interface StoredUpload {
-  id: string;
-  label: string;
-  url: string;
-  createdAt: string;
-}
-
-function readUploads(): StoredUpload[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(UPLOADS_KEY);
-    return raw ? (JSON.parse(raw) as StoredUpload[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeUploads(uploads: StoredUpload[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(UPLOADS_KEY, JSON.stringify(uploads));
-}
-
-export function getAllGalleryImages(): GalleryImage[] {
-  const stock: GalleryImage[] = stockGalleryImages.map((img) => ({
+function stockFallback(): GalleryImage[] {
+  return stockGalleryImages.map((img) => ({
     ...img,
     source: "stock" as const,
   }));
-  const uploads: GalleryImage[] = readUploads().map((img) => ({
-    id: img.id,
-    label: img.label,
-    url: img.url,
-    source: "upload" as const,
-  }));
-  return [...uploads, ...stock];
 }
 
-export function saveUploadedImage(
+export async function fetchAllGalleryImages(): Promise<GalleryImage[]> {
+  try {
+    const res = await fetch("/api/gallery", { credentials: "include" });
+    if (!res.ok) return stockFallback();
+    return (await res.json()) as GalleryImage[];
+  } catch {
+    return stockFallback();
+  }
+}
+
+export async function saveUploadedImage(
   dataUrl: string,
   fileName: string
-): GalleryImage {
-  const uploads = readUploads();
-  const item: StoredUpload = {
-    id: `upload-${Date.now()}`,
-    label: fileName.replace(/\.[^.]+$/, "") || "Yüklenen görsel",
-    url: dataUrl,
-    createdAt: new Date().toISOString(),
-  };
-  const next = [item, ...uploads].slice(0, MAX_UPLOADS);
-  writeUploads(next);
-  return { ...item, source: "upload" };
+): Promise<GalleryImage> {
+  const res = await fetch("/api/admin/gallery", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ dataUrl, fileName }),
+  });
+
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error || "Görsel yüklenemedi.");
+  }
+
+  return res.json() as Promise<GalleryImage>;
 }
 
-export function deleteUploadedImage(id: string) {
-  writeUploads(readUploads().filter((u) => u.id !== id));
+export async function deleteUploadedImage(id: string): Promise<void> {
+  const res = await fetch(`/api/admin/gallery/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error || "Görsel silinemedi.");
+  }
+}
+
+/** @deprecated fetchAllGalleryImages kullanın */
+export function getAllGalleryImages(): GalleryImage[] {
+  return stockFallback();
 }
 
 export async function fileToDataUrl(file: File): Promise<string> {

@@ -164,6 +164,8 @@ export const ar = {
     dashboard: "لوحة التحكم",
     products: "المنتجات",
     orders: "الطلبات",
+    customPrint: "طباعة مخصصة",
+    scanQuotes: "عروض المسح",
     pricing: "حساب التكلفة",
     panel: "لوحة الإدارة",
     logout: "خروج المشرف",
