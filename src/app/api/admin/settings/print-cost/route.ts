@@ -3,6 +3,7 @@ import { assertAdminSession } from "@/lib/api/requireAdmin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   PRINT_COST_DEFAULTS,
+  parsePrintCostInputs,
   type PrintCostInputs,
 } from "@/lib/printCostCalculator";
 
@@ -20,10 +21,9 @@ export async function GET() {
 
     if (error) throw error;
 
-    const inputs =
-      (data?.print_cost_inputs as PrintCostInputs | null) ?? {
-        ...PRINT_COST_DEFAULTS,
-      };
+    const inputs = parsePrintCostInputs(
+      data?.print_cost_inputs ?? PRINT_COST_DEFAULTS
+    );
 
     return NextResponse.json(inputs);
   } catch (e) {
@@ -38,7 +38,7 @@ export async function GET() {
 export async function PUT(req: Request) {
   try {
     await assertAdminSession();
-    const inputs = (await req.json()) as PrintCostInputs;
+    const inputs = parsePrintCostInputs(await req.json());
     const supabase = createAdminClient();
 
     const { error } = await supabase.from("admin_settings").upsert({

@@ -111,7 +111,7 @@ export default function AdminDashboard() {
             <div>
               <p className="font-semibold">Ücret Hesaplama</p>
               <p className="text-xs text-violet-200/60 mt-0.5">
-                Filament + elektrik + %60 kar — baskı satış fiyatı
+                Filament + elektrik — baskı satış fiyatı
               </p>
             </div>
             <span className="ml-auto text-xs text-cyan-300/80 hidden sm:inline">

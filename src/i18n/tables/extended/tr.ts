@@ -181,7 +181,7 @@ export const trExtended = {
   },
   adminPricing: {
     title: "Ücret Hesaplama",
-    subtitle: "Filament, süre, elektrik ve kar marjı ile satış fiyatı",
+    subtitle: "Filament, süre ve elektrik ile satış fiyatı",
     hint: "Prusa blog hesaplayıcısından esinlenilmiştir.",
     prusaLink: "Prusa fiyat hesaplama rehberi",
     params: "Parametreler",

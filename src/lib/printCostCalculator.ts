@@ -1,4 +1,4 @@
-/** 3D baskı birim maliyet ve satış fiyatı hesabı */
+/** 3D baskı birim maliyet ve satış fiyatı hesabı (kar marjı yok — satış = üretim maliyeti) */
 
 export const PRINT_COST_DEFAULTS = {
   filamentPricePerKg: 450,
@@ -7,7 +7,6 @@ export const PRINT_COST_DEFAULTS = {
   printMinutes: 30,
   powerWatts: 150,
   electricityPricePerKwh: 3.2,
-  profitMarginPercent: 60,
   quantity: 1,
 } as const;
 
@@ -18,7 +17,6 @@ export interface PrintCostInputs {
   printMinutes: number;
   powerWatts: number;
   electricityPricePerKwh: number;
-  profitMarginPercent: number;
   quantity: number;
 }
 
@@ -29,7 +27,6 @@ export interface PrintCostBreakdown {
   energyKwh: number;
   electricityCost: number;
   productionCost: number;
-  profitAmount: number;
   unitSalePrice: number;
   totalSalePrice: number;
 }
@@ -44,13 +41,36 @@ export function getPrintDurationHours(hours: number, minutes: number): number {
   return roundMoney(h + m / 60);
 }
 
+/** Kayıtlı ayarlardan yüklerken eski kar marjı alanını yok sayar */
+export function parsePrintCostInputs(raw: unknown): PrintCostInputs {
+  const r =
+    raw && typeof raw === "object"
+      ? (raw as Record<string, unknown>)
+      : {};
+  const num = (key: keyof PrintCostInputs, fallback: number) => {
+    const v = r[key];
+    return typeof v === "number" && Number.isFinite(v) ? v : fallback;
+  };
+  return {
+    filamentPricePerKg: num("filamentPricePerKg", PRINT_COST_DEFAULTS.filamentPricePerKg),
+    printGrams: num("printGrams", PRINT_COST_DEFAULTS.printGrams),
+    printHours: num("printHours", PRINT_COST_DEFAULTS.printHours),
+    printMinutes: num("printMinutes", PRINT_COST_DEFAULTS.printMinutes),
+    powerWatts: num("powerWatts", PRINT_COST_DEFAULTS.powerWatts),
+    electricityPricePerKwh: num(
+      "electricityPricePerKwh",
+      PRINT_COST_DEFAULTS.electricityPricePerKwh
+    ),
+    quantity: Math.max(1, Math.floor(num("quantity", PRINT_COST_DEFAULTS.quantity))),
+  };
+}
+
 export function calculatePrintCost(
   inputs: PrintCostInputs
 ): PrintCostBreakdown {
   const grams = Math.max(0, inputs.printGrams);
   const pricePerKg = Math.max(0, inputs.filamentPricePerKg);
   const qty = Math.max(1, Math.floor(inputs.quantity) || 1);
-  const margin = Math.max(0, inputs.profitMarginPercent) / 100;
 
   const printDurationHours = getPrintDurationHours(
     inputs.printHours,
@@ -66,8 +86,7 @@ export function calculatePrintCost(
   const electricityCost = roundMoney(energyKwh * kwhPrice);
 
   const productionCost = roundMoney(filamentCost + electricityCost);
-  const profitAmount = roundMoney(productionCost * margin);
-  const unitSalePrice = roundMoney(productionCost + profitAmount);
+  const unitSalePrice = productionCost;
   const totalSalePrice = roundMoney(unitSalePrice * qty);
 
   return {
@@ -77,7 +96,6 @@ export function calculatePrintCost(
     energyKwh,
     electricityCost,
     productionCost,
-    profitAmount,
     unitSalePrice,
     totalSalePrice,
   };

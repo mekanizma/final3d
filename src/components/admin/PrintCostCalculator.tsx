@@ -6,7 +6,6 @@ import {
   Calculator,
   Zap,
   Spool,
-  TrendingUp,
   Copy,
   RotateCcw,
   Info,
@@ -16,6 +15,7 @@ import { formatPrice, cn } from "@/lib/utils";
 import {
   PRINT_COST_DEFAULTS,
   calculatePrintCost,
+  parsePrintCostInputs,
   type PrintCostInputs,
 } from "@/lib/printCostCalculator";
 
@@ -88,7 +88,7 @@ async function loadFromServer(): Promise<PrintCostInputs> {
       credentials: "include",
     });
     if (!res.ok) return loadSaved();
-    return (await res.json()) as PrintCostInputs;
+    return parsePrintCostInputs(await res.json());
   } catch {
     return loadSaved();
   }
@@ -142,9 +142,7 @@ export function PrintCostCalculator() {
       `Filament (1 kg): ${formatPrice(inputs.filamentPricePerKg)}`,
       `Kullanılan: ${inputs.printGrams} g → ${formatPrice(breakdown.filamentCost)}`,
       `Süre: ${breakdown.printDurationHours} sa · ${breakdown.energyKwh} kWh → ${formatPrice(breakdown.electricityCost)}`,
-      `Üretim maliyeti: ${formatPrice(breakdown.productionCost)}`,
-      `Kar (%${inputs.profitMarginPercent}): ${formatPrice(breakdown.profitAmount)}`,
-      `Satış (1 adet): ${formatPrice(breakdown.unitSalePrice)}`,
+      `Üretim / satış (1 adet): ${formatPrice(breakdown.unitSalePrice)}`,
       inputs.quantity > 1
         ? `Toplam (${inputs.quantity} adet): ${formatPrice(breakdown.totalSalePrice)}`
         : null,
@@ -156,8 +154,6 @@ export function PrintCostCalculator() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
-
-  const margin = inputs.profitMarginPercent;
 
   return (
     <motion.div
@@ -173,7 +169,7 @@ export function PrintCostCalculator() {
           <div>
             <h1 className="text-2xl font-bold">Ücret Hesaplama</h1>
             <p className="text-sm text-violet-200/60">
-              Filament + elektrik maliyeti, %60 kar marjı ile satış fiyatı
+              Filament + elektrik maliyeti = önerilen satış fiyatı
             </p>
           </div>
         </div>
@@ -227,21 +223,6 @@ export function PrintCostCalculator() {
               </div>
             ))}
 
-            <div className="pt-2 border-t border-white/10">
-              <label className="block text-xs font-medium text-violet-200/70 mb-1.5">
-                Kar marjı
-              </label>
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
-                <TrendingUp className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-sm font-semibold text-emerald-200">
-                  %{margin} sabit
-                </span>
-                <span className="text-[10px] text-violet-300/50 ml-auto">
-                  üretim maliyeti üzerine
-                </span>
-              </div>
-            </div>
-
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
@@ -283,8 +264,8 @@ export function PrintCostCalculator() {
               </p>
             )}
             <p className="text-xs text-violet-300/45 mt-3">
-              Üretim {formatPrice(breakdown.productionCost)} + kar{" "}
-              {formatPrice(breakdown.profitAmount)} (%{margin})
+              Toplam maliyet (filament + elektrik):{" "}
+              {formatPrice(breakdown.productionCost)}
             </p>
           </GlassCard>
 
@@ -309,20 +290,6 @@ export function PrintCostCalculator() {
                 sub={`${inputs.powerWatts} W × ${breakdown.printDurationHours} sa baskı`}
                 value={breakdown.electricityCost}
               />
-              <li className="border-t border-white/10 pt-3 flex justify-between text-sm">
-                <span className="text-violet-200/70">Üretim maliyeti (ara)</span>
-                <span className="font-semibold tabular-nums">
-                  {formatPrice(breakdown.productionCost)}
-                </span>
-              </li>
-              <li className="flex justify-between text-sm">
-                <span className="text-emerald-300/80">
-                  Kar marjı (%{margin})
-                </span>
-                <span className="font-semibold text-emerald-300 tabular-nums">
-                  +{formatPrice(breakdown.profitAmount)}
-                </span>
-              </li>
               <li className="border-t border-fuchsia-400/20 pt-3 flex justify-between">
                 <span className="font-semibold">Satış fiyatı (1 adet)</span>
                 <span className="text-lg font-bold text-neon tabular-nums">
@@ -344,7 +311,7 @@ export function PrintCostCalculator() {
                 elektrik = (W / 1000) × saat × ₺/kWh
               </p>
               <p className="glass rounded-lg p-3 border border-white/5 sm:col-span-2">
-                satış = (filament + elektrik) × (1 + {margin / 100})
+                satış = filament + elektrik
               </p>
             </div>
           </GlassCard>

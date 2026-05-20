@@ -177,7 +177,7 @@ export const enExtended = {
   },
   adminPricing: {
     title: "Print pricing",
-    subtitle: "Sale price from filament, time, electricity and margin",
+    subtitle: "Sale price from filament, time and electricity",
     hint: "Inspired by the Prusa price calculator blog.",
     prusaLink: "Prusa pricing guide",
     params: "Parameters",
