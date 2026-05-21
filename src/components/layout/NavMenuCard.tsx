@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { cn } from "@/lib/utils";
@@ -11,12 +11,12 @@ export type NavLinkConfig = {
   icon: LucideIcon;
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   closed: { opacity: 0, y: 6 },
   open: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
