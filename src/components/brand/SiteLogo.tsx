@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 const sizeClass = {
   sm: "h-11 w-auto",
   md: "h-12 w-auto",
-  nav: "h-[220px] w-auto",
+  /** Navbar — h-16 çubuk içinde okunaklı, taşmayan */
+  nav: "h-11 w-auto min-w-[5.25rem] sm:h-12 sm:min-w-[5.75rem] lg:h-[3.25rem] lg:min-w-[6.5rem] max-h-[3.25rem]",
   lg: "h-[4.5rem] w-auto",
   xl: "h-24 w-auto",
 } as const;
@@ -14,7 +15,7 @@ const sizeClass = {
 const glowClass = {
   sm: "blur-xl scale-110",
   md: "blur-2xl scale-110",
-  nav: "blur-2xl scale-110",
+  nav: "blur-lg scale-105 opacity-80",
   lg: "blur-2xl scale-125",
   xl: "blur-3xl scale-125",
 } as const;

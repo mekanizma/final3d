@@ -10,9 +10,12 @@ import { cn } from "@/lib/utils";
 export function LanguageSwitcher({
   className,
   fullWidth = false,
+  compact = false,
 }: {
   className?: string;
   fullWidth?: boolean;
+  /** Sadece küre ikonu — dar mobil üst çubuk */
+  compact?: boolean;
 }) {
   const pathname = usePathname() || "/";
   const current = getLocaleFromPathname(pathname);
@@ -46,7 +49,8 @@ export function LanguageSwitcher({
         aria-expanded={open}
         aria-label={localeLabels[current]}
         className={cn(
-          "flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-sm",
+          "flex items-center gap-1.5 rounded-xl text-sm",
+          compact ? "p-2" : "px-2.5 py-1.5",
           "border border-white/10 bg-white/[0.04]",
           "hover:bg-white/10 hover:border-white/20 transition-colors",
           "focus:outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/15",
@@ -56,17 +60,21 @@ export function LanguageSwitcher({
       >
         <span className="flex items-center gap-1.5 min-w-0">
           <Globe className="w-4 h-4 text-violet-300/80 shrink-0" aria-hidden />
-          <span className="font-semibold text-violet-100 truncate">
-            {localeLabels[current]}
-          </span>
-        </span>
-        <ChevronDown
-          className={cn(
-            "w-3.5 h-3.5 text-violet-300/70 shrink-0 transition-transform",
-            open && "rotate-180"
+          {!compact && (
+            <span className="font-semibold text-violet-100 truncate">
+              {localeLabels[current]}
+            </span>
           )}
-          aria-hidden
-        />
+        </span>
+        {!compact && (
+          <ChevronDown
+            className={cn(
+              "w-3.5 h-3.5 text-violet-300/70 shrink-0 transition-transform",
+              open && "rotate-180"
+            )}
+            aria-hidden
+          />
+        )}
       </button>
 
       {open && (
