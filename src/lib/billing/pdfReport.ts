@@ -1,26 +1,8 @@
 import type { Content, TableCell, TDocumentDefinitions } from "pdfmake/interfaces";
 import type { SalesReport } from "@/lib/billing/buildReport";
 import { moneyText } from "@/lib/billing/buildReport";
+import { pdfToBuffer } from "@/lib/billing/pdfMakeClient";
 import { ORDER_STATUS_LABELS } from "@/lib/constants";
-
-type PdfMakeInstance = {
-  vfs?: Record<string, string>;
-  createPdf: (doc: TDocumentDefinitions) => {
-    getBuffer: (cb: (buf: Uint8Array) => void) => void;
-  };
-};
-
-async function getPdfMake(): Promise<PdfMakeInstance> {
-  const pdfMake = (await import("pdfmake/build/pdfmake"))
-    .default as PdfMakeInstance;
-  const pdfFonts = await import("pdfmake/build/vfs_fonts");
-  const vfs =
-    (pdfFonts as { pdfMake?: { vfs?: Record<string, string> } }).pdfMake?.vfs ??
-    (pdfFonts as { default?: { pdfMake?: { vfs?: Record<string, string> } } })
-      .default?.pdfMake?.vfs;
-  if (vfs) pdfMake.vfs = vfs;
-  return pdfMake;
-}
 
 function cell(text: string, extra?: Partial<TableCell>): TableCell {
   return { text, ...(extra ?? {}) } as TableCell;
@@ -326,16 +308,5 @@ export function buildPdfDocument(report: SalesReport): TDocumentDefinitions {
 export async function generateSalesPdfBuffer(
   report: SalesReport
 ): Promise<Buffer> {
-  const pdfMake = await getPdfMake();
-  const doc = buildPdfDocument(report);
-  const pdf = pdfMake.createPdf(doc);
-  return new Promise((resolve, reject) => {
-    pdf.getBuffer((buffer: Uint8Array) => {
-      try {
-        resolve(Buffer.from(buffer));
-      } catch (e) {
-        reject(e);
-      }
-    });
-  });
+  return pdfToBuffer(buildPdfDocument(report));
 }

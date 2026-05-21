@@ -3,6 +3,10 @@ import type {
   QuotePdfType,
   ScanQuoteDocument,
 } from "@/lib/billing/quoteTypes";
+import {
+  filenameFromDisposition,
+  openOrDownloadBlob,
+} from "@/lib/downloadBlob";
 
 const PDF_FETCH_TIMEOUT_MS = 90_000;
 
@@ -41,14 +45,26 @@ export async function openQuotePdf(
     throw new Error("Boş PDF yanıtı alındı.");
   }
 
-  const url = URL.createObjectURL(blob);
-  const opened = window.open(url, "_blank", "noopener,noreferrer");
-  if (!opened) {
-    const a = window.document.createElement("a");
-    a.href = url;
-    a.download = `${document.quoteNo}.pdf`;
-    a.rel = "noopener";
-    a.click();
+  const contentType = res.headers.get("Content-Type") ?? "";
+  if (!contentType.includes("pdf") && blob.type && !blob.type.includes("pdf")) {
+    const text = await blob.text();
+    try {
+      const j = JSON.parse(text) as { error?: string };
+      throw new Error(j.error || "PDF oluşturulamadı.");
+    } catch (e) {
+      if (e instanceof Error && e.message !== "PDF oluşturulamadı.") throw e;
+      throw new Error("Geçersiz PDF yanıtı.");
+    }
   }
-  setTimeout(() => URL.revokeObjectURL(url), 120_000);
+
+  const filename =
+    filenameFromDisposition(
+      res.headers.get("Content-Disposition"),
+      `${document.quoteNo}.pdf`
+    ) || `${document.quoteNo}.pdf`;
+
+  const mode = await openOrDownloadBlob(blob, filename);
+  if (mode === "downloaded") {
+    return;
+  }
 }

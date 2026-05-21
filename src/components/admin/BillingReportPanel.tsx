@@ -21,6 +21,10 @@ import { ORDER_STATUS_LABELS } from "@/lib/constants";
 import { orderStatusLabel } from "@/lib/order-labels";
 import type { SalesReport } from "@/lib/billing/buildReport";
 import type { BillingPeriod } from "@/lib/billing/period";
+import {
+  downloadBlob,
+  filenameFromDisposition,
+} from "@/lib/downloadBlob";
 
 const PERIODS: BillingPeriod[] = [
   "daily",
@@ -110,6 +114,7 @@ export function BillingReportPanel({ embedded = false }: { embedded?: boolean })
 
   async function downloadPdf() {
     setPdfLoading(true);
+    setError(null);
     try {
       const res = await fetch(
         `/api/admin/billing/report?${query}&format=pdf`,
@@ -120,14 +125,14 @@ export function BillingReportPanel({ embedded = false }: { embedded?: boolean })
         throw new Error((body as { error?: string }).error || res.statusText);
       }
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download =
-        res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ??
-        `final3d-satis-${period}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      if (!blob.size) {
+        throw new Error("Boş PDF yanıtı alındı.");
+      }
+      const filename = filenameFromDisposition(
+        res.headers.get("Content-Disposition"),
+        `final3d-satis-${period}.pdf`
+      );
+      downloadBlob(blob, filename);
     } catch (e) {
       setError((e as Error).message);
     } finally {
