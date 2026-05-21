@@ -4,17 +4,17 @@ import { ProductPhoto } from "@/components/ui/ProductPhoto";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { useIntl } from "@/components/i18n/IntlProvider";
 import { getProductName, getProductDescription } from "@/lib/product-i18n";
+import { getProductGallery } from "@/lib/product-images";
 import { categoryLabel } from "@/lib/order-labels";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ShoppingCart, Sparkles } from "lucide-react";
-import { useRef, useState } from "react";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { formatPrice, cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { useState, type CSSProperties } from "react";
+import { formatPrice } from "@/lib/utils";
 import { tFormat } from "@/lib/t-format";
-import { ShippingPromo } from "@/components/shipping/ShippingPromo";
 import type { Product } from "@/types";
 import { useCartStore } from "@/store/cartStore";
 import { FlyingCartAnimation } from "@/components/cart/FlyingCartAnimation";
+
+const CARD_ACCENTS = ["#c34a36", "#4e8397", "#ff8066", "#008bc9"] as const;
 
 interface ProductCardProps {
   product: Product;
@@ -25,32 +25,35 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const { locale, t } = useIntl();
   const displayName = getProductName(product, locale);
   const displayDesc = getProductDescription(product, locale);
-  const cardRef = useRef<HTMLDivElement>(null);
   const addItem = useCartStore((s) => s.addItem);
   const [flying, setFlying] = useState(false);
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]));
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]));
+  const gallery = getProductGallery(product);
+  const cover = gallery[0];
+  const hoverImage = gallery[1] ?? gallery[0];
+  const accent = CARD_ACCENTS[index % CARD_ACCENTS.length];
 
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    x.set(px);
-    y.set(py);
+  const tags: string[] = [];
+  if (product.featured) tags.push(t("productCard.featured"));
+  if (product.stock <= 5 && product.stock > 0) {
+    tags.push(
+      tFormat(t, "productCard.lowStock", { count: String(product.stock) })
+    );
   }
 
-  function handleMouseLeave() {
-    x.set(0);
-    y.set(0);
-  }
+  const cardStyle = {
+    "--product-card--accent": accent,
+  } as CSSProperties;
+
+  const buttonStyle = {
+    "--purchase-button--background": "var(--_accent)",
+    "--purchase-button--foreground": "var(--_accent-contrast)",
+  } as CSSProperties;
 
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+    if (product.stock === 0) return;
     setFlying(true);
     addItem(product);
     setTimeout(() => setFlying(false), 800);
@@ -59,92 +62,72 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
   return (
     <>
       <FlyingCartAnimation trigger={flying} imageUrl={product.image} />
-      <motion.div
-        ref={cardRef}
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: index * 0.08, duration: 0.5 }}
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+      <motion.section
+        className="_card"
+        style={cardStyle}
+        layout
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96 }}
+        transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.24) }}
       >
-        <LocaleLink href={`/products/${product.id}`}>
-          <GlassCard
-            hover
-            className={cn(
-              "overflow-hidden group h-full",
-              product.featured &&
-                "ring-1 ring-fuchsia-400/30 shadow-[0_0_32px_rgba(232,121,249,0.12)]"
-            )}
-          >
-            <div className="relative h-56 sm:h-60 overflow-hidden">
-              <motion.div
-                className="absolute inset-0 animate-float"
-                style={{ animationDelay: `${index * 0.3}s` }}
-              >
-                <ProductPhoto
-                  src={product.image}
-                  alt={displayName}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              </motion.div>
-              <div className="absolute inset-0 card-vignette pointer-events-none z-[1]" />
-              <div
-                className="product-card-image-scrim"
-                aria-hidden
-              />
-              {product.featured && (
-                <span className="product-image-badge product-image-badge--featured absolute top-3 right-3 z-10">
-                  <Sparkles className="w-3 h-3 shrink-0" aria-hidden />
-                  {t("productCard.featured")}
-                </span>
-              )}
-              <span className="product-image-badge product-image-badge--category absolute top-3 left-3 z-10 max-w-[calc(100%-1.5rem)] truncate">
-                {categoryLabel(product.category, t)}
-              </span>
-              {product.stock <= 5 && product.stock > 0 && (
-                <span
-                  className={cn(
-                    "product-image-badge product-image-badge--stock absolute z-10 max-w-[calc(100%-1.5rem)] truncate",
-                    product.featured ? "top-12 right-3" : "top-3 right-3"
-                  )}
-                >
-                  {tFormat(t, "productCard.lowStock", {
-                    count: String(product.stock),
-                  })}
-                </span>
-              )}
-            </div>
-            <div className="p-5">
-              <h3 className="font-semibold text-white mb-1 line-clamp-1 group-hover:text-neon transition-colors">
-                {displayName}
-              </h3>
-              <p className="text-xs text-violet-200/50 line-clamp-2 mb-4">
-                {displayDesc}
-              </p>
-              <div className="flex items-center justify-between gap-2">
-                <div>
-                  <span className="text-lg font-bold text-neon block">
-                    {formatPrice(product.price)}
-                  </span>
-                  <ShippingPromo variant="compact" />
-                </div>
-                <motion.button
-                  onClick={handleAddToCart}
-                  className="p-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500/25 to-cyan-500/20 border border-fuchsia-400/40 hover:border-cyan-400/60 hover:shadow-[0_0_20px_rgba(232,121,249,0.3)] transition-all"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  disabled={product.stock === 0}
-                >
-                  <ShoppingCart className="w-4 h-4 text-cyan-300" />
-                </motion.button>
-              </div>
-            </div>
-          </GlassCard>
+        <LocaleLink
+          href={`/products/${product.id}`}
+          className="_thumbnail-link"
+          aria-label={displayName}
+        >
+          <div className="_thumbnail-stack">
+            <ProductPhoto
+              src={cover}
+              alt={displayName}
+              priority={index < 4}
+            />
+            <ProductPhoto src={hoverImage} alt="" />
+          </div>
         </LocaleLink>
-      </motion.div>
+
+        <p className="_category -trim-both">{categoryLabel(product.category, t)}</p>
+
+        <h2
+          className="_heading -fluid-text -trim-both"
+          style={
+            {
+              "--fluid-text--min-font-size": 14,
+              "--fluid-text--max-font-size": 17,
+            } as CSSProperties
+          }
+        >
+          <LocaleLink href={`/products/${product.id}`}>{displayName}</LocaleLink>
+        </h2>
+
+        <p className="_price -trim-both">{formatPrice(product.price)}</p>
+        <p className="_description -line-clamp">{displayDesc}</p>
+
+        <ul
+          className="_tag-list cluster"
+          style={{ "--cluster--gap": "0.35rem" } as CSSProperties}
+          aria-hidden={tags.length === 0}
+        >
+          {tags.map((tag) => (
+            <li key={tag} className="_tag -trim-both">
+              {tag}
+            </li>
+          ))}
+        </ul>
+
+        <div className="_button" style={buttonStyle}>
+          <button
+            type="button"
+            className="scope purchase-button"
+            onClick={handleAddToCart}
+            disabled={product.stock === 0}
+          >
+            {product.stock === 0
+              ? t("productCard.outOfStock")
+              : t("productCard.addCart")}
+          </button>
+        </div>
+      </motion.section>
     </>
   );
 }

@@ -3,6 +3,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ProductCard } from "@/components/products/ProductCard";
+import {
+  ProductCardsGrid,
+  ProductCardSkeleton,
+} from "@/components/products/ProductCardsGrid";
 import { useProductStore } from "@/store/productStore";
 import { PRODUCT_CATEGORIES, type ProductCategory } from "@/types";
 import { categoryLabel } from "@/lib/order-labels";
@@ -69,20 +73,17 @@ export function ProductGrid({ standalone = false }: ProductGridProps) {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <ProductCardsGrid columnMaxCount={4}>
             {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="glass rounded-2xl h-80 animate-pulse"
-              />
+              <ProductCardSkeleton key={i} />
             ))}
-          </div>
+          </ProductCardsGrid>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <ProductCardsGrid columnMaxCount={4}>
             {filtered.map((product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
             ))}
-          </div>
+          </ProductCardsGrid>
         )}
 
         {!loading && filtered.length === 0 && (

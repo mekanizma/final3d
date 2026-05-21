@@ -1,0 +1,445 @@
+/* Ürün kartları — kompakt, sabit alt satır (sepete ekle) */
+
+@layer composition {
+  .scope.product-cards .grid {
+    --_c-fill-mode: var(--grid--fill-mode, auto-fill);
+    --_c-row-gap: var(--grid--row-gap, 0.65rem);
+    --_c-column-gap: var(--grid--column-gap, 0.25rem);
+    --_c-column-max-count: var(--grid--column-max-count, 4);
+    --_c-column-min-width: var(--grid--column-min-width, 12.5rem);
+    --_c-column-width-calculated: calc(
+      (100% - var(--_c-column-gap) * (var(--_c-column-max-count) - 1)) /
+        var(--_c-column-max-count)
+    );
+    --_c-column-width: min(
+      100%,
+      max(var(--_c-column-min-width), var(--_c-column-width-calculated))
+    );
+
+    display: grid;
+    grid-template-columns: repeat(
+      var(--_c-fill-mode),
+      minmax(var(--_c-column-width), 1fr)
+    );
+    gap: var(--_c-row-gap) var(--_c-column-gap);
+  }
+
+  .scope.product-cards .cluster {
+    --_c-main-alignment: var(--cluster--main-alignment, start);
+    --_c-cross-alignment: var(--cluster--cross-alignment, center);
+    --_c-gap: var(--cluster--gap, 0.35rem);
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--_c-gap);
+    justify-content: var(--_c-main-alignment);
+    align-items: var(--_c-cross-alignment);
+  }
+}
+
+@layer utilities {
+  .scope.product-cards .-fluid-text {
+    --_fluid-text--min-width: var(--fluid-text--min-width, 320);
+    --_fluid-text--max-width: var(--fluid-text--max-width, 1280);
+    --_fluid-text--min-font-size: var(--fluid-text--min-font-size, 14);
+    --_fluid-text--max-font-size: var(--fluid-text--max-font-size, 17);
+    --_fluid-text--base-font-size: var(--fluid-text--base-font-size, 16);
+    --_fluid-text--relative-unit: var(--fluid-text--relative-unit, 100cqi);
+    --_fluid-text--slope: calc(
+      (var(--_fluid-text--max-font-size) - var(--_fluid-text--min-font-size)) /
+        (var(--_fluid-text--max-width) - var(--_fluid-text--min-width))
+    );
+    --_fluid-text--intercept: calc(
+      var(--_fluid-text--min-font-size) - var(--_fluid-text--slope) *
+        var(--_fluid-text--min-width)
+    );
+    --_fluid-text--font-size: clamp(
+      var(--_fluid-text--min-font-size) / var(--_fluid-text--base-font-size) *
+        1rem,
+      var(--_fluid-text--slope) * var(--_fluid-text--relative-unit) +
+        var(--_fluid-text--intercept) / var(--_fluid-text--base-font-size) *
+        1rem,
+      var(--_fluid-text--max-font-size) / var(--_fluid-text--base-font-size) *
+        1rem
+    );
+
+    font-size: var(--_fluid-text--font-size);
+  }
+
+  @supports (text-box-trim: trim-both) {
+    .scope.product-cards .-trim-both {
+      text-box-trim: trim-both;
+      text-box-edge: cap alphabetic;
+    }
+  }
+
+  .scope.product-cards .-line-clamp {
+    --_limit: var(--line-clamp--limit, 3);
+
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--_limit);
+    line-clamp: var(--_limit);
+  }
+}
+
+@layer features {
+  .scope.product-cards {
+    --card-foreground: #1a1048;
+    --card-background: #f8f4ff;
+    --ease-in-expo: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+    --icon-cart: url("data:image/svg+xml,%3Csvg viewBox='0 0 576 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='currentColor' d='M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z'/%3E%3C/svg%3E");
+
+    container-type: inline-size;
+    container-name: product-cards;
+  }
+
+  .scope.product-cards ._card-list > * {
+    min-width: 0;
+  }
+
+  .scope.product-cards ._card {
+    --_accent: var(--product-card--accent, #c34a36);
+    --_row-gap: 0.3rem;
+    --_padding: 12px;
+    --_radius: 26px;
+    --_accent-contrast: #fff;
+    --_inner-radius: calc(var(--_radius) - var(--_padding));
+    --_category-radius: 10px;
+    --_duration: 350ms;
+    --_has-hocus-on: ;
+    --_has-hocus-off: initial;
+    --_thumb-ratio: 4 / 3;
+    --_thumb-object-position: 72% 50%;
+
+    display: grid;
+    width: 100%;
+    justify-self: stretch;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    grid-template-rows:
+      auto
+      auto
+      3.5rem
+      1.85rem
+      2.625rem;
+    gap: var(--_row-gap) 0.6rem;
+    padding: var(--_padding);
+    border-radius: var(--_radius);
+    box-shadow: 0 12px 28px -12px rgb(26 16 72 / 22%);
+    background-color: var(--card-background);
+    color: var(--card-foreground);
+    height: 100%;
+  }
+
+  @supports (color: oklch(from red l c h)) {
+    .scope.product-cards ._card {
+      --_accent-contrast: oklch(from var(--_accent) sign(0.7 - l) 0 0);
+    }
+  }
+
+  .scope.product-cards ._card:has(
+      ._thumbnail-link:hover,
+      ._heading a:hover,
+      button:hover
+    ) {
+    @media (hover: hover) {
+      --_has-hocus-on: initial;
+      --_has-hocus-off: ;
+    }
+  }
+
+  .scope.product-cards ._card:has(:focus-visible) {
+    --_has-hocus-on: initial;
+    --_has-hocus-off: ;
+  }
+
+  .scope.product-cards ._thumbnail-link {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    border-radius: var(--_inner-radius);
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .scope.product-cards ._thumbnail-link:focus-visible {
+    outline: 2px solid var(--_accent);
+    outline-offset: 2px;
+  }
+
+  .scope.product-cards ._thumbnail-stack {
+    display: grid;
+    aspect-ratio: var(--_thumb-ratio);
+    max-block-size: 10.25rem;
+    overflow: hidden;
+    border-radius: var(--_inner-radius);
+    background-color: color-mix(in srgb, var(--card-foreground) 6%, var(--card-background));
+  }
+
+  .scope.product-cards ._thumbnail-stack > img {
+    grid-area: 1 / 1;
+    inline-size: 112%;
+    block-size: 100%;
+    margin-inline-start: -6%;
+    display: block;
+    object-fit: cover;
+    object-position: var(--_thumb-object-position);
+    border-radius: var(--_inner-radius);
+    filter: url(#svg-inset-shadow);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scope.product-cards ._thumbnail-stack > img {
+      transition-property: clip-path;
+      transition-duration: var(--_duration);
+      transition-timing-function: var(--_has-hocus-on, var(--ease-out-expo))
+        var(--_has-hocus-off, var(--ease-in-expo));
+    }
+  }
+
+  .scope.product-cards ._thumbnail-stack > img:nth-child(1) {
+    filter: brightness(0.8) grayscale(1) url(#svg-inset-shadow);
+  }
+
+  .scope.product-cards ._thumbnail-stack > img:nth-child(2) {
+    @media (hover: hover) {
+      clip-path: var(--_has-hocus-on, inset(0 round var(--_inner-radius)))
+        var(--_has-hocus-off, inset(100% round var(--_inner-radius)));
+    }
+  }
+
+  .scope.product-cards ._card > ._category {
+    z-index: 1;
+    grid-row: 1;
+    grid-column: 1 / -1;
+    place-self: start;
+    pointer-events: none;
+    max-inline-size: calc(
+      100% - (var(--_category-radius) + var(--_inner-radius))
+    );
+  }
+
+  .scope.product-cards ._card > ._heading {
+    grid-row: 2;
+    grid-column: 1;
+    align-self: center;
+    margin: 0;
+    padding-block: 0.15rem;
+    font-weight: 700;
+    line-height: 1.2;
+    min-width: 0;
+  }
+
+  .scope.product-cards ._card > ._heading a {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .scope.product-cards ._card > ._heading a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  .scope.product-cards ._card > ._price {
+    grid-row: 2;
+    grid-column: 2;
+    place-self: center end;
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+
+  .scope.product-cards ._price {
+    padding-block: 0.4em;
+    padding-inline: 0.75em;
+    border-radius: 9999px;
+    background-color: var(--_accent);
+    color: var(--_accent-contrast);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .scope.product-cards ._card > ._description {
+    grid-row: 3;
+    grid-column: 1 / -1;
+    align-self: start;
+    margin: 0;
+    opacity: 0.82;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  .scope.product-cards ._card > ._tag-list {
+    grid-row: 4;
+    grid-column: 1 / -1;
+    align-self: center;
+    margin: 0;
+    padding: 0;
+    min-block-size: 1.85rem;
+    max-block-size: 1.85rem;
+    overflow: hidden;
+    list-style: none;
+  }
+
+  .scope.product-cards ._card > ._button {
+    grid-row: 5;
+    grid-column: 1 / -1;
+    align-self: stretch;
+    display: flex;
+    min-block-size: 2.625rem;
+    max-block-size: 2.625rem;
+  }
+
+  .scope.product-cards ._category {
+    position: relative;
+    align-content: center;
+    min-block-size: calc(var(--_category-radius) * 2);
+    margin: 0;
+    padding-block: 0.45em;
+    padding-inline: 0.75em;
+    border-end-end-radius: var(--_category-radius);
+    background-color: var(--card-background);
+    color: var(--card-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    filter: drop-shadow(4px 4px 2px rgb(26 16 72 / 12%));
+  }
+
+  .scope.product-cards ._category::before,
+  .scope.product-cards ._category::after {
+    content: "";
+    position: absolute;
+    block-size: var(--_category-radius);
+    aspect-ratio: 1;
+    mask-image: radial-gradient(
+      circle at 100% 100%,
+      transparent var(--_category-radius),
+      red calc(var(--_category-radius) + 1px)
+    );
+    background-color: inherit;
+  }
+
+  .scope.product-cards ._category::before {
+    inset-block-start: 0;
+    inset-inline-start: 100%;
+  }
+
+  .scope.product-cards ._category::after {
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+  }
+
+  .scope.product-cards ._tag {
+    padding-block: 0.25em;
+    padding-inline: 0.55em;
+    border-radius: 9999px;
+    background-color: color-mix(in srgb, var(--_accent) 18%, var(--card-background));
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  @supports (color: oklch(from red l c h)) {
+    .scope.product-cards ._tag {
+      background-color: oklch(from var(--_accent) 90% 25% h);
+    }
+  }
+
+  .scope.product-cards .scope.purchase-button {
+    --_background: var(--purchase-button--background, #696969);
+    --_background-hocus: color-mix(in srgb, var(--_background) 75%, black);
+    --_foreground: var(--purchase-button--foreground, #f8f4ff);
+    --_foreground-hocus: var(--_foreground);
+    --_hocus-on: ;
+    --_hocus-off: initial;
+
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4ch;
+    min-block-size: 2.625rem;
+    max-block-size: 2.625rem;
+    padding: 0 0.875rem;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    background-color: var(--_hocus-on, var(--_background-hocus))
+      var(--_hocus-off, var(--_background));
+    color: var(--_hocus-on, var(--_foreground-hocus))
+      var(--_hocus-off, var(--_foreground));
+    font-weight: 700;
+    font-size: 0.8125rem;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition-property: background-color, color;
+    transition-duration: 300ms;
+  }
+
+  @supports (color: oklch(from red l c h)) {
+    .scope.product-cards .scope.purchase-button {
+      --_background-hocus: oklch(from var(--_background) 60% 60% h);
+      --_foreground-hocus: oklch(
+        from var(--_background-hocus) sign(0.7 - l) 0 0
+      );
+    }
+  }
+
+  .scope.product-cards .scope.purchase-button::before {
+    content: "";
+    flex: 0 0 0.875em;
+    mask-image: var(--icon-cart);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    aspect-ratio: 1;
+    background-color: currentcolor;
+  }
+
+  .scope.product-cards .scope.purchase-button:hover {
+    @media (hover: hover) {
+      --_hocus-on: initial;
+      --_hocus-off: ;
+    }
+  }
+
+  .scope.product-cards .scope.purchase-button:focus-visible {
+    --_hocus-on: initial;
+    --_hocus-off: ;
+    outline: 2px solid var(--_accent);
+    outline-offset: 2px;
+  }
+
+  .scope.product-cards .scope.purchase-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .scope.product-cards ._card-skeleton {
+    border-radius: 22px;
+    min-block-size: 19rem;
+    background: rgb(248 244 255 / 8%);
+    animation: product-card-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes product-card-pulse {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}

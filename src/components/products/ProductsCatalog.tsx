@@ -16,6 +16,10 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { ProductCard } from "@/components/products/ProductCard";
+import {
+  ProductCardsGrid,
+  ProductCardSkeleton,
+} from "@/components/products/ProductCardsGrid";
 import { SortSelect } from "@/components/products/SortSelect";
 import { useIntl } from "@/components/i18n/IntlProvider";
 import { useProductStore } from "@/store/productStore";
@@ -517,41 +521,19 @@ export function ProductsCatalog() {
 
             {/* Grid */}
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <ProductCardsGrid columnMaxCount={3}>
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="glass rounded-2xl overflow-hidden animate-pulse"
-                  >
-                    <div className="h-56 bg-white/5" />
-                    <div className="p-5 space-y-3">
-                      <div className="h-4 bg-white/10 rounded w-3/4" />
-                      <div className="h-3 bg-white/5 rounded w-full" />
-                      <div className="h-8 bg-white/10 rounded w-1/2" />
-                    </div>
-                  </div>
+                  <ProductCardSkeleton key={i} />
                 ))}
-              </div>
+              </ProductCardsGrid>
             ) : filtered.length > 0 ? (
-              <motion.div
-                layout
-                className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
-              >
+              <ProductCardsGrid columnMaxCount={3}>
                 <AnimatePresence mode="popLayout">
                   {filtered.map((product, i) => (
-                    <motion.div
-                      key={product.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.96 }}
-                      transition={{ duration: 0.35, delay: Math.min(i * 0.04, 0.24) }}
-                    >
-                      <ProductCard product={product} index={i} />
-                    </motion.div>
+                    <ProductCard key={product.id} product={product} index={i} />
                   ))}
                 </AnimatePresence>
-              </motion.div>
+              </ProductCardsGrid>
             ) : (
               <EmptyCatalogState
                 t={t}
