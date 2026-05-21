@@ -170,7 +170,39 @@ create index if not exists scan_quote_requests_created_at_idx
   on public.scan_quote_requests (created_at desc);
 
 -- =============================================================================
--- 6. GALERİ YÜKLEMELERİ (admin ürün görseli)
+-- 6. ADMIN TEKLİF BELGELERİ (faturalandırma — PDF teklif formları)
+-- =============================================================================
+create table if not exists public.admin_quote_documents (
+  id              text primary key,
+  quote_type      text not null check (quote_type in ('scan', 'custom')),
+  quote_no        text not null,
+  issued_at       date not null,
+  valid_until     date not null,
+  client_name     text not null,
+  client_email    text not null default '',
+  client_phone    text not null default '',
+  client_company  text,
+  total_amount    numeric(12, 2) not null default 0 check (total_amount >= 0),
+  document        jsonb not null,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now(),
+  constraint admin_quote_documents_quote_no_key unique (quote_no)
+);
+
+create index if not exists admin_quote_documents_type_idx
+  on public.admin_quote_documents (quote_type);
+
+create index if not exists admin_quote_documents_created_at_idx
+  on public.admin_quote_documents (created_at desc);
+
+comment on table public.admin_quote_documents is
+  'Admin teklif PDF formları; web talepleri ayrı tablolarda (custom_print_requests, scan_quote_requests).';
+
+comment on column public.admin_quote_documents.document is
+  'Tam form JSON (ScanQuoteDocument | CustomPrintQuoteDocument).';
+
+-- =============================================================================
+-- 7. GALERİ YÜKLEMELERİ (admin ürün görseli)
 -- =============================================================================
 create table if not exists public.gallery_uploads (
   id          text primary key,
@@ -191,6 +223,7 @@ alter table public.products enable row level security;
 alter table public.orders enable row level security;
 alter table public.custom_print_requests enable row level security;
 alter table public.scan_quote_requests enable row level security;
+alter table public.admin_quote_documents enable row level security;
 alter table public.gallery_uploads enable row level security;
 
 -- Profiller: kullanıcı kendi kaydını okur/günceller

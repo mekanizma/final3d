@@ -12,6 +12,7 @@ import {
   Calculator,
   LogOut,
   FileText,
+  Receipt,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,11 @@ const links = [
   { href: "/admin", labelKey: "adminNav.dashboard", icon: LayoutDashboard },
   { href: "/admin/products", labelKey: "adminNav.products", icon: Package },
   { href: "/admin/orders", labelKey: "adminNav.orders", icon: ShoppingBag },
+  {
+    href: "/admin/faturalandirma",
+    labelKey: "adminNav.billing",
+    icon: Receipt,
+  },
   { href: "/admin/teklifler", labelKey: "adminNav.quotes", icon: FileText },
   { href: "/admin/hesaplama", labelKey: "adminNav.pricing", icon: Calculator },
 ] as const;

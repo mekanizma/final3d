@@ -184,6 +184,7 @@ export const en = {
     dashboard: "Dashboard",
     products: "Products",
     orders: "Orders",
+    billing: "Billing & reports",
     quotes: "Quotes",
     pricing: "Print pricing",
     panel: "Admin panel",

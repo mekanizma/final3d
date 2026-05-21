@@ -180,6 +180,7 @@ export const ru = {
     dashboard: "Дашборд",
     products: "Товары",
     orders: "Заказы",
+    billing: "Отчёты и продажи",
     quotes: "Заявки",
     pricing: "Расчёт стоимости",
     panel: "Админ-панель",

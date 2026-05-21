@@ -180,6 +180,7 @@ export const ar = {
     dashboard: "لوحة التحكم",
     products: "المنتجات",
     orders: "الطلبات",
+    billing: "الفوترة والتقارير",
     quotes: "العروض",
     pricing: "حساب التكلفة",
     panel: "لوحة الإدارة",

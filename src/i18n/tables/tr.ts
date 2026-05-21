@@ -186,6 +186,7 @@ export const tr = {
     dashboard: "Dashboard",
     products: "Ürünler",
     orders: "Siparişler",
+    billing: "Faturalandırma",
     quotes: "Teklifler",
     pricing: "Ücret Hesaplama",
     panel: "Admin Panel",
