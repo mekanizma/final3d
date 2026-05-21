@@ -183,6 +183,7 @@ export const ru = {
     billing: "Отчёты и продажи",
     quotes: "Заявки",
     pricing: "Расчёт стоимости",
+    scanPricing: "Робот цен сканирования",
     panel: "Админ-панель",
     logout: "Выйти из админки",
     loggingOut: "Выход…",
@@ -238,6 +239,10 @@ export const ru = {
     searchChip: "Поиск: {q}",
     inStockChip: "В наличии",
     close: "Закрыть",
+    pagination: "Страницы",
+    pageOf: "Страница {current} из {total}",
+    prevPage: "Назад",
+    nextPage: "Вперёд",
   },
   productDetail: {
     back: "К каталогу",

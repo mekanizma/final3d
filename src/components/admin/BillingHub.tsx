@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   FileText,
   ScanLine,
@@ -23,7 +24,15 @@ const TABS: { id: BillingTab; icon: typeof FileText; labelKey: string }[] = [
 
 export function BillingHub() {
   const { t } = useIntl();
+  const searchParams = useSearchParams();
   const [tab, setTab] = useState<BillingTab>("sales");
+
+  useEffect(() => {
+    const q = searchParams.get("tab");
+    if (q === "scan" || q === "custom" || q === "sales") {
+      setTab(q);
+    }
+  }, [searchParams]);
 
   return (
     <div className="space-y-6">

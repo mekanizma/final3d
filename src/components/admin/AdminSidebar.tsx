@@ -10,6 +10,7 @@ import {
   X,
   Home,
   Calculator,
+  ScanLine,
   LogOut,
   FileText,
   Receipt,
@@ -32,6 +33,11 @@ const links = [
   },
   { href: "/admin/teklifler", labelKey: "adminNav.quotes", icon: FileText },
   { href: "/admin/hesaplama", labelKey: "adminNav.pricing", icon: Calculator },
+  {
+    href: "/admin/tarama-fiyat",
+    labelKey: "adminNav.scanPricing",
+    icon: ScanLine,
+  },
 ] as const;
 
 export function AdminSidebar() {

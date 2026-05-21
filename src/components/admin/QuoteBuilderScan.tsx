@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2, ScanLine, FileOutput } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Loader2, ScanLine, FileOutput, Sparkles } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { QuoteLineItemsEditor } from "@/components/admin/QuoteLineItemsEditor";
@@ -21,6 +21,10 @@ import {
   type ScanQuoteDocument,
 } from "@/lib/billing/quoteTypes";
 import { openQuotePdf } from "@/lib/billing/openQuotePdf";
+import {
+  buildScanQuoteFromPricing,
+  consumeScanPricingQuoteDraft,
+} from "@/lib/scanPricingToQuote";
 
 export function QuoteBuilderScan() {
   const { t } = useIntl();
@@ -28,6 +32,14 @@ export function QuoteBuilderScan() {
   const [validDays, setValidDays] = useState(14);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [robotImported, setRobotImported] = useState(false);
+
+  useEffect(() => {
+    const draft = consumeScanPricingQuoteDraft();
+    if (!draft) return;
+    setDoc(buildScanQuoteFromPricing(draft.inputs, draft.breakdown));
+    setRobotImported(true);
+  }, []);
 
   function patch<K extends keyof ScanQuoteDocument>(
     key: K,
@@ -81,6 +93,13 @@ export function QuoteBuilderScan() {
         <p className="text-sm text-violet-200/60 mt-1">
           {t("adminBilling.quote.scanSubtitle")}
         </p>
+        {robotImported && (
+          <p className="mt-3 text-sm text-cyan-200/90 flex items-center gap-2 rounded-xl border border-cyan-400/25 bg-cyan-500/10 px-4 py-2.5">
+            <Sparkles className="w-4 h-4 shrink-0" aria-hidden />
+            Fiyat robotundan aktarıldı — müşteri bilgilerini tamamlayıp PDF
+            oluşturun.
+          </p>
+        )}
       </div>
 
       <GlassCard hover={false} className="p-5 space-y-4">

@@ -187,6 +187,7 @@ export const en = {
     billing: "Billing & reports",
     quotes: "Quotes",
     pricing: "Print pricing",
+    scanPricing: "Scan pricing robot",
     panel: "Admin panel",
     logout: "Admin sign out",
     loggingOut: "Signing out…",
@@ -244,6 +245,10 @@ export const en = {
     searchChip: "Search: {q}",
     inStockChip: "In stock",
     close: "Close",
+    pagination: "Pagination",
+    pageOf: "Page {current} of {total}",
+    prevPage: "Previous",
+    nextPage: "Next",
   },
   productDetail: {
     back: "Back to catalog",

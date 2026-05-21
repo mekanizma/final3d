@@ -189,6 +189,7 @@ export const tr = {
     billing: "Faturalandırma",
     quotes: "Teklifler",
     pricing: "Ücret Hesaplama",
+    scanPricing: "Tarama Fiyat Robotu",
     panel: "Admin Panel",
     logout: "Admin çıkış",
     loggingOut: "Çıkılıyor…",
@@ -245,6 +246,10 @@ export const tr = {
     searchChip: "Arama: {q}",
     inStockChip: "Stokta",
     close: "Kapat",
+    pagination: "Sayfalama",
+    pageOf: "Sayfa {current} / {total}",
+    prevPage: "Önceki",
+    nextPage: "Sonraki",
   },
   productDetail: {
     back: "Kataloğa dön",

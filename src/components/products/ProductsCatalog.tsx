@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -21,6 +21,7 @@ import {
   ProductCardSkeleton,
 } from "@/components/products/ProductCardsGrid";
 import { SortSelect } from "@/components/products/SortSelect";
+import { CatalogPagination } from "@/components/products/CatalogPagination";
 import { useIntl } from "@/components/i18n/IntlProvider";
 import { useProductStore } from "@/store/productStore";
 import { categoryLabel } from "@/lib/order-labels";
@@ -30,6 +31,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { PRODUCT_CATEGORIES, type ProductCategory } from "@/types";
 import {
   DEFAULT_FILTERS,
+  PRODUCTS_PER_PAGE,
   countActiveFilters,
   filterAndSortProducts,
   getProductPriceBounds,
@@ -266,6 +268,8 @@ export function ProductsCatalog() {
   const [filters, setFilters] = useState<ProductFilters>(DEFAULT_FILTERS);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const gridAnchorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -287,6 +291,39 @@ export function ProductsCatalog() {
     () => filterAndSortProducts(products, filters),
     [products, filters]
   );
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PRODUCTS_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+
+  const paginatedProducts = useMemo(() => {
+    const start = (safePage - 1) * PRODUCTS_PER_PAGE;
+    return filtered.slice(start, start + PRODUCTS_PER_PAGE);
+  }, [filtered, safePage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    filters.search,
+    filters.category,
+    filters.minPrice,
+    filters.maxPrice,
+    filters.inStockOnly,
+    filters.featuredOnly,
+    filters.sort,
+  ]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+  }, [currentPage, totalPages]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    gridAnchorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const listFrom =
+    filtered.length === 0 ? 0 : (safePage - 1) * PRODUCTS_PER_PAGE + 1;
+  const listTo = Math.min(safePage * PRODUCTS_PER_PAGE, filtered.length);
 
   const activeFilterCount = countActiveFilters(filters);
 
@@ -398,16 +435,41 @@ export function ProductsCatalog() {
 
           <div className="flex-1 min-w-0">
             {/* Toolbar */}
+            <div
+              ref={gridAnchorRef}
+              className="scroll-mt-28 -mt-28 pt-28 pointer-events-none"
+              aria-hidden
+            />
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <p className="text-sm text-violet-200/60">
                 {loading ? (
                   t("products.loading")
+                ) : filtered.length === 0 ? (
+                  <>
+                    <span className="text-white font-medium">0</span>{" "}
+                    {t("products.countListed")}
+                  </>
                 ) : (
                   <>
                     <span className="text-white font-medium">
-                      {filtered.length}
-                    </span>{" "}
+                      {listFrom}–{listTo}
+                    </span>
+                    <span className="text-violet-300/50">
+                      {" "}
+                      / {filtered.length}{" "}
+                    </span>
                     {t("products.countListed")}
+                    {totalPages > 1 && (
+                      <span className="text-violet-300/50">
+                        {" "}
+                        ·{" "}
+                        {tFormat(t, "products.pageOf", {
+                          current: String(safePage),
+                          total: String(totalPages),
+                        })}
+                      </span>
+                    )}
                     {filters.category !== "all" && (
                       <span className="text-violet-300/50">
                         {" "}
@@ -527,13 +589,33 @@ export function ProductsCatalog() {
                 ))}
               </ProductCardsGrid>
             ) : filtered.length > 0 ? (
-              <ProductCardsGrid columnMaxCount={3}>
-                <AnimatePresence mode="popLayout">
-                  {filtered.map((product, i) => (
-                    <ProductCard key={product.id} product={product} index={i} />
-                  ))}
-                </AnimatePresence>
-              </ProductCardsGrid>
+              <>
+                <ProductCardsGrid columnMaxCount={3}>
+                  <AnimatePresence mode="popLayout">
+                    {paginatedProducts.map((product, i) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        index={i}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </ProductCardsGrid>
+                <CatalogPagination
+                  currentPage={safePage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  labels={{
+                    prev: t("products.prevPage"),
+                    next: t("products.nextPage"),
+                    page: t("products.pagination"),
+                    pageOfFormatted: tFormat(t, "products.pageOf", {
+                      current: String(safePage),
+                      total: String(totalPages),
+                    }),
+                  }}
+                />
+              </>
             ) : (
               <EmptyCatalogState
                 t={t}

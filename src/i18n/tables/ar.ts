@@ -183,6 +183,7 @@ export const ar = {
     billing: "الفوترة والتقارير",
     quotes: "العروض",
     pricing: "حساب التكلفة",
+    scanPricing: "روبوت تسعير المسح",
     panel: "لوحة الإدارة",
     logout: "خروج المشرف",
     loggingOut: "جارٍ الخروج…",
@@ -238,6 +239,10 @@ export const ar = {
     searchChip: "بحث: {q}",
     inStockChip: "متوفر",
     close: "إغلاق",
+    pagination: "ترقيم الصفحات",
+    pageOf: "صفحة {current} من {total}",
+    prevPage: "السابق",
+    nextPage: "التالي",
   },
   productDetail: {
     back: "العودة إلى الكتالوج",

@@ -8,6 +8,9 @@ export type SortOption =
   | "name"
   | "newest";
 
+/** Ürünler kataloğu — sayfa başına gösterim */
+export const PRODUCTS_PER_PAGE = 15;
+
 export const SORT_OPTIONS: SortOption[] = [
   "featured",
   "price-asc",
