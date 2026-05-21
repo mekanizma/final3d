@@ -15,9 +15,8 @@ import {
 } from "lucide-react";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { ProductPhoto } from "@/components/ui/ProductPhoto";
 import { Scan3DVideo } from "@/components/home/Scan3DVideo";
-import { SCAN_IMAGES } from "@/lib/scanMedia";
+import { ScanCapabilityCards } from "@/components/home/ScanCapabilityCards";
 import { useIntl } from "@/components/i18n/IntlProvider";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { AnimatedProse } from "@/components/ui/AnimatedProse";
@@ -100,25 +99,6 @@ export function Scan3DSection() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#12082a]/90 via-[#12082a]/25 to-transparent pointer-events-none z-[1]" />
               <div className="absolute inset-0 card-vignette pointer-events-none z-[1]" />
 
-              <div className="absolute bottom-4 left-4 right-4 flex gap-3 z-[2]">
-                <div className="relative flex-1 aspect-[4/3] rounded-xl overflow-hidden border border-white/15 shadow-lg">
-                  <ProductPhoto
-                    src={SCAN_IMAGES.model}
-                    alt={t("scanSection.altModel")}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="relative flex-1 aspect-[4/3] rounded-xl overflow-hidden border border-white/15 shadow-lg">
-                  <ProductPhoto
-                    src={SCAN_IMAGES.workflow}
-                    alt={t("scanSection.altWorkflow")}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-
               <div className="absolute top-4 left-4 z-[2] glass px-3 py-2 rounded-xl border border-cyan-400/30 flex items-center gap-2">
                 <ScanLine className="w-4 h-4 text-cyan-300" />
                 <span className="text-xs font-medium text-cyan-100/90">
@@ -135,39 +115,7 @@ export function Scan3DSection() {
         </div>
 
         <motion.div id="detay" className="scroll-mt-28">
-          <motion.div
-            {...fadeUp}
-            transition={{ duration: 0.5 }}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12"
-          >
-            {capabilities.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <GlassCard
-                  key={item.title}
-                  hover={false}
-                  className="p-5 border-white/5"
-                >
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.06 }}
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/25 to-violet-500/20 border border-white/10 flex items-center justify-center mb-3">
-                      <Icon className="w-5 h-5 text-cyan-300" />
-                    </div>
-                    <h3 className="font-semibold text-white/95 text-sm mb-1">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs text-violet-200/55 leading-relaxed">
-                      {item.desc}
-                    </p>
-                  </motion.div>
-                </GlassCard>
-              );
-            })}
-          </motion.div>
+          <ScanCapabilityCards items={capabilities} />
 
           <div className="grid lg:grid-cols-2 gap-8 items-stretch">
             <GlassCard
