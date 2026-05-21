@@ -1,13 +1,31 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { NeonButton } from "@/components/ui/NeonButton";
-import { HeroPrinterVideo } from "@/components/home/HeroPrinterVideo";
+import { HERO_PRINTER_VIDEO } from "@/lib/heroMedia";
 import { ShippingPromo } from "@/components/shipping/ShippingPromo";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { useIntl } from "@/components/i18n/IntlProvider";
+
+const HeroPrinterVideo = dynamic(
+  () =>
+    import("@/components/home/HeroPrinterVideo").then((m) => ({
+      default: m.HeroPrinterVideo,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 aspect-[4/5] sm:aspect-[16/11] max-h-[520px] bg-[#0a0618] bg-cover bg-center"
+        style={{ backgroundImage: `url(${HERO_PRINTER_VIDEO.poster})` }}
+        aria-hidden
+      />
+    ),
+  }
+);
 
 export function HeroSection() {
   const { t } = useIntl();
@@ -32,7 +50,7 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.35 }}
           >
             <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight mb-6 tracking-tight">
               <span className="block text-white/95">{t("hero.line1")}</span>

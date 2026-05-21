@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Package,
   ShoppingBag,
-  Box,
   Menu,
   X,
   Home,
@@ -19,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { useIntl } from "@/components/i18n/IntlProvider";
 import { getLocaleFromPathname, stripLocalePath, withLocale } from "@/lib/locale-path";
+import { SiteLogo } from "@/components/brand/SiteLogo";
 
 const links = [
   { href: "/admin", labelKey: "adminNav.dashboard", icon: LayoutDashboard },
@@ -62,14 +62,9 @@ export function AdminSidebar() {
         )}
       >
         <div className="p-6 border-b border-white/5">
-          <LocaleLink href="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-fuchsia-500 via-violet-500 to-cyan-400 flex items-center justify-center">
-              <Box className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <p className="font-bold text-sm">Final3d</p>
-              <p className="text-xs text-violet-300/60">{t("adminNav.panel")}</p>
-            </div>
+          <LocaleLink href="/admin" className="flex flex-col gap-2">
+            <SiteLogo size="md" />
+            <p className="text-xs text-violet-300/60">{t("adminNav.panel")}</p>
           </LocaleLink>
         </div>
 

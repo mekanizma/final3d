@@ -1,11 +1,13 @@
-import { HeroSection } from "@/components/home/HeroSection";
-import { HomeDiscoverSections } from "@/components/home/HomeDiscoverSections";
+import { HomePageContent } from "@/components/home/HomePageContent";
+import { listProducts } from "@/lib/products/listProducts";
 
-export default function HomePage() {
-  return (
-    <>
-      <HeroSection />
-      <HomeDiscoverSections />
-    </>
-  );
+export default async function HomePage() {
+  let initialProducts: Awaited<ReturnType<typeof listProducts>> = [];
+  try {
+    initialProducts = await listProducts();
+  } catch {
+    /* Supabase yoksa istemci /api/products ile dener */
+  }
+
+  return <HomePageContent initialProducts={initialProducts} />;
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { ADMIN_SESSION_COOKIE } from "@/lib/adminSession";
+import { needsSessionRefresh } from "@/lib/auth/needsSessionRefresh";
 import { updateSession } from "@/lib/supabase/middleware";
 import { defaultLocale, isLocale } from "@/i18n/config";
 
@@ -62,9 +63,14 @@ export async function middleware(request: NextRequest) {
       url.searchParams.set("next", pathname);
       return NextResponse.redirect(url);
     }
+    return updateSession(request);
   }
 
-  return updateSession(request);
+  if (needsSessionRefresh(inner)) {
+    return updateSession(request);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

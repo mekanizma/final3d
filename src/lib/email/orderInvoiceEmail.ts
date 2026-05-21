@@ -2,6 +2,7 @@ import { ORDER_STATUS_LABELS } from "@/lib/constants";
 import { resolveOrderTotals } from "@/lib/pricing";
 import { formatDate, formatPrice } from "@/lib/utils";
 import { escapeHtml } from "@/lib/email/escapeHtml";
+import { SITE_HOST, SITE_LOGO_PATH } from "@/lib/seo/constants";
 import type { Order } from "@/types";
 
 const BRAND = {
@@ -60,8 +61,8 @@ export function buildOrderInvoiceEmail(order: Order): OrderInvoiceEmailContent {
         <table role="presentation" width="100%" style="max-width:620px;background:#1a1035;border:1px solid rgba(232,121,249,0.35);border-radius:16px;overflow:hidden;box-shadow:0 8px 40px rgba(168,85,247,0.2);">
           <tr>
             <td style="padding:28px 32px;background:linear-gradient(135deg,#7c3aed,#db2777,#0891b2);">
+              <img src="${SITE_HOST}${SITE_LOGO_PATH}" alt="FINAL3D" width="120" height="120" style="display:block;height:44px;width:auto;margin-bottom:12px;" />
               <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.85);">Sipariş Onay Belgesi</p>
-              <h1 style="margin:0;font-size:26px;font-weight:700;color:#fff;">${BRAND.name}</h1>
               <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,0.9);">${BRAND.tagline}</p>
             </td>
           </tr>

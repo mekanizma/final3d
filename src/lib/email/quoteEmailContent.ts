@@ -1,4 +1,5 @@
 import { escapeHtml } from "@/lib/email/escapeHtml";
+import { SITE_HOST, SITE_LOGO_PATH } from "@/lib/seo/constants";
 import {
   materialLabelTr,
   scanLocationLabelTr,
@@ -20,8 +21,8 @@ function emailShell(title: string, bodyHtml: string, bodyText: string) {
       <table role="presentation" width="100%" style="max-width:620px;background:#1a1035;border:1px solid rgba(232,121,249,0.35);border-radius:16px;overflow:hidden;">
         <tr>
           <td style="padding:24px 28px;background:linear-gradient(135deg,#7c3aed,#db2777,#0891b2);">
-            <p style="margin:0;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.85);">Final3d</p>
-            <h1 style="margin:8px 0 0;font-size:22px;color:#fff;">${escapeHtml(title)}</h1>
+            <img src="${SITE_HOST}${SITE_LOGO_PATH}" alt="FINAL3D" width="120" height="120" style="display:block;height:40px;width:auto;margin-bottom:12px;" />
+            <h1 style="margin:0;font-size:22px;color:#fff;">${escapeHtml(title)}</h1>
           </td>
         </tr>
         <tr><td style="padding:28px;">${bodyHtml}</td></tr>

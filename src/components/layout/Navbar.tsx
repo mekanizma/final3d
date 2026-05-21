@@ -10,6 +10,7 @@ import { CartDrawer } from "@/components/cart/CartDrawer";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useIntl } from "@/components/i18n/IntlProvider";
+import { SiteLogo } from "@/components/brand/SiteLogo";
 
 export function Navbar() {
   const { t } = useIntl();
@@ -30,17 +31,10 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-[100] border-b border-white/10 bg-[#12082a]/96 backdrop-blur-xl supports-[backdrop-filter]:bg-[#12082a]/90 shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-3 sm:gap-4">
-          <LocaleLink href="/" className="flex items-center gap-2 group shrink-0 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-fuchsia-500 via-violet-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-fuchsia-500/30">
-              <span className="text-[11px] font-black tracking-tight text-white leading-none">
-                F3
-              </span>
-            </div>
-            <span className="font-bold text-lg tracking-tight hidden sm:inline">
-              Final<span className="text-neon">3d</span>
-            </span>
+      <header className="fixed inset-x-0 top-0 z-[100] border-b border-white/10 bg-[#12082a]/96 backdrop-blur-xl supports-[backdrop-filter]:bg-[#12082a]/90 shadow-[0_12px_40px_rgba(0,0,0,0.35)] overflow-visible">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-3 sm:gap-4 overflow-visible">
+          <LocaleLink href="/" className="flex items-center group shrink-0 min-w-0 overflow-visible">
+            <SiteLogo size="nav" />
           </LocaleLink>
 
           <nav className="hidden lg:flex items-center gap-4 xl:gap-6 flex-1 justify-center min-w-0">

@@ -2,15 +2,18 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
+import { SITE_LOGO_PATH } from "@/lib/seo/constants";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -39,6 +42,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+  },
+  icons: {
+    icon: [{ url: SITE_LOGO_PATH, type: "image/svg+xml" }],
+    shortcut: SITE_LOGO_PATH,
+    apple: [{ url: SITE_LOGO_PATH, type: "image/svg+xml" }],
   },
   robots: { index: true, follow: true },
 };

@@ -42,8 +42,8 @@ export function ProductShowcaseRotator() {
   );
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    if (products.length === 0) fetchProducts();
+  }, [fetchProducts, products.length]);
 
   useEffect(() => {
     if (catalog.length <= 1) return;

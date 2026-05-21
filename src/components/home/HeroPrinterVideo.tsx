@@ -52,7 +52,7 @@ export function HeroPrinterVideo() {
     <motion.div
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className="relative w-full"
     >
       <motion.div
@@ -88,7 +88,7 @@ export function HeroPrinterVideo() {
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             disablePictureInPicture
             controlsList="nodownload nofullscreen noremoteplayback"
             onLoadedData={() => setReady(true)}

@@ -5,6 +5,8 @@ export const SITE_HOST =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
   "https://final3d.tr";
 
+export const SITE_LOGO_PATH = "/logo.svg";
+
 export const SITE_PHONE = "+905338398293";
 export const SITE_EMAIL = "info@final3d.tr";
 

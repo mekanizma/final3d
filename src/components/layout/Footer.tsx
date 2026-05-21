@@ -17,17 +17,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 relative">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <LocaleLink href="/" className="inline-flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-fuchsia-500 via-violet-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-fuchsia-500/25">
-                <span className="text-[11px] font-black tracking-tight text-white leading-none">
-                  F3
-                </span>
-              </div>
-              <span className="font-bold text-lg">
-                Final<span className="text-neon">3d</span>
-              </span>
-            </LocaleLink>
-            <p className="text-sm text-violet-200/65 max-w-md leading-relaxed mt-4">
+            <p className="text-sm text-violet-200/65 max-w-md leading-relaxed">
               {t("footer.tagline")}
             </p>
           </div>

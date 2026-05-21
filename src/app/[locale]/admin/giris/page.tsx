@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { useIntl } from "@/components/i18n/IntlProvider";
 import { motion } from "framer-motion";
-import { Lock, Mail, Shield, ArrowLeft } from "lucide-react";
+import { Lock, Mail, ArrowLeft } from "lucide-react";
+import { SiteLogo } from "@/components/brand/SiteLogo";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { FormInput } from "@/components/ui/FormField";
@@ -66,9 +67,7 @@ function AdminLoginForm() {
         className="w-full max-w-md"
       >
         <div className="flex justify-center mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-fuchsia-500 via-violet-600 to-cyan-400 flex items-center justify-center shadow-[0_0_40px_rgba(232,121,249,0.35)]">
-            <Shield className="w-7 h-7 text-white" strokeWidth={2} />
-          </div>
+          <SiteLogo size="xl" />
         </div>
 
         <GlassCard hover={false} className="p-8 border-fuchsia-400/20">
