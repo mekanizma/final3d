@@ -60,8 +60,9 @@ create table if not exists public.products (
   price         numeric(12, 2) not null check (price >= 0),
   stock         integer not null default 0 check (stock >= 0),
   image         text not null,
+  images        jsonb not null default '[]'::jsonb,
   category      text not null check (
-    category in ('3d-print', 'model', 'accessory', 'filament', 'tool')
+    category in ('model', 'figure', 'accessory')
   ),
   featured      boolean not null default false,
   created_at    timestamptz not null default now()
@@ -73,6 +74,9 @@ create index if not exists products_created_at_idx on public.products (created_a
 
 comment on column public.products.translations is
   'Record<Locale, {name, description}> — tr, en, ru, ar';
+
+comment on column public.products.images is
+  'Ürün galerisi URL listesi; image = kapak (ilk görsel)';
 
 -- =============================================================================
 -- 3. SİPARİŞLER

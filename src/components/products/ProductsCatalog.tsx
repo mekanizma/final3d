@@ -8,11 +8,9 @@ import {
   X,
   Sparkles,
   Package,
-  Printer,
   Boxes,
-  Wrench,
   Puzzle,
-  CircleDot,
+  Shapes,
   RotateCcw,
   LayoutGrid,
   TrendingUp,
@@ -25,7 +23,7 @@ import { categoryLabel } from "@/lib/order-labels";
 import { tFormat } from "@/lib/t-format";
 import { formatPrice, cn } from "@/lib/utils";
 import { GlassCard } from "@/components/ui/GlassCard";
-import type { ProductCategory } from "@/types";
+import { PRODUCT_CATEGORIES, type ProductCategory } from "@/types";
 import {
   DEFAULT_FILTERS,
   countActiveFilters,
@@ -35,22 +33,13 @@ import {
   type SortOption,
 } from "@/lib/productCatalog";
 
-const categories: (ProductCategory | "all")[] = [
-  "all",
-  "3d-print",
-  "filament",
-  "model",
-  "accessory",
-  "tool",
-];
+const categories: (ProductCategory | "all")[] = ["all", ...PRODUCT_CATEGORIES];
 
 const categoryIcons: Record<ProductCategory | "all", typeof Package> = {
   all: LayoutGrid,
-  "3d-print": Printer,
-  filament: CircleDot,
   model: Boxes,
+  figure: Shapes,
   accessory: Puzzle,
-  tool: Wrench,
 };
 
 const PRICE_PRESET_KEYS = [

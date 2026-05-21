@@ -4,17 +4,11 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ProductCard } from "@/components/products/ProductCard";
 import { useProductStore } from "@/store/productStore";
-import type { ProductCategory } from "@/types";
-import { CATEGORY_LABELS } from "@/lib/constants";
+import { PRODUCT_CATEGORIES, type ProductCategory } from "@/types";
+import { categoryLabel } from "@/lib/order-labels";
+import { useIntl } from "@/components/i18n/IntlProvider";
 
-const categories: (ProductCategory | "all")[] = [
-  "all",
-  "3d-print",
-  "model",
-  "filament",
-  "accessory",
-  "tool",
-];
+const categories: (ProductCategory | "all")[] = ["all", ...PRODUCT_CATEGORIES];
 
 interface ProductGridProps {
   /** Tam sayfa katalog (/urunler) */
@@ -22,6 +16,7 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ standalone = false }: ProductGridProps) {
+  const { t } = useIntl();
   const { products, loading, fetchProducts } = useProductStore();
   const [activeCategory, setActiveCategory] = useState<ProductCategory | "all">(
     "all"
@@ -51,8 +46,7 @@ export function ProductGrid({ standalone = false }: ProductGridProps) {
             Ürün <span className="text-neon">Kataloğu</span>
           </h2>
           <p className="text-violet-200/60 max-w-xl mx-auto">
-            3D yazıcılardan filamentlere, özel modellerden aksesuarlara kadar
-            geniş ürün yelpazesi.
+            MODEL, FİGÜR ve AKSESUAR kategorilerinde ürünler.
           </p>
         </motion.div>
 
@@ -69,7 +63,7 @@ export function ProductGrid({ standalone = false }: ProductGridProps) {
                   : "glass text-violet-200/70 hover:text-white hover:border-cyan-400/40"
               }`}
             >
-              {cat === "all" ? "Tümü" : CATEGORY_LABELS[cat]}
+              {cat === "all" ? "Tümü" : categoryLabel(cat, t)}
             </button>
           ))}
         </div>

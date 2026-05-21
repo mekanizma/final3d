@@ -3,7 +3,7 @@ export const en = {
   meta: {
     title: "Final3d | 3D Printing Products",
     description:
-      "Northern Cyprus premium 3D printing marketplace. Printers, filaments, models and accessories. Cash on delivery.",
+      "Northern Cyprus premium 3D printing marketplace. MODEL, FIGURE and ACCESSORY catalog. Cash on delivery.",
   },
   nav: {
     home: "Home",
@@ -60,11 +60,11 @@ export const en = {
     title: "Ready-made",
     titleNeon: "product catalog",
     subtitle:
-      "Printers, filaments, models and accessories — filter and add to cart.",
+      "MODEL, FIGURE and ACCESSORY — filter and add to cart.",
     cardTitle: "Discover our",
     cardTitleNeon: "products",
     cardBody:
-      "3D printers, filaments, models and accessories in one catalog. Filter by category, add to cart, receive delivery to your door.",
+      "MODEL, FIGURE and ACCESSORY in one catalog. Filter by category, add to cart, receive delivery to your door.",
     ctaProducts: "Go to products page",
     trust1t: "Fast delivery",
     trust1d:
@@ -215,7 +215,7 @@ export const en = {
   products: {
     catalogTitle: "Product",
     catalogTitleNeon: "catalog",
-    catalogSub: "Filaments, printers, models and accessories.",
+    catalogSub: "MODEL, FIGURE and ACCESSORY.",
     searchPh: "Search products…",
     clearSearch: "Clear search",
     allCategories: "All categories",
@@ -249,11 +249,9 @@ export const en = {
     orderNow: "Order now",
   },
   category: {
-    "3d-print": "3D printer",
-    model: "Model & figure",
-    accessory: "Accessory",
-    filament: "Filament",
-    tool: "Tools & calibration",
+    model: "MODEL",
+    figure: "FIGURE",
+    accessory: "ACCESSORY",
   },
   orderStatus: {
     yeni: "New",

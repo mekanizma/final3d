@@ -1,11 +1,9 @@
 import type { OrderStatus, ProductCategory } from "@/types";
 
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
-  "3d-print": "3D Yazıcı",
-  model: "Model & Figür",
-  accessory: "Aksesuar",
-  filament: "Filament",
-  tool: "Alet & Kalibrasyon",
+  model: "MODEL",
+  figure: "FİGÜR",
+  accessory: "AKSESUAR",
 };
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {

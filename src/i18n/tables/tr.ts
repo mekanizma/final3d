@@ -2,7 +2,7 @@ export const tr = {
   meta: {
     title: "Final3d | 3D Baskı Ürünleri",
     description:
-      "Kuzey Kıbrıs'ın premium 3D baskı ürünleri platformu. Yazıcılar, filamentler, modeller ve aksesuarlar. Kapıda ödeme.",
+      "Kuzey Kıbrıs'ın premium 3D baskı ürünleri platformu. MODEL, FİGÜR ve AKSESUAR kataloğu. Kapıda ödeme.",
   },
   nav: {
     home: "Ana Sayfa",
@@ -59,11 +59,11 @@ export const tr = {
     title: "Hazır",
     titleNeon: "ürün kataloğu",
     subtitle:
-      "Yazıcı, filament, model ve aksesuarlar — filtreleyin, sepete ekleyin.",
+      "MODEL, FİGÜR ve AKSESUAR — filtreleyin, sepete ekleyin.",
     cardTitle: "Ürünleri",
     cardTitleNeon: "keşfedin",
     cardBody:
-      "3D yazıcılar, filamentler, modeller ve aksesuarlar tek katalogda. Kategorilere göre filtreleyin, sepete ekleyin, kapınıza kadar teslim alın.",
+      "MODEL, FİGÜR ve AKSESUAR tek katalogda. Kategorilere göre filtreleyin, sepete ekleyin, kapınıza kadar teslim alın.",
     ctaProducts: "Ürünler sayfasına git",
     trust1t: "Hızlı teslimat",
     trust1d:
@@ -216,7 +216,7 @@ export const tr = {
   products: {
     catalogTitle: "Ürün",
     catalogTitleNeon: "Kataloğu",
-    catalogSub: "Filament, yazıcı, model ve aksesuarlar.",
+    catalogSub: "MODEL, FİGÜR ve AKSESUAR.",
     searchPh: "Ürün ara…",
     clearSearch: "Aramayı temizle",
     allCategories: "Tüm kategoriler",
@@ -250,11 +250,9 @@ export const tr = {
     orderNow: "Hemen Sipariş Ver",
   },
   category: {
-    "3d-print": "3D Yazıcı",
-    model: "Model & Figür",
-    accessory: "Aksesuar",
-    filament: "Filament",
-    tool: "Alet & Kalibrasyon",
+    model: "MODEL",
+    figure: "FİGÜR",
+    accessory: "AKSESUAR",
   },
   orderStatus: {
     yeni: "Yeni",

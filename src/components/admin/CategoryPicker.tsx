@@ -1,32 +1,15 @@
 "use client";
 
-import {
-  Printer,
-  Box,
-  Puzzle,
-  Disc3,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
+import { Box, Puzzle, Shapes, type LucideIcon } from "lucide-react";
 import { categoryLabel } from "@/lib/order-labels";
 import { cn } from "@/lib/utils";
-import type { ProductCategory } from "@/types";
+import { PRODUCT_CATEGORIES, type ProductCategory } from "@/types";
 import { useIntl } from "@/components/i18n/IntlProvider";
 
-const categories: ProductCategory[] = [
-  "3d-print",
-  "model",
-  "accessory",
-  "filament",
-  "tool",
-];
-
 const CATEGORY_ICONS: Record<ProductCategory, LucideIcon> = {
-  "3d-print": Printer,
   model: Box,
+  figure: Shapes,
   accessory: Puzzle,
-  filament: Disc3,
-  tool: Wrench,
 };
 
 interface CategoryPickerProps {
@@ -42,8 +25,8 @@ export function CategoryPicker({ value, onChange }: CategoryPickerProps) {
       <label className="text-sm font-medium text-violet-100/90">
         {t("productsFilter.category")}
       </label>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {categories.map((cat) => {
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        {PRODUCT_CATEGORIES.map((cat) => {
           const Icon = CATEGORY_ICONS[cat];
           const selected = value === cat;
           return (

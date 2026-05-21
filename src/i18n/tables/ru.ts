@@ -209,7 +209,7 @@ export const ru = {
   products: {
     catalogTitle: "Каталог",
     catalogTitleNeon: "товаров",
-    catalogSub: "Филаменты, принтеры, модели и аксессуары.",
+    catalogSub: "МОДЕЛЬ, ФИГУРКА и АКСЕССУАР.",
     searchPh: "Поиск товаров…",
     clearSearch: "Сбросить поиск",
     allCategories: "Все категории",
@@ -243,11 +243,9 @@ export const ru = {
     orderNow: "Заказать сейчас",
   },
   category: {
-    "3d-print": "3D-принтер",
-    model: "Модели и фигурки",
-    accessory: "Аксессуары",
-    filament: "Филамент",
-    tool: "Инструменты и калибровка",
+    model: "МОДЕЛЬ",
+    figure: "ФИГУРКА",
+    accessory: "АКСЕССУАР",
   },
   orderStatus: {
     yeni: "Новый",

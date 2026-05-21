@@ -17,10 +17,23 @@ export type DbProduct = {
   price: number | string;
   stock: number;
   image: string;
+  images?: string[] | null;
   category: ProductCategory;
   featured: boolean;
   created_at: string;
 };
+
+export function resolveProductImages(row: {
+  image: string;
+  images?: string[] | null;
+}): string[] {
+  const fromCol = Array.isArray(row.images)
+    ? row.images.map((u) => String(u).trim()).filter(Boolean)
+    : [];
+  if (fromCol.length > 0) return fromCol;
+  const cover = row.image?.trim();
+  return cover ? [cover] : [];
+}
 
 export type DbOrder = {
   id: string;
@@ -49,6 +62,7 @@ export type DbProfile = {
 };
 
 export function mapProduct(row: DbProduct): Product {
+  const images = resolveProductImages(row);
   return {
     id: row.id,
     name: row.name,
@@ -56,7 +70,8 @@ export function mapProduct(row: DbProduct): Product {
     translations: row.translations as Product["translations"],
     price: Number(row.price),
     stock: row.stock,
-    image: row.image,
+    image: images[0] ?? row.image,
+    images,
     category: row.category,
     featured: row.featured,
     createdAt: row.created_at,
@@ -93,14 +108,24 @@ export function mapProfile(row: DbProfile): UserPublic {
   };
 }
 
-export function productToDb(input: Partial<Product> & Pick<Product, "name" | "description" | "price" | "stock" | "image" | "category">) {
+export function productToDb(
+  input: Partial<Product> &
+    Pick<Product, "name" | "description" | "price" | "stock" | "image" | "category"> & {
+      images?: string[];
+    }
+) {
+  const images = resolveProductImages({
+    image: input.image,
+    images: input.images,
+  });
   return {
     name: input.name,
     description: input.description,
     translations: input.translations ?? {},
     price: input.price,
     stock: input.stock,
-    image: input.image,
+    image: images[0] ?? input.image,
+    images,
     category: input.category,
     featured: input.featured ?? false,
   };

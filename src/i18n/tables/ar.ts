@@ -209,7 +209,7 @@ export const ar = {
   products: {
     catalogTitle: "كتالوج",
     catalogTitleNeon: "المنتجات",
-    catalogSub: "فلامنت، طابعات، نماذج وملحقات.",
+    catalogSub: "نموذج، تمثال وملحق.",
     searchPh: "ابحث عن منتجات…",
     clearSearch: "مسح البحث",
     allCategories: "كل الفئات",
@@ -243,11 +243,9 @@ export const ar = {
     orderNow: "اطلب الآن",
   },
   category: {
-    "3d-print": "طابعة ثلاثية الأبعاد",
-    model: "نماذج وتماثيل",
-    accessory: "ملحقات",
-    filament: "فلامنت",
-    tool: "أدوات ومعايرة",
+    model: "نموذج",
+    figure: "تمثال",
+    accessory: "ملحق",
   },
   orderStatus: {
     yeni: "جديد",

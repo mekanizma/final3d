@@ -16,7 +16,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { useIntl } from "@/components/i18n/IntlProvider";
 import { categoryLabel } from "@/lib/order-labels";
-import type { ProductCategory } from "@/types";
+import { PRODUCT_CATEGORIES } from "@/types";
 
 const fadeUp = {
   initial: { opacity: 0, y: 28 },
@@ -24,12 +24,7 @@ const fadeUp = {
   viewport: { once: true, margin: "-60px" },
 };
 
-const highlightCategories: ProductCategory[] = [
-  "3d-print",
-  "filament",
-  "model",
-  "accessory",
-];
+const highlightCategories = PRODUCT_CATEGORIES;
 
 export function HomeDiscoverSections() {
   const { t } = useIntl();

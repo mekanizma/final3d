@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { CreateProductInput, Product, ProductCategory } from "@/types";
+import { resolveProductImages } from "@/lib/supabase/mappers";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { ProductImagePicker } from "@/components/admin/ProductImagePicker";
 import { CategoryPicker } from "@/components/admin/CategoryPicker";
@@ -19,12 +20,14 @@ const empty: CreateProductInput = {
   price: 0,
   stock: 0,
   image: "",
-  category: "3d-print",
+  images: [],
+  category: "model",
   featured: false,
 };
 
 export function ProductForm({ initial, onSubmit, onCancel }: ProductFormProps) {
   const { t } = useIntl();
+  const initialImages = initial ? resolveProductImages(initial) : [];
   const [form, setForm] = useState<CreateProductInput>(
     initial
       ? {
@@ -32,7 +35,8 @@ export function ProductForm({ initial, onSubmit, onCancel }: ProductFormProps) {
           description: initial.description,
           price: initial.price,
           stock: initial.stock,
-          image: initial.image,
+          image: initialImages[0] ?? initial.image,
+          images: initialImages,
           category: initial.category,
           featured: initial.featured,
         }
@@ -42,16 +46,27 @@ export function ProductForm({ initial, onSubmit, onCancel }: ProductFormProps) {
   const [imageError, setImageError] = useState<string | null>(null);
   const isNew = !initial;
 
+  function setImages(images: string[]) {
+    setForm({
+      ...form,
+      images,
+      image: images[0] ?? "",
+    });
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.image.trim()) {
+    if (form.images.length === 0) {
       setImageError(t("productForm.imageRequired"));
       return;
     }
     setImageError(null);
     setLoading(true);
     try {
-      await onSubmit(form);
+      await onSubmit({
+        ...form,
+        image: form.images[0],
+      });
     } finally {
       setLoading(false);
     }
@@ -101,13 +116,7 @@ export function ProductForm({ initial, onSubmit, onCancel }: ProductFormProps) {
         />
       </div>
 
-      <ProductImagePicker
-        value={form.image}
-        onChange={(image) => {
-          setForm({ ...form, image });
-          setImageError(null);
-        }}
-      />
+      <ProductImagePicker value={form.images} onChange={setImages} />
       {imageError && (
         <p className="text-xs text-rose-400 -mt-2">{imageError}</p>
       )}

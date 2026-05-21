@@ -12,6 +12,7 @@ import { api } from "@/services";
 import { formatPrice } from "@/lib/utils";
 import { ShippingPromo } from "@/components/shipping/ShippingPromo";
 import type { Product } from "@/types";
+import { getProductGallery } from "@/lib/product-images";
 import { useCartStore } from "@/store/cartStore";
 import { NeonButton } from "@/components/ui/NeonButton";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -22,6 +23,7 @@ export function ProductDetailClient({ id }: { id: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [flying, setFlying] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
   const addItem = useCartStore((s) => s.addItem);
 
   useEffect(() => {
@@ -38,6 +40,8 @@ export function ProductDetailClient({ id }: { id: string }) {
 
   const displayName = getProductName(product, locale);
   const displayDesc = getProductDescription(product, locale);
+  const gallery = getProductGallery(product);
+  const mainImage = gallery[activeImage] ?? product.image;
 
   function handleAddToCart() {
     setFlying(true);
@@ -66,12 +70,13 @@ export function ProductDetailClient({ id }: { id: string }) {
             <GlassCard hover={false} className="overflow-hidden">
               <div className="relative h-[400px] lg:h-[500px]">
                 <motion.div
+                  key={mainImage}
                   className="absolute inset-4 animate-float"
                   animate={{ y: [0, -15, 0] }}
                   transition={{ duration: 4, repeat: Infinity }}
                 >
                   <ProductPhoto
-                    src={product.image}
+                    src={mainImage}
                     alt={displayName}
                     fill
                     className="object-contain"
@@ -79,6 +84,29 @@ export function ProductDetailClient({ id }: { id: string }) {
                   />
                 </motion.div>
               </div>
+              {gallery.length > 1 && (
+                <div className="flex gap-2 p-4 pt-0 overflow-x-auto">
+                  {gallery.map((url, index) => (
+                    <button
+                      key={`${url}-${index}`}
+                      type="button"
+                      onClick={() => setActiveImage(index)}
+                      className={`relative w-16 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
+                        activeImage === index
+                          ? "border-cyan-400 ring-2 ring-cyan-400/30"
+                          : "border-transparent opacity-70 hover:opacity-100"
+                      }`}
+                    >
+                      <ProductPhoto
+                        src={url}
+                        alt=""
+                        fill
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </GlassCard>
           </motion.div>
 

@@ -1,11 +1,12 @@
 import type { Locale } from "@/i18n/config";
 
-export type ProductCategory =
-  | "3d-print"
-  | "model"
-  | "accessory"
-  | "filament"
-  | "tool";
+export type ProductCategory = "model" | "figure" | "accessory";
+
+export const PRODUCT_CATEGORIES: ProductCategory[] = [
+  "model",
+  "figure",
+  "accessory",
+];
 
 export type OrderStatus =
   | "yeni"
@@ -29,7 +30,10 @@ export interface Product {
   translations?: ProductTranslations;
   price: number;
   stock: number;
+  /** Kapak görseli — kartlar ve sepet için */
   image: string;
+  /** Ürün detay galerisi; boşsa [image] kullanılır */
+  images?: string[];
   category: ProductCategory;
   featured?: boolean;
   createdAt: string;
@@ -118,6 +122,7 @@ export interface CreateProductInput {
   price: number;
   stock: number;
   image: string;
+  images: string[];
   category: ProductCategory;
   featured?: boolean;
 }
