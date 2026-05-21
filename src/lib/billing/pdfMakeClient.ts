@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import type { Content, TableCell, TDocumentDefinitions } from "pdfmake/interfaces";
 
 type PdfMakeModule = {
@@ -10,6 +11,58 @@ type PdfMakeModule = {
   };
 };
 
+const nodeRequire = createRequire(import.meta.url);
+
+/** pdfmake 0.2: pdfMake.vfs — pdfmake 0.3: modül doğrudan { "Roboto-Regular.ttf": base64 } */
+function resolveVfsFromModule(mod: unknown): Record<string, string> {
+  if (!mod || typeof mod !== "object") return {};
+
+  const legacy = mod as {
+    pdfMake?: { vfs?: Record<string, string> };
+    default?: { pdfMake?: { vfs?: Record<string, string> } };
+  };
+  if (legacy.pdfMake?.vfs && typeof legacy.pdfMake.vfs === "object") {
+    return legacy.pdfMake.vfs;
+  }
+  if (legacy.default?.pdfMake?.vfs && typeof legacy.default.pdfMake.vfs === "object") {
+    return legacy.default.pdfMake.vfs;
+  }
+
+  const candidates: unknown[] = [mod, legacy.default];
+  for (const src of candidates) {
+    if (!src || typeof src !== "object") continue;
+    const entries = Object.entries(src as Record<string, unknown>).filter(
+      ([name, data]) =>
+        /\.(ttf|otf)$/i.test(name) && typeof data === "string" && data.length > 0
+    );
+    if (entries.length > 0) {
+      return Object.fromEntries(entries) as Record<string, string>;
+    }
+  }
+
+  return {};
+}
+
+async function loadPdfMakeVfs(): Promise<Record<string, string>> {
+  try {
+    const vfsMod = await import("pdfmake/build/vfs_fonts.js");
+    const vfs = resolveVfsFromModule(vfsMod.default ?? vfsMod);
+    if (Object.keys(vfs).length > 0) return vfs;
+  } catch {
+    /* dynamic import — fallback require */
+  }
+
+  try {
+    const vfsMod = nodeRequire("pdfmake/build/vfs_fonts.js");
+    const vfs = resolveVfsFromModule(vfsMod);
+    if (Object.keys(vfs).length > 0) return vfs;
+  } catch {
+    /* ignore */
+  }
+
+  throw new Error("PDF yazı tipleri (vfs) yüklenemedi.");
+}
+
 let pdfMakeInstance: PdfMakeModule | null = null;
 
 async function getPdfMake(): Promise<PdfMakeModule> {
@@ -18,20 +71,11 @@ async function getPdfMake(): Promise<PdfMakeModule> {
   const mod = await import("pdfmake");
   const pdfmake = (mod.default ?? mod) as unknown as PdfMakeModule;
 
-  const vfsMod = await import("pdfmake/build/vfs_fonts.js");
-  const vfs =
-    (
-      vfsMod as {
-        pdfMake?: { vfs?: Record<string, string> };
-        default?: { pdfMake?: { vfs?: Record<string, string> } };
-      }
-    ).pdfMake?.vfs ??
-    (vfsMod as { default?: { pdfMake?: { vfs?: Record<string, string> } } })
-      .default?.pdfMake?.vfs;
-
-  if (!vfs) {
-    throw new Error("PDF yazı tipleri (vfs) yüklenemedi.");
+  if (typeof pdfmake.createPdf !== "function") {
+    throw new Error("pdfmake modülü geçersiz.");
   }
+
+  const vfs = await loadPdfMakeVfs();
 
   for (const [filename, data] of Object.entries(vfs)) {
     pdfmake.virtualfs.writeFileSync(filename, Buffer.from(data, "base64"));
