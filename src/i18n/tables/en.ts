@@ -316,7 +316,9 @@ export const en = {
     h1b: "AND BRING THEM BACK TO LIFE.",
     serviceBadge: "Our service · 3D scanning",
     lead:
-      "We digitize objects and produce prints. We measure your real-world part or object with professional 3D scanning, prepare a clean digital model, and complete filament printing under one roof when you need it. Scanning, files and production — one address.",
+      "We digitize objects and produce prints. We measure your real-world part or object with professional 3D scanning, prepare a clean digital model, and complete filament printing under one roof when you need it. From measurement to print, every step in the same studio — one team, one workflow.",
+    highlights:
+      "digitize|3D scanning|clean digital|filament printing|one workflow",
     sub:
       "Reverse engineering, archive, prototype or spare part: handheld scanner, color texture and TRNC studio / on-site service.",
     ctaScanQuote: "Get scan quote",

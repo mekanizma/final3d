@@ -317,7 +317,9 @@ export const tr = {
     h1b: "YENİDEN HAYAT VERİYORUZ.",
     serviceBadge: "Hizmetimiz · 3D Tarama",
     lead:
-      "Nesneleri dijitalize ediyoruz, baskısını üretiyoruz. Gerçek dünyadaki parçanızı veya objenizi profesyonel 3D tarama ile ölçüyoruz; temiz dijital modeli hazırlıyor, isteğinize göre filament baskısını aynı çatı altında tamamlıyoruz. Tarama, dosya ve üretim — tek adres.",
+      "Nesneleri dijitalize ediyoruz, baskısını üretiyoruz. Gerçek dünyadaki parçanızı veya objenizi profesyonel 3D tarama ile ölçüyoruz; Temiz dijital modeli hazırlıyor, isteğinize göre filament baskısını aynı çatı altında tamamlıyoruz. Ölçümden baskıya kadar her adım aynı stüdyoda — tek ekip, tek süreç.",
+    highlights:
+      "dijitalize|3D tarama|Temiz|filament baskı|tek süreç",
     sub:
       "Tersine mühendislik, arşiv, prototip veya kopya parça: el tipi tarayıcı, renkli doku ve KKTC'de stüdyo / saha hizmeti.",
     ctaScanQuote: "Tarama Teklifi Al",

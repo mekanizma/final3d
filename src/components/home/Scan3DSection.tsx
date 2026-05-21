@@ -20,6 +20,7 @@ import { Scan3DVideo } from "@/components/home/Scan3DVideo";
 import { SCAN_IMAGES } from "@/lib/scanMedia";
 import { useIntl } from "@/components/i18n/IntlProvider";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
+import { AnimatedProse } from "@/components/ui/AnimatedProse";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -68,12 +69,11 @@ export function Scan3DSection() {
               </span>
             </h2>
 
-            <p className="text-violet-200/75 text-base sm:text-lg leading-relaxed max-w-lg mb-4">
-              {t("scanSection.lead")}
-            </p>
-            <p className="text-sm text-violet-300/50 max-w-lg mb-8 leading-relaxed">
-              {t("scanSection.sub")}
-            </p>
+            <AnimatedProse
+              lead={t("scanSection.lead")}
+              sub={t("scanSection.sub")}
+              highlights={t("scanSection.highlights")}
+            />
 
             <div className="flex flex-wrap gap-3">
               <LocaleLink href="/3d-tarama/teklif">
