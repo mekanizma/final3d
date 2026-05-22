@@ -112,7 +112,7 @@
     --_has-hocus-on: ;
     --_has-hocus-off: initial;
     --_thumb-ratio: 4 / 3;
-    --_thumb-object-position: 72% 50%;
+    --_thumb-object-position: right center;
 
     display: grid;
     width: 100%;
@@ -121,10 +121,10 @@
     grid-template-rows:
       auto
       auto
-      3.5rem
+      minmax(3.75rem, auto)
       1.85rem
       2.625rem;
-    gap: var(--_row-gap) 0.6rem;
+    gap: var(--_row-gap) 0.65rem;
     padding: var(--_padding);
     border-radius: var(--_radius);
     box-shadow: 0 12px 28px -12px rgb(26 16 72 / 22%);
@@ -174,7 +174,7 @@
   .scope.product-cards ._thumbnail-stack {
     display: grid;
     aspect-ratio: var(--_thumb-ratio);
-    max-block-size: 10.25rem;
+    inline-size: 100%;
     overflow: hidden;
     border-radius: var(--_inner-radius);
     background-color: color-mix(in srgb, var(--card-foreground) 6%, var(--card-background));
@@ -182,9 +182,9 @@
 
   .scope.product-cards ._thumbnail-stack > img {
     grid-area: 1 / 1;
-    inline-size: 112%;
+    inline-size: 100%;
     block-size: 100%;
-    margin-inline-start: -6%;
+    margin: 0;
     display: block;
     object-fit: cover;
     object-position: var(--_thumb-object-position);
@@ -226,19 +226,24 @@
   .scope.product-cards ._card > ._heading {
     grid-row: 2;
     grid-column: 1;
-    align-self: center;
+    align-self: start;
     margin: 0;
     padding-block: 0.15rem;
+    padding-inline-end: 0.4rem;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.3;
     min-width: 0;
   }
 
   .scope.product-cards ._card > ._heading a {
-    display: block;
+    display: -webkit-box;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     color: inherit;
     text-decoration: none;
   }
@@ -251,11 +256,12 @@
   .scope.product-cards ._card > ._price {
     grid-row: 2;
     grid-column: 2;
-    place-self: center end;
+    place-self: start end;
     margin: 0;
     font-weight: 700;
     font-size: 0.8125rem;
     white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .scope.product-cards ._price {
@@ -272,9 +278,10 @@
     grid-column: 1 / -1;
     align-self: start;
     margin: 0;
-    opacity: 0.82;
-    font-size: 0.8125rem;
-    line-height: 1.45;
+    opacity: 0.88;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    --line-clamp--limit: 4;
   }
 
   .scope.product-cards ._card > ._tag-list {
