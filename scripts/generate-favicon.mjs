@@ -5,12 +5,12 @@ import sharp from "sharp";
 import pngToIco from "png-to-ico";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const logo = resolve(root, "public/logo.png");
-const bg = { r: 10, g: 6, b: 24, alpha: 1 };
+const source = resolve(root, "public/favicon-source.svg");
 
 async function squarePng(size) {
-  return sharp(logo)
-    .resize(size, size, { fit: "contain", background: bg })
+  const density = Math.max(144, Math.round((size / 512) * 384));
+  return sharp(source, { density })
+    .resize(size, size, { fit: "cover" })
     .png()
     .toBuffer();
 }
@@ -23,5 +23,6 @@ writeFileSync(resolve(root, "src/app/favicon.ico"), faviconIco);
 writeFileSync(resolve(root, "src/app/icon.png"), await squarePng(512));
 writeFileSync(resolve(root, "src/app/apple-icon.png"), await squarePng(180));
 writeFileSync(resolve(root, "public/favicon.ico"), faviconIco);
+writeFileSync(resolve(root, "public/apple-icon.png"), await squarePng(180));
 
-console.log("favicon.ico, icon.png, apple-icon.png, public/favicon.ico updated");
+console.log("Professional favicon generated from public/favicon-source.svg");
