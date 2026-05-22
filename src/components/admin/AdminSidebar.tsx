@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils";
 import { LocaleLink } from "@/components/i18n/LocaleLink";
 import { useIntl } from "@/components/i18n/IntlProvider";
 import { getLocaleFromPathname, stripLocalePath, withLocale } from "@/lib/locale-path";
-import { SiteLogo } from "@/components/brand/SiteLogo";
 
 const links = [
   { href: "/admin", labelKey: "adminNav.dashboard", icon: LayoutDashboard },
@@ -74,9 +73,11 @@ export function AdminSidebar() {
         )}
       >
         <div className="p-6 border-b border-white/5">
-          <LocaleLink href="/admin" className="flex flex-col gap-2">
-            <SiteLogo size="md" />
-            <p className="text-xs text-violet-300/60">{t("adminNav.panel")}</p>
+          <LocaleLink
+            href="/admin"
+            className="block text-sm font-semibold text-white hover:text-fuchsia-200 transition-colors"
+          >
+            {t("adminNav.panel")}
           </LocaleLink>
         </div>
 
