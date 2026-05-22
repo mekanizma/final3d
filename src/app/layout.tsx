@@ -44,9 +44,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
   },
   icons: {
-    icon: [{ url: SITE_LOGO_PATH, type: "image/svg+xml" }],
+    icon: [{ url: SITE_LOGO_PATH, type: "image/png" }],
     shortcut: SITE_LOGO_PATH,
-    apple: [{ url: SITE_LOGO_PATH, type: "image/svg+xml" }],
+    apple: [{ url: SITE_LOGO_PATH, type: "image/png" }],
   },
   robots: { index: true, follow: true },
 };

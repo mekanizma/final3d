@@ -46,10 +46,11 @@ export function Navbar() {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-[100] border-b border-white/10 bg-[#12082a]/96 backdrop-blur-xl supports-[backdrop-filter]:bg-[#12082a]/90 shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center gap-2 sm:gap-4 min-w-0">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 h-[5.5rem] flex items-center gap-2 sm:gap-4 min-w-0">
           <LocaleLink
             href="/"
-            className="flex items-center group shrink-0 overflow-visible py-0.5 -my-0.5"
+            className="flex items-center group shrink-0 overflow-visible py-0.5"
+            aria-label="FINAL3D Ana sayfa"
           >
             <SiteLogo size="nav" />
           </LocaleLink>

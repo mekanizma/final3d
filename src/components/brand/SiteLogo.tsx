@@ -2,20 +2,21 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { SITE_LOGO_PATH } from "@/lib/seo/constants";
 
 const sizeClass = {
   sm: "h-11 w-auto",
   md: "h-12 w-auto",
-  /** Navbar — h-16 çubuk içinde okunaklı, taşmayan */
-  nav: "h-11 w-auto min-w-[5.25rem] sm:h-12 sm:min-w-[5.75rem] lg:h-[3.25rem] lg:min-w-[6.5rem] max-h-[3.25rem]",
-  lg: "h-[4.5rem] w-auto",
-  xl: "h-24 w-auto",
+  /** Navbar — dikey kompozisyonlu PNG, header yüksekliğine oturur */
+  nav: "block h-[5rem] w-auto max-w-[min(52vw,11.5rem)] sm:max-w-[13rem]",
+  lg: "h-20 w-auto",
+  xl: "h-28 w-auto",
 } as const;
 
 const glowClass = {
   sm: "blur-xl scale-110",
   md: "blur-2xl scale-110",
-  nav: "blur-lg scale-105 opacity-80",
+  nav: "blur-lg scale-105 opacity-70",
   lg: "blur-2xl scale-125",
   xl: "blur-3xl scale-125",
 } as const;
@@ -36,7 +37,7 @@ export function SiteLogo({
     <span
       className={cn(
         "pointer-events-none absolute inset-0 rounded-2xl",
-        "bg-gradient-to-br from-fuchsia-500/35 via-violet-500/25 to-cyan-400/20",
+        "bg-gradient-to-br from-fuchsia-500/25 via-violet-500/15 to-cyan-400/10",
         glowClass[size]
       )}
       aria-hidden
@@ -46,8 +47,22 @@ export function SiteLogo({
   const imgClass = cn(
     sizeClass[size],
     "relative z-10 object-contain shrink-0",
-    "drop-shadow-[0_0_14px_rgba(232,121,249,0.5)]"
+    "drop-shadow-[0_4px_18px_rgba(0,0,0,0.5)]"
   );
+
+  if (!animated && size === "nav") {
+    return (
+      /* eslint-disable-next-line @next/next/no-img-element */
+      <img
+        src={SITE_LOGO_PATH}
+        alt="FINAL3D"
+        className={cn(imgClass, className)}
+        style={{ height: "5rem", width: "auto" }}
+        decoding="async"
+        fetchPriority="high"
+      />
+    );
+  }
 
   if (!animated) {
     return (
@@ -60,10 +75,8 @@ export function SiteLogo({
         {glow}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/logo.svg"
+          src={SITE_LOGO_PATH}
           alt="FINAL3D"
-          width={940}
-          height={940}
           className={imgClass}
           decoding="async"
         />
@@ -85,14 +98,14 @@ export function SiteLogo({
       <motion.span
         className={cn(
           "pointer-events-none absolute inset-0 rounded-2xl",
-          "bg-gradient-to-br from-fuchsia-500/40 via-violet-500/30 to-cyan-400/25",
+          "bg-gradient-to-br from-fuchsia-500/30 via-violet-500/20 to-cyan-400/15",
           glowClass[size]
         )}
         aria-hidden
         animate={{
-          opacity: [0.45, 0.9, 0.45],
-          scale: [1.08, 1.28, 1.08],
-          rotate: [0, 8, 0, -8, 0],
+          opacity: [0.35, 0.75, 0.35],
+          scale: [1.08, 1.22, 1.08],
+          rotate: [0, 6, 0, -6, 0],
         }}
         transition={{
           duration: 5,
@@ -100,34 +113,21 @@ export function SiteLogo({
           ease: "easeInOut",
         }}
       />
-      <motion.span
-        className="pointer-events-none absolute inset-0 rounded-full bg-fuchsia-400/20 blur-3xl"
-        aria-hidden
-        animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.55, 0.3] }}
-        transition={{
-          duration: 3.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 0.5,
-        }}
-      />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <motion.img
-        src="/logo.svg"
+        src={SITE_LOGO_PATH}
         alt="FINAL3D"
-        width={940}
-        height={940}
         className={imgClass}
         decoding="async"
-        animate={{ y: [0, -8, 0] }}
+        animate={{ y: [0, -6, 0] }}
         transition={{
           duration: 4.5,
           repeat: Infinity,
           ease: "easeInOut",
         }}
         whileHover={{
-          scale: 1.05,
-          filter: "drop-shadow(0 0 24px rgba(232,121,249,0.85))",
+          scale: 1.04,
+          filter: "drop-shadow(0 6px 24px rgba(56,189,248,0.45))",
         }}
       />
     </motion.span>

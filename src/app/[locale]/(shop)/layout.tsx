@@ -16,7 +16,7 @@ export default function ShopLayout({
       <ClearLegacyStorage shopOnly />
       <Navbar />
       <PageTransition>
-        <main className="relative z-10 pt-16">
+        <main className="relative z-10 pt-[5.5rem]">
           {children}
         </main>
       </PageTransition>

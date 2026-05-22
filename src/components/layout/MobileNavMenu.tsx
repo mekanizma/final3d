@@ -99,7 +99,7 @@ export function MobileNavMenu({
           <motion.button
             type="button"
             aria-label="Menüyü kapat"
-            className="lg:hidden fixed inset-0 top-16 z-[200] bg-black/60 backdrop-blur-[2px]"
+            className="lg:hidden fixed inset-0 top-[5.5rem] z-[200] bg-black/60 backdrop-blur-[2px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -108,8 +108,11 @@ export function MobileNavMenu({
           />
 
           <motion.div
-            className="lg:hidden fixed inset-x-0 top-16 z-[201] flex flex-col bg-[#100c1f] border-t border-white/10 shadow-2xl"
-            style={{ height: "calc(100dvh - 4rem)", maxHeight: "calc(100dvh - 4rem)" }}
+            className="lg:hidden fixed inset-x-0 top-[5.5rem] z-[201] flex flex-col bg-[#100c1f] border-t border-white/10 shadow-2xl"
+            style={{
+              height: "calc(100dvh - 5.5rem)",
+              maxHeight: "calc(100dvh - 5.5rem)",
+            }}
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}

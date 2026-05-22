@@ -40,7 +40,7 @@ export function HeroSection() {
   return (
     <section
       ref={ref}
-      className="relative min-h-[calc(100dvh-4rem)] flex items-center overflow-hidden grid-pattern"
+      className="relative min-h-[calc(100dvh-5.5rem)] flex items-center overflow-hidden grid-pattern"
     >
       <motion.div
         style={{ y, opacity }}
