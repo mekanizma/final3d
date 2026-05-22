@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
-import { SITE_LOGO_PATH } from "@/lib/seo/constants";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,9 +43,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
   },
   icons: {
-    icon: [{ url: SITE_LOGO_PATH, type: "image/png" }],
-    shortcut: SITE_LOGO_PATH,
-    apple: [{ url: SITE_LOGO_PATH, type: "image/png" }],
+    icon: [{ url: "/favicon.ico", type: "image/x-icon", sizes: "48x48" }],
+    shortcut: "/favicon.ico",
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
   },
   robots: { index: true, follow: true },
 };
